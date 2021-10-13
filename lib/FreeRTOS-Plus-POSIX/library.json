@@ -1,0 +1,14 @@
+{
+    "name": "FreeRTOS-Plus-POSIX",
+    "version": "1.0.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "build":
+    {
+        "srcDir": "source",
+        "includeDir": "include"
+    }
+}

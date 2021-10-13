@@ -1,0 +1,15 @@
+{
+    "name": "microROS",
+    "version": "galactic-a4c138e3",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "build":
+    {
+        "extraScript": "import_ros2_install.py",
+        "srcFilter": "-<*>",
+        "libArchive": false
+    }
+}
