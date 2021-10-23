@@ -3,7 +3,6 @@
 .Project
 .vscode/*
 !.vscode/extensions.json
-.vscode/launch.json
-.vscode/ipch
+!.vscode/tasks.json
 
 *.log
