@@ -1,0 +1,16 @@
+{
+    "name": "usb-describe",
+    "version": "1.0.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "dependencies":
+    [
+    ],
+    "build":
+    {
+        "libLDFMode": "chain"
+    }
+}

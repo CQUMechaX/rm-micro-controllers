@@ -1,51 +1,23 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : usbd_cdc_if.c
   * @version        : v1.0_Cube
   * @brief          : Usb device for Virtual Com Port.
   ******************************************************************************
-  * This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
+  * @attention
   *
-  * Copyright (c) 2018 STMicroelectronics International N.V. 
-  * All rights reserved.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without 
-  * modification, are permitted, provided that the following conditions are met:
-  *
-  * 1. Redistribution of source code must retain the above copyright notice, 
-  *    this list of conditions and the following disclaimer.
-  * 2. Redistributions in binary form must reproduce the above copyright notice,
-  *    this list of conditions and the following disclaimer in the documentation
-  *    and/or other materials provided with the distribution.
-  * 3. Neither the name of STMicroelectronics nor the names of other 
-  *    contributors to this software may be used to endorse or promote products 
-  *    derived from this software without specific written permission.
-  * 4. This software, including modifications and/or derivative works of this 
-  *    software, must execute solely and exclusively on microcontroller or
-  *    microprocessor devices manufactured by or for STMicroelectronics.
-  * 5. Redistribution and use of this software other than as permitted under 
-  *    this license is void and will automatically terminate your rights under 
-  *    this license. 
-  *
-  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
-  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
-  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-  * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
-  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
-  * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
@@ -78,6 +50,7 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
+
 /* USER CODE END PRIVATE_TYPES */
 
 /**
@@ -106,6 +79,7 @@
   */
 
 /* USER CODE BEGIN PRIVATE_MACRO */
+
 /* USER CODE END PRIVATE_MACRO */
 
 /**
@@ -142,6 +116,7 @@ uint8_t UART_RxBuffer[2048];
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
+
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -157,6 +132,7 @@ static int8_t CDC_Init_FS(void);
 static int8_t CDC_DeInit_FS(void);
 static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len);
+static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
 
@@ -173,7 +149,8 @@ USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
   CDC_Init_FS,
   CDC_DeInit_FS,
   CDC_Control_FS,
-  CDC_Receive_FS
+  CDC_Receive_FS,
+  CDC_TransmitCplt_FS
 };
 
 /* Private functions ---------------------------------------------------------*/
@@ -212,25 +189,25 @@ static int8_t CDC_DeInit_FS(void)
 static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 {
   /* USER CODE BEGIN 5 */
-  switch (cmd)
+  switch(cmd)
   {
-  case CDC_SEND_ENCAPSULATED_COMMAND:
- 
-    break;
-
-  case CDC_GET_ENCAPSULATED_RESPONSE:
- 
-    break;
-
-  case CDC_SET_COMM_FEATURE:
- 
-    break;
-
-  case CDC_GET_COMM_FEATURE:
+    case CDC_SEND_ENCAPSULATED_COMMAND:
 
     break;
 
-  case CDC_CLEAR_COMM_FEATURE:
+    case CDC_GET_ENCAPSULATED_RESPONSE:
+
+    break;
+
+    case CDC_SET_COMM_FEATURE:
+
+    break;
+
+    case CDC_GET_COMM_FEATURE:
+
+    break;
+
+    case CDC_CLEAR_COMM_FEATURE:
 
     break;
 
@@ -245,29 +222,29 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*                                        2 - 2 Stop bits                      */
   /* 5      | bParityType |  1   | Number | Parity                               */
   /*                                        0 - None                             */
-  /*                                        1 - Odd                              */ 
+  /*                                        1 - Odd                              */
   /*                                        2 - Even                             */
   /*                                        3 - Mark                             */
   /*                                        4 - Space                            */
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
-  case CDC_SET_LINE_CODING:   
-		memcpy(&SET_LineCoding,pbuf,length);
-		ComPort_Config();
+    case CDC_SET_LINE_CODING:
+      memcpy(&SET_LineCoding,pbuf,length);
+      ComPort_Config();
     break;
 
-  case CDC_GET_LINE_CODING:     
-
-    break;
-
-  case CDC_SET_CONTROL_LINE_STATE:
+    case CDC_GET_LINE_CODING:
 
     break;
 
-  case CDC_SEND_BREAK:
- 
-    break;    
-    
+    case CDC_SET_CONTROL_LINE_STATE:
+
+    break;
+
+    case CDC_SEND_BREAK:
+
+    break;
+
   default:
     break;
   }
@@ -281,10 +258,11 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   *         through this function.
   *
   *         @note
-  *         This function will block any OUT packet reception on USB endpoint
-  *         untill exiting this function. If you exit this function before transfer
-  *         is complete on CDC interface (ie. using DMA controller) it will result
-  *         in receiving more data while previous ones are still not sent.
+  *         This function will issue a NAK packet on any OUT packet received on
+  *         USB endpoint until exiting this function. If you exit this function
+  *         before transfer is complete on CDC interface (ie. using DMA controller)
+  *         it will result in receiving more data while previous ones are still
+  *         not sent.
   *
   * @param  Buf: Buffer of data to be received
   * @param  Len: Number of data received (in bytes)
@@ -323,16 +301,34 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
   }
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
   result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
-	
-	
-	
-	
   /* USER CODE END 7 */
   return result;
 }
 
-/* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
+/**
+  * @brief  CDC_TransmitCplt_FS
+  *         Data transmitted callback
+  *
+  *         @note
+  *         This function is IN transfer complete callback used to inform user that
+  *         the submitted Data is successfully sent over USB.
+  *
+  * @param  Buf: Buffer of data to be received
+  * @param  Len: Number of data received (in bytes)
+  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
+  */
+static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
+{
+  uint8_t result = USBD_OK;
+  /* USER CODE BEGIN 13 */
+  UNUSED(Buf);
+  UNUSED(Len);
+  UNUSED(epnum);
+  /* USER CODE END 13 */
+  return result;
+}
 
+/* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**
   * @brief  ComPort_Config
@@ -420,20 +416,15 @@ static void ComPort_Config(void)
     /* Initialization Error */
     Error_Handler();
   }
-
 	
   /* Start reception: provide the buffer pointer with offset and the buffer size */
 	HAL_UART_Receive_IT_IDLE(&huart6,UART_RxBuffer,2048);
 		
 }
 
-
-
 void UART_RxCplCallback(UART_HandleTypeDef* uart){
-		
 		CDC_Transmit_FS(uart->pRxBuffPtr,uart->RxXferCount);
 }
-
 
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 

@@ -1,0 +1,21 @@
+{
+    "name": "microROS-cube-example",
+    "version": "1.0.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "dependencies":
+    {
+        "STM32Cube Middleware-FreeRTOS": "*",
+        "FreeRTOS-Plus-POSIX": "*"
+    },
+    "build":
+    {
+        "flags": ["-I $PROJECT_SRC_DIR", "-I $PROJECT_INCLUDE_DIR"],
+        "includeDir": "Inc",
+        "srcDir": "Src",
+        "libLDFMode": "chain+"
+    }
+}
