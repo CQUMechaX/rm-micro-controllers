@@ -3,7 +3,6 @@ global_env = DefaultEnvironment()
 
 import os 
 
-env.Append(LINKFLAGS=['-Wl,--start-group'])
 for package in os.listdir():
     if os.path.isdir(package):
         if os.path.exists(package + "/include"):
@@ -12,7 +11,9 @@ for package in os.listdir():
         #     for staticLib in os.listdir(package + '/lib'):
         #         if os.path.isfile(package + '/lib/' + staticLib):
         #             env.Append(LINKFLAGS=[os.path.abspath(package + "/lib/" + staticLib)])
+env.Append(LINKFLAGS=['-Wl,--start-group'])
 env.Append(LINKFLAGS=[os.path.abspath('libmicroros.a')])
+# env.Append(LINKFLAGS=['-Wl,--end-group'])
             # print(package)
 # env.Append(LINKFLAGS=['-Wl,lib/micro-ros/rclc/lib/librclc.a'])
 # env.Append(CPPEFINES=['-DUNREAL'])
