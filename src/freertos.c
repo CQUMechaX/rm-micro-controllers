@@ -129,8 +129,8 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
-  printf("Hello I'm here!");
+  // MX_USB_DEVICE_Init();
+  printf("Hello I'm here!\n");
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   bool availableNetwork = false;
@@ -200,13 +200,13 @@ void StartDefaultTask(void *argument)
     {
 		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
 						  !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
-      // printf("1");
+      printf("1\n");
     } 
     else 
     {
 		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin,
 						  !HAL_GPIO_ReadPin(LED_GREEN_GPIO_Port, LED_GREEN_Pin));
-      // printf("2");
+      printf("2");
     }
     osDelay(200);
   }

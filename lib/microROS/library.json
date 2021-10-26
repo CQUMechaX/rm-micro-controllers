@@ -6,10 +6,16 @@
         "type": "git",
         "url": "https://github.com/foo/bar.git"
     },
+    "dependencies":
+    {
+        "STM32Cube Middleware-FreeRTOS": "*",
+        "FreeRTOS-Plus-POSIX": "*"
+    },
     "build":
     {
         "extraScript": "import_ros2_install.py",
         "srcFilter": "-<*>",
+        "lib_ldf_mode": "off",
         "libArchive": false
     }
 }

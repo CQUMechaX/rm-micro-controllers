@@ -1,0 +1,19 @@
+{
+    "name": "CDC-Describe",
+    "version": "1.0.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "dependencies":
+    {
+        "STM32_USB_Device_Library-DualCDC": "*",
+        "STM32_USB_Device_Library-Core": "*"
+    },
+    "build":
+    {
+        "includeDir": "Inc",
+        "srcDir": "Src"
+    }
+}

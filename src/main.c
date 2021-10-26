@@ -47,34 +47,24 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern uint8_t UART_RxBuffer[2048];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-#define BUFSIZE 4096
-char buffer[BUFSIZE];
-extern struct netif gnetif;
-UART_HandleTypeDef *printf_uart = &huart6;
+// #define BUFSIZE 4096
+// char buffer[BUFSIZE];
+// extern struct netif gnetif;
+// UART_HandleTypeDef *printf_uart = &huart6;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#ifdef __GNUC__
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
+
 extern void initialise_monitor_handles(void);
 
-PUTCHAR_PROTOTYPE
-{
-  HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 0xff);
-  osDelay(1000);
-  return ch;
-}
 /* USER CODE END 0 */
 
 /**
@@ -107,9 +97,12 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
-  // MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  // if(HAL_UART_Receive_IT_IDLE(&huart6, UART_RxBuffer, 2048) != HAL_OK)
+  // {
+    // Error_Handler();
+  // }
   /* USER CODE END 2 */
 
   /* Init scheduler */

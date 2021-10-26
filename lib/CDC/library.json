@@ -1,0 +1,19 @@
+{
+    "name": "STM32_USB_Device_Library-DualCDC",
+    "version": "1.26.2",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/foo/bar.git"
+    },
+    "dependencies":
+    {
+        "STM32_USB_Device_Library-Core": "*",
+        "CDC-Describe": "*"
+    },
+    "build":
+    {
+        "includeDir": "Inc",
+        "srcDir": "Src"
+    }
+}

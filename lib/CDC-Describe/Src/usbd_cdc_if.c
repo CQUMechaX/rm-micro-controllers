@@ -136,8 +136,7 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
 
-void UART_RxCplCallback(UART_HandleTypeDef* uart);
-static void ComPort_Config(void);
+void ComPort_Config(void);
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
@@ -275,6 +274,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 	
 	HAL_UART_Transmit_DMA(&huart6,Buf,*Len);
+  CDC_Transmit_FS(Buf, *Len);
 	
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -336,8 +336,9 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   * @param  None.
   * @retval None
   * @note   When a configuration is not supported, a default value is used.
+  * @ref https://imuncle.github.io/content.html?id=59
   */
-static void ComPort_Config(void)
+void ComPort_Config(void)
 {	
 	
 	uint32_t DMA_FLAGS;

@@ -20,8 +20,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 
+/* USER CODE BEGIN INCLUDE */
+#include "usbd_cdc_if.h"
+/* USER CODE END INCLUDE */
+
 /* USER CODE BEGIN 0 */
-void UART_RxCplCallback(UART_HandleTypeDef* uart);
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart6;
@@ -53,7 +56,6 @@ void MX_USART6_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART6_Init 2 */
-
   /* USER CODE END USART6_Init 2 */
 
 }
@@ -119,6 +121,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart6_tx);
 
+    /* USART6 interrupt Init */
+    HAL_NVIC_SetPriority(USART6_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART6_IRQn);
   /* USER CODE BEGIN USART6_MspInit 1 */
 
   /* USER CODE END USART6_MspInit 1 */
@@ -145,6 +150,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     /* USART6 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmarx);
     HAL_DMA_DeInit(uartHandle->hdmatx);
+    /* USART6 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART6_IRQn);
   /* USER CODE BEGIN USART6_MspDeInit 1 */
 
   /* USER CODE END USART6_MspDeInit 1 */
