@@ -19,11 +19,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "can.h"
 #include "dma.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
+#include "tools/buzzer.h"
+
+#include <cmsis_os2.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -97,12 +101,13 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART6_UART_Init();
-  MX_USB_DEVICE_Init();
+  MX_CAN1_Init();
+  MX_CAN2_Init();
+  MX_TIM12_Init();
   /* USER CODE BEGIN 2 */
-  // if(HAL_UART_Receive_IT_IDLE(&huart6, UART_RxBuffer, 2048) != HAL_OK)
-  // {
-    // Error_Handler();
-  // }
+
+  buzzerStartUp();
+  MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -119,7 +124,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    printf("help");
+    printf("help\n");
+    // HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }

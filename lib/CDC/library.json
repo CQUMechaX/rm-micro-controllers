@@ -13,6 +13,7 @@
     },
     "build":
     {
+        "srcFilter": "+<*> -<.git/> -<.svn/> -<test/> -<example/> -<*template*>",
         "includeDir": "Inc",
         "srcDir": "Src"
     }

@@ -1,9 +1,12 @@
 #include <uxr/client/transport.h>
+#include <cmsis_os2.h>
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_dma.h"
+#include "usbd_conf.h"
+#include "usbd_cdc_if.h"
 
-#include <unistd.h>
+// #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -31,7 +34,7 @@ size_t freertos_serial_write(struct uxrCustomTransport* transport, const uint8_t
 
     HAL_StatusTypeDef ret;
     if (uart->gState == HAL_UART_STATE_READY){
-        ret = HAL_UART_Transmit_DMA(uart, buf, len);
+        ret = HAL_UART_Transmit_DMA(uart, (uint8_t*)buf, len);
         while (ret == HAL_OK && uart->gState != HAL_UART_STATE_READY){
         osDelay(1);
         }
@@ -57,4 +60,19 @@ size_t freertos_serial_read(struct uxrCustomTransport* transport, uint8_t* buf, 
     }
     
     return wrote;
+}
+
+bool CDCUxrOpen(struct uxrCustomTransport * transport){
+    return true;
+    // return USBD_Get_USB_Status(HAL_OK);
+}
+bool CDCUxrClose(struct uxrCustomTransport * transport){
+    return true;
+}
+size_t CDCUxrWrite(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err){
+    return CDC_Transmit_FS(buf, len, 0);
+}
+size_t CDCUxrRead(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err){
+    // return CDC_Receive_FS();
+    return 0;
 }

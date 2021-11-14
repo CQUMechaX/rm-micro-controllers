@@ -21,8 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
-#include "main.h"
 #include "cmsis_os.h"
+
+#include "main.h"
+#include "tim.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -130,8 +132,9 @@ void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
   // MX_USB_DEVICE_Init();
-  printf("Hello I'm here!\n");
   /* USER CODE BEGIN StartDefaultTask */
+  // printf("Hello I'm here!\n");
+  
   /* Infinite loop */
   bool availableNetwork = false;
 
@@ -139,11 +142,11 @@ void StartDefaultTask(void *argument)
   availableNetwork = true; 
   rmw_uros_set_custom_transport( 
     true, 
-    (void *) &huart6, 
-    freertos_serial_open, 
-    freertos_serial_close, 
-    freertos_serial_write, 
-    freertos_serial_read); 
+    (void *) NULL, 
+    CDCUxrOpen, 
+    CDCUxrClose, 
+    CDCUxrWrite, 
+    CDCUxrRead); 
 #elif defined(RMW_UXRCE_TRANSPORT_UDP) 
   printf("Ethernet Initialization\r\n");
 

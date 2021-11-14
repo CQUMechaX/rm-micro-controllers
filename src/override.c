@@ -1,7 +1,9 @@
 #include <errno.h>
 #include <sys/unistd.h> // STDOUT_FILENO, STDERR_FILENO
+
 #include "override.h"
 #include "usart.h"
+#include "cmsis_os2.h"
 
 
 #ifdef __GNUC__
@@ -31,8 +33,9 @@ int _write(int file, char *data, int len)
       return -1;
    }
 
-   HAL_StatusTypeDef status =
-      HAL_UART_Transmit(&huart6, (uint8_t*)data, len, 0xff);
+   HAL_StatusTypeDef status = 0;
+   // status = HAL_UART_Transmit(&huart6, (uint8_t*)data, len, 0xff);
+   // status = HAL_UART_Transmit_DMA(&huart6, data, len);
 
    // return # of bytes written - as best we can tell
    return (status == HAL_OK ? len : 0);

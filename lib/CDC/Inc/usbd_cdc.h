@@ -58,7 +58,7 @@ extern "C" {
 #define CDC_DATA_FS_MAX_PACKET_SIZE                 64U  /* Endpoint IN & OUT Packet size */
 #define CDC_CMD_PACKET_SIZE                         8U  /* Control Endpoint Packet size */
 
-#define USB_CDC_CONFIG_DESC_SIZ                     67U
+#define USB_CDC_CONFIG_DESC_SIZ                     ((67U - 9 + 8) * 2 + 9)
 #define CDC_DATA_HS_IN_PACKET_SIZE                  CDC_DATA_HS_MAX_PACKET_SIZE
 #define CDC_DATA_HS_OUT_PACKET_SIZE                 CDC_DATA_HS_MAX_PACKET_SIZE
 
@@ -103,8 +103,8 @@ typedef struct _USBD_CDC_Itf
 {
   int8_t (* Init)(void);
   int8_t (* DeInit)(void);
-  int8_t (* Control)(uint8_t cmd, uint8_t *pbuf, uint16_t length);
-  int8_t (* Receive)(uint8_t *Buf, uint32_t *Len);
+  int8_t (* Control)(uint8_t cmd, uint8_t *pbuf, uint16_t length, uint8_t epindex);
+  int8_t (* Receive)(uint8_t *Buf, uint32_t *Len, uint8_t epindex);
   int8_t (* TransmitCplt)(uint8_t *Buf, uint32_t *Len, uint8_t epnum);
 } USBD_CDC_ItfTypeDef;
 
@@ -153,8 +153,8 @@ uint8_t USBD_CDC_SetTxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff,
                              uint32_t length);
 
 uint8_t USBD_CDC_SetRxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff);
-uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
-uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev);
+uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev, uint8_t epindex);
+uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev, uint8_t epindex);
 /**
   * @}
   */

@@ -130,13 +130,13 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 static int8_t CDC_Init_FS(void);
 static int8_t CDC_DeInit_FS(void);
-static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
-static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len);
+static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_t epindex);
+static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len, uint8_t epindex);
 static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
 
-void ComPort_Config(void);
+void ComPort_Config(uint8_t* pbuf, uint16_t length);
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
@@ -183,11 +183,13 @@ static int8_t CDC_DeInit_FS(void)
   * @param  cmd: Command code
   * @param  pbuf: Buffer containing command data (request parameters)
   * @param  length: Number of data to be sent (in bytes)
+  * @param  epindex: endpoint index ( 0 or 2 )
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
+static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_t epindex)
 {
   /* USER CODE BEGIN 5 */
+  /* TODO To specify one source of CDC endpoint. Oct 27th*/
   switch(cmd)
   {
     case CDC_SEND_ENCAPSULATED_COMMAND:
@@ -228,8 +230,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-      memcpy(&SET_LineCoding,pbuf,length);
-      ComPort_Config();
+      ComPort_Config(pbuf, length);
     break;
 
     case CDC_GET_LINE_CODING:
@@ -265,16 +266,17 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   *
   * @param  Buf: Buffer of data to be received
   * @param  Len: Number of data received (in bytes)
+  * @param  epindex: endpoint index ( 0 or 2 )
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
+static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len, uint8_t epindex)
 {
   /* USER CODE BEGIN 6 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+  USBD_CDC_ReceivePacket(&hUsbDeviceFS, epindex);
 	
-	HAL_UART_Transmit_DMA(&huart6,Buf,*Len);
-  CDC_Transmit_FS(Buf, *Len);
+	// HAL_UART_Transmit_DMA(&huart6, Buf, *Len);
+  // CDC_Transmit_FS(Buf, *Len, epindex);
 	
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -289,9 +291,10 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   *
   * @param  Buf: Buffer of data to be sent
   * @param  Len: Number of data to be sent (in bytes)
+  * @param  epindex: endpoint index ( 0 or 2 )
   * @retval USBD_OK if all operations are OK else USBD_FAIL or USBD_BUSY
   */
-uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
+uint8_t CDC_Transmit_FS(const uint8_t* Buf, uint16_t Len, uint8_t epindex)
 {
   uint8_t result = USBD_OK;
   /* USER CODE BEGIN 7 */
@@ -300,7 +303,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
     return USBD_BUSY;
   }
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
-  result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+  result = USBD_CDC_TransmitPacket(&hUsbDeviceFS, epindex);
   /* USER CODE END 7 */
   return result;
 }
@@ -333,12 +336,13 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 /**
   * @brief  ComPort_Config
   *         Configure the COM Port with the parameters received from host.
-  * @param  None.
+  * @param  pbuf 
+  * @param  length 
   * @retval None
   * @note   When a configuration is not supported, a default value is used.
-  * @ref https://imuncle.github.io/content.html?id=59
+  * @ref https://imuncle.github.io/content.html?id=59 shows the specfic logic.
   */
-void ComPort_Config(void)
+void ComPort_Config(uint8_t* pbuf, uint16_t length)
 {	
 	
 	uint32_t DMA_FLAGS;
@@ -353,6 +357,7 @@ void ComPort_Config(void)
     Error_Handler();
   }
   
+  memcpy(&SET_LineCoding, pbuf, length);
   /* set the Stop bit */
   switch (SET_LineCoding.format)
   {
@@ -419,12 +424,12 @@ void ComPort_Config(void)
   }
 	
   /* Start reception: provide the buffer pointer with offset and the buffer size */
-	HAL_UART_Receive_IT_IDLE(&huart6,UART_RxBuffer,2048);
+	HAL_UART_Receive_IT_IDLE(&huart6, UART_RxBuffer, 2048);
 		
 }
 
 void UART_RxCplCallback(UART_HandleTypeDef* uart){
-		CDC_Transmit_FS(uart->pRxBuffPtr,uart->RxXferCount);
+		CDC_Transmit_FS(uart->pRxBuffPtr, uart->RxXferCount, 2);
 }
 
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */

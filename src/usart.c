@@ -170,10 +170,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   */
 HAL_StatusTypeDef HAL_UART_Receive_IT_IDLE(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size){
 
-	 uint32_t *tmp;
+	uint32_t *tmp;
 	
 	 /*Enable UART IDLE Interrupt*/
-	 __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
+  __HAL_UART_CLEAR_IDLEFLAG(huart);
+	__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
 	
   /* Check that a Rx process is not already ongoing */
   if(huart->RxState == HAL_UART_STATE_READY) 
@@ -264,6 +265,7 @@ void HAL_UART_IDLE_IRQHandler(UART_HandleTypeDef *huart)
 		
 	}else if(__HAL_UART_GET_FLAG(huart,UART_FLAG_TC)){
 		
+		// UART_RxCplCallback(huart);
 		__HAL_UART_CLEAR_FLAG(huart,UART_FLAG_TC);
 			
 		  /* Disable the UART Transmit Complete Interrupt */    

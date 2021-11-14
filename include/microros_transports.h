@@ -25,6 +25,10 @@ bool freertos_serial_close(struct uxrCustomTransport * transport);
 size_t freertos_serial_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
 size_t freertos_serial_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
 
+bool CDCUxrOpen(struct uxrCustomTransport * transport);
+bool CDCUxrClose(struct uxrCustomTransport * transport);
+size_t CDCUxrWrite(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
+size_t CDCUxrRead(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
 #ifdef __cplusplus
 }
 #endif
