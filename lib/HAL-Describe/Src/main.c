@@ -25,7 +25,7 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
-#include "tools/buzzer.h"
+#include "tool/buzzer.h"
 
 #include <cmsis_os2.h>
 

@@ -1,4 +1,4 @@
-#include "tools/buzzer.h"
+#include "tool/buzzer.h"
 #include "tim.h"
 #include <stdarg.h>
 

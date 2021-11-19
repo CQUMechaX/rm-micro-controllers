@@ -8,8 +8,7 @@
     },
     "dependencies":
     {
-        "STM32_USB_Device_Library-Core": "*",
-        "CDC-Describe": "*"
+        "STM32_USB_Device_Library-Core": "*"
     },
     "build":
     {
