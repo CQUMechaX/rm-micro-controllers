@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -19,18 +19,18 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "can.h"
 #include "dma.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
-#include "tool/buzzer.h"
-
-#include <cmsis_os2.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "tool/buzzer.h"
 
 /* USER CODE END Includes */
 
@@ -88,13 +88,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  // HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0U);
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -104,10 +105,10 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_TIM12_Init();
+  MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
 
   buzzerStartUp();
-  MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -224,7 +225,7 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,*/
+  /* User can add his own implementation to report the file name and line number, */
   printf("Wrong parameters value: file %s on line %d\r\n", file, line);
   /* USER CODE END 6 */
 }

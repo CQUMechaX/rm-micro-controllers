@@ -24,13 +24,13 @@ uint8_t buzzerList(__IO uint32_t *CCR, const uint16_t freqList[], uint32_t freqL
 uint8_t buzzerStartUp(void)
 {
     HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
-    // (htim12.Instance -> CCR1) = 100;
+    (htim12.Instance -> CCR1) = 10;
     // (htim12.Instance -> PSC) = 100;
     // HAL_Delay(700);
     // (htim12.Instance -> PSC) = 200;
     // HAL_Delay(700);
-    // (htim12.Instance -> PSC) = 50;
-    // HAL_Delay(700);
+    (htim12.Instance -> PSC) = 50;
+    HAL_Delay(200);
     // (htim12.Instance -> PSC) = 40;
     // HAL_Delay(700);
     // (htim12.Instance -> PSC) = 30;
