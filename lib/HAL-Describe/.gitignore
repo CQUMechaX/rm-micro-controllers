@@ -1,0 +1,7 @@
+*
+!*/
+!Core/*
+!*.json
+!*.ioc
+!*.py
+!.gitignore

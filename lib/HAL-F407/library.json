@@ -1,5 +1,5 @@
 {
-    "name": "HAL-Describe",
+    "name": "HAL-F407",
     "version": "1.0.0",
     "repository":
     {
@@ -15,7 +15,8 @@
     "build":
     {
         "flags": ["-I $PROJECT_SRC_DIR", "-I $PROJECT_INCLUDE_DIR"],
-        "includeDir": "Inc",
-        "srcDir": "Src"
+        "libArchive": false,
+        "includeDir": "Core/Inc",
+        "srcDir": "Core/Src"
     }
 }

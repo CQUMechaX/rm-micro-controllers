@@ -1,5 +1,5 @@
 {
-    "name": "HAL-Describe",
+    "name": "HAL-F427",
     "version": "1.0.0",
     "repository":
     {
@@ -16,7 +16,7 @@
     {
         "flags": ["-I $PROJECT_SRC_DIR", "-I $PROJECT_INCLUDE_DIR"],
         "libArchive": false,
-        "includeDir": "Inc",
-        "srcDir": "Src"
+        "includeDir": "Core/Inc",
+        "srcDir": "Core/Src"
     }
 }

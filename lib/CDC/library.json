@@ -14,6 +14,7 @@
     {
         "srcFilter": "+<*> -<.git/> -<.svn/> -<test/> -<example/> -<*template*>",
         "includeDir": "Inc",
-        "srcDir": "Src"
+        "srcDir": "Src",
+        "libLDFMode": "chain"
     }
 }

@@ -15,6 +15,7 @@
     "build":
     {
         "includeDir": "Inc",
-        "srcDir": "Src"
+        "srcDir": "Src",
+        "libLDFMode": "chain"
     }
 }
