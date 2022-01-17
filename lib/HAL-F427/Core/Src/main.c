@@ -30,7 +30,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "tool/buzzer.h"
+#include "init.h"
 
 /* USER CODE END Includes */
 
@@ -107,8 +107,8 @@ int main(void)
   MX_TIM12_Init();
   MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
+  userCodeInit();
 
-  buzzerStartUp();
   /* USER CODE END 2 */
 
   /* Init scheduler */

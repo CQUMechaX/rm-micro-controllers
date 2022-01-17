@@ -346,85 +346,85 @@ void ComPort_Config(uint8_t* pbuf, uint16_t length)
 {	
 	
 	uint32_t DMA_FLAGS;
-	DMA_FLAGS = __HAL_DMA_GET_TC_FLAG_INDEX(huart6.hdmarx);
-	__HAL_DMA_DISABLE(huart6.hdmarx);
-	__HAL_DMA_CLEAR_FLAG(huart6.hdmarx,DMA_FLAGS);
+	// DMA_FLAGS = __HAL_DMA_GET_TC_FLAG_INDEX(huart6.hdmarx);
+	// __HAL_DMA_DISABLE(huart6.hdmarx);
+	// __HAL_DMA_CLEAR_FLAG(huart6.hdmarx,DMA_FLAGS);
 	
 	
-  if(HAL_UART_DeInit(&huart6) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
+  // if(HAL_UART_DeInit(&huart6) != HAL_OK)
+  // {
+  //   /* Initialization Error */
+  //   Error_Handler();
+  // }
   
-  memcpy(&SET_LineCoding, pbuf, length);
-  /* set the Stop bit */
-  switch (SET_LineCoding.format)
-  {
-  case 0:
-    huart6.Init.StopBits = UART_STOPBITS_1;
-    break;
-  case 2:
-    huart6.Init.StopBits = UART_STOPBITS_2;
-    break;
-  default :
-    huart6.Init.StopBits = UART_STOPBITS_1;
-    break;
-  }
+  // memcpy(&SET_LineCoding, pbuf, length);
+  // /* set the Stop bit */
+  // switch (SET_LineCoding.format)
+  // {
+  // case 0:
+  //   huart6.Init.StopBits = UART_STOPBITS_1;
+  //   break;
+  // case 2:
+  //   huart6.Init.StopBits = UART_STOPBITS_2;
+  //   break;
+  // default :
+  //   huart6.Init.StopBits = UART_STOPBITS_1;
+  //   break;
+  // }
   
-  /* set the parity bit*/
-  switch (SET_LineCoding.paritytype)
-  {
-  case 0:
-    huart6.Init.Parity = UART_PARITY_NONE;
-    break;
-  case 1:
-    huart6.Init.Parity = UART_PARITY_ODD;
-    break;
-  case 2:
-    huart6.Init.Parity = UART_PARITY_EVEN;
-    break;
-  default :
-    huart6.Init.Parity = UART_PARITY_NONE;
-    break;
-  }
+  // /* set the parity bit*/
+  // switch (SET_LineCoding.paritytype)
+  // {
+  // case 0:
+  //   huart6.Init.Parity = UART_PARITY_NONE;
+  //   break;
+  // case 1:
+  //   huart6.Init.Parity = UART_PARITY_ODD;
+  //   break;
+  // case 2:
+  //   huart6.Init.Parity = UART_PARITY_EVEN;
+  //   break;
+  // default :
+  //   huart6.Init.Parity = UART_PARITY_NONE;
+  //   break;
+  // }
   
-  /*set the data type : only 8bits and 9bits is supported */
-  switch (SET_LineCoding.datatype)
-  {
-  case 0x07:
-    /* With this configuration a parity (Even or Odd) must be set */
-    huart6.Init.WordLength = UART_WORDLENGTH_8B;
-    break;
-  case 0x08:
-    if(huart6.Init.Parity == UART_PARITY_NONE)
-    {
-      huart6.Init.WordLength = UART_WORDLENGTH_8B;
-    }
-    else 
-    {
-      huart6.Init.WordLength = UART_WORDLENGTH_9B;
-    }
+  // /*set the data type : only 8bits and 9bits is supported */
+  // switch (SET_LineCoding.datatype)
+  // {
+  // case 0x07:
+  //   /* With this configuration a parity (Even or Odd) must be set */
+  //   huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  //   break;
+  // case 0x08:
+  //   if(huart6.Init.Parity == UART_PARITY_NONE)
+  //   {
+  //     huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  //   }
+  //   else 
+  //   {
+  //     huart6.Init.WordLength = UART_WORDLENGTH_9B;
+  //   }
     
-    break;
-  default :
-    huart6.Init.WordLength = UART_WORDLENGTH_8B;
-    break;
-  }
+  //   break;
+  // default :
+  //   huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  //   break;
+  // }
   
-  huart6.Init.BaudRate     = SET_LineCoding.bitrate;
-  huart6.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-  huart6.Init.Mode         = UART_MODE_TX_RX;
-  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  // huart6.Init.BaudRate     = SET_LineCoding.bitrate;
+  // huart6.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+  // huart6.Init.Mode         = UART_MODE_TX_RX;
+  // huart6.Init.OverSampling = UART_OVERSAMPLING_16;
   
-  if(HAL_UART_Init(&huart6) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
+  // if(HAL_UART_Init(&huart6) != HAL_OK)
+  // {
+  //   /* Initialization Error */
+  //   Error_Handler();
+  // }
 	
   /* Start reception: provide the buffer pointer with offset and the buffer size */
-	HAL_UART_Receive_IT_IDLE(&huart6, UART_RxBuffer, 2048);
+	// HAL_UART_Receive_IT_IDLE(&huart6, UART_RxBuffer, 2048);
 		
 }
 

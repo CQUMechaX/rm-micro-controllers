@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -26,6 +26,20 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
+#include "allocators.h"
+#include "cmsis_os2.h"
+#include <usart.h>
+
+#include <rcl/rcl.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <ucdr/microcdr.h>
+#include <uxr/client/client.h>
+
+#include <rmw_microros/rmw_microros.h> 
+
+#include <microros_transports.h> 
+#include "app.h"
 
 /* USER CODE END Includes */
 
@@ -53,7 +67,7 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 3000 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,10 +132,85 @@ void StartDefaultTask(void *argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
+  // printf("Hello I'm here!\n");
+  
   /* Infinite loop */
-  for(;;)
+  bool availableNetwork = false;
+
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM 
+  availableNetwork = true; 
+  rmw_uros_set_custom_transport( 
+    true, 
+    (void *) NULL, 
+    CDCUxrOpen, 
+    CDCUxrClose, 
+    CDCUxrWrite, 
+    CDCUxrRead); 
+#elif defined(RMW_UXRCE_TRANSPORT_UDP) 
+  printf("Ethernet Initialization\r\n");
+
+  // Waiting for an IP
+  printf("Waiting for IP\r\n");
+  int retries = 0;
+  while (gnetif.ip_addr.addr == 0 && retries < 10) {
+    osDelay(500);
+    retries++;
+  };
+
+  availableNetwork = (gnetif.ip_addr.addr != 0);
+  if (availableNetwork) {
+    printf("IP: %s\r\n", ip4addr_ntoa(&gnetif.ip_addr));
+  } else {
+    printf("Impossible to retrieve an IP\n");
+  }
+#endif
+
+  // Launch app thread when IP configured
+  rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
+  freeRTOS_allocator.allocate = __freertos_allocate;
+  freeRTOS_allocator.deallocate = __freertos_deallocate;
+  freeRTOS_allocator.reallocate = __freertos_reallocate;
+  freeRTOS_allocator.zero_allocate = __freertos_zero_allocate;
+
+  if (!rcutils_set_default_allocator(&freeRTOS_allocator))
   {
-    osDelay(1);
+    printf("Error on default allocators (line %d)\n", __LINE__);
+  }
+
+  osThreadAttr_t attributes;
+  memset(&attributes, 0x0, sizeof(osThreadAttr_t));
+  attributes.name = "microROS_app";
+  attributes.stack_size = 5 * 3000;
+  attributes.priority = (osPriority_t)osPriorityNormal;
+  osThreadNew(appMain, NULL, &attributes);
+  osDelay(500);
+  char ptrTaskList[500];
+  vTaskList(ptrTaskList);
+  printf("**********************************\n");
+  printf("Task  State   Prio    Stack    Num\n");
+  printf("**********************************\n");
+  printf(ptrTaskList);
+  printf("**********************************\n");
+
+  TaskHandle_t xHandle;
+  xHandle = xTaskGetHandle("microROS_app");
+
+  while (1) 
+  {
+    if (eTaskGetState(xHandle) != eSuspended && availableNetwork)
+    // if(1)
+    {
+		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
+						  !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
+      printf("1\n");
+    } 
+    else 
+    {
+		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin,
+						  !HAL_GPIO_ReadPin(LED_GREEN_GPIO_Port, LED_GREEN_Pin));
+      printf("2");
+    }
+    osDelay(200);
   }
   /* USER CODE END StartDefaultTask */
 }

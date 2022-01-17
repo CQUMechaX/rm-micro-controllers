@@ -17,7 +17,7 @@
  */
 PUTCHAR_PROTOTYPE
 {
-  HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 0xff);
+//   HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 0xff);
   osDelay(1000);
   return ch;
 }
@@ -40,3 +40,9 @@ int _write(int file, char *data, int len)
    // return # of bytes written - as best we can tell
    return (status == HAL_OK ? len : 0);
 }
+
+
+// different pin binding
+
+// #include "tim.h"
+// TIM_HandleTypeDef htim_buzzer = HTIM_BUZZER;

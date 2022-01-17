@@ -1,3 +1,8 @@
+/**
+ * 
+ * @author Tiger3018
+ */
+#pragma once
 #ifndef __BUZZER_H__
 #define __BUZZER_H__
 
