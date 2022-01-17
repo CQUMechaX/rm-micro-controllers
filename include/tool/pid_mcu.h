@@ -20,6 +20,8 @@
 // struct
 
 // function
+
+void chassis_task_simple(void const *pvParameters);
  
 #ifdef __cplusplus
  }

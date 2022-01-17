@@ -111,7 +111,7 @@ typedef struct GCC_PACKED
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
-extern void detect_task(void const *pvParameters);
+void detect_task(void *pvParameters);
 
 /**
   * @brief          get toe error status

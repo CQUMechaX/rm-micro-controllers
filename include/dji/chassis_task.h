@@ -23,6 +23,7 @@
 #include "CAN_receive.h"
 #include "pid.h"
 #include "app/connectivity.h"
+#include "marco.h"
 // #include "remote_control.h"
 // #include "user_lib.h"
 
@@ -214,4 +215,40 @@ extern void chassis_task(void const *pvParameters);
   */
 extern void chassis_rc_to_control_vector(float *vx_set, float *vy_set, chassis_move_t *chassis_move_rc_to_vector);
 
+/**
+  * @brief          初始化"chassis_move"变量，包括pid初始化， 遥控器指针初始化，3508底盘电机指针初始化，云台电机初始化，陀螺仪角度指针初始化
+  * @param[out]     chassis_move_init:"chassis_move"变量指针.
+  * @retval         none
+  */
+void chassis_init(chassis_move_t *chassis_move_init);
+
+
+/**
+  * @brief          设置底盘控制模式，主要在'chassis_behaviour_mode_set'函数中改变
+  * @param[out]     chassis_move_mode:"chassis_move"变量指针.
+  * @retval         none
+  */
+void chassis_set_mode(chassis_move_t *chassis_move_mode);
+
+
+/**
+  * @brief          底盘测量数据更新，包括电机速度，欧拉角度，机器人速度
+  * @param[out]     chassis_move_update:"chassis_move"变量指针.
+  * @retval         none
+  */
+void chassis_feedback_update(chassis_move_t *chassis_move_update);
+
+/**
+  * @brief          设置底盘控制设置值, 三运动控制值是通过chassis_behaviour_control_set函数设置的
+  * @param[out]     chassis_move_update:"chassis_move"变量指针.
+  * @retval         none
+  */
+void chassis_set_contorl(chassis_move_t *chassis_move_control);
+
+/**
+  * @brief          控制循环，根据控制设定值，计算电机电流值，进行控制
+  * @param[out]     chassis_move_control_loop:"chassis_move"变量指针.
+  * @retval         none
+  */
+void chassis_control_loop(chassis_move_t *chassis_move_control_loop);
 #endif

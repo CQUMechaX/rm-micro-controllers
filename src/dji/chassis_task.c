@@ -23,9 +23,10 @@
 #include "dji/chassis_behaviour.h"
 // #include <math.h>
 #include "dji/pid.h"
-// #include "remote_control.h"
+#include "dji/remote_control.h"
 #include "dji/CAN_receive.h"
 #include "dji/detect_task.h"
+// #include "marco.h"
 // #include "INS_task.h"
 
 #define rc_deadband_limit(input, output, dealine)        \
@@ -41,30 +42,7 @@
     }
 
 
-/**
-  * @brief          "chassis_move" valiable initialization, include pid initialization, remote control data point initialization, 3508 chassis motors
-  *                 data point initialization, gimbal motor data point initialization, and gyro sensor angle point initialization.
-  * @param[out]     chassis_move_init: "chassis_move" valiable point
-  * @retval         none
-  */
-/**
-  * @brief          初始化"chassis_move"变量，包括pid初始化， 遥控器指针初始化，3508底盘电机指针初始化，云台电机初始化，陀螺仪角度指针初始化
-  * @param[out]     chassis_move_init:"chassis_move"变量指针.
-  * @retval         none
-  */
-static void chassis_init(chassis_move_t *chassis_move_init);
 
-/**
-  * @brief          set chassis control mode, mainly call 'chassis_behaviour_mode_set' function
-  * @param[out]     chassis_move_mode: "chassis_move" valiable point
-  * @retval         none
-  */
-/**
-  * @brief          设置底盘控制模式，主要在'chassis_behaviour_mode_set'函数中改变
-  * @param[out]     chassis_move_mode:"chassis_move"变量指针.
-  * @retval         none
-  */
-static void chassis_set_mode(chassis_move_t *chassis_move_mode);
 
 /**
   * @brief          when chassis mode change, some param should be changed, suan as chassis yaw_set should be now chassis yaw
@@ -77,41 +55,6 @@ static void chassis_set_mode(chassis_move_t *chassis_move_mode);
   * @retval         none
   */
 static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit);
-/**
-  * @brief          chassis some measure data updata, such as motor speed, euler angle， robot speed
-  * @param[out]     chassis_move_update: "chassis_move" valiable point
-  * @retval         none
-  */
-/**
-  * @brief          底盘测量数据更新，包括电机速度，欧拉角度，机器人速度
-  * @param[out]     chassis_move_update:"chassis_move"变量指针.
-  * @retval         none
-  */
-static void chassis_feedback_update(chassis_move_t *chassis_move_update);
-/**
-  * @brief          set chassis control set-point, three movement control value is set by "chassis_behaviour_control_set".
-  *                 
-  * @param[out]     chassis_move_update: "chassis_move" valiable point
-  * @retval         none
-  */
-/**
-  * @brief          
-  * @param[out]     chassis_move_update:"chassis_move"变量指针.
-  * @retval         none
-  */
-static void chassis_set_contorl(chassis_move_t *chassis_move_control);
-/**
-  * @brief          control loop, according to control set-point, calculate motor current, 
-  *                 motor current will be sentto motor
-  * @param[out]     chassis_move_control_loop: "chassis_move" valiable point
-  * @retval         none
-  */
-/**
-  * @brief          控制循环，根据控制设定值，计算电机电流值，进行控制
-  * @param[out]     chassis_move_control_loop:"chassis_move"变量指针.
-  * @retval         none
-  */
-static void chassis_control_loop(chassis_move_t *chassis_move_control_loop);
 
 #if INCLUDE_uxTaskGetStackHighWaterMark
 uint32_t chassis_high_water;
@@ -204,7 +147,7 @@ void chassis_task(void const *pvParameters)
   * @param[out]     chassis_move_init:"chassis_move"变量指针.
   * @retval         none
   */
-static void chassis_init(chassis_move_t *chassis_move_init)
+void chassis_init(chassis_move_t *chassis_move_init)
 {
     if (chassis_move_init == NULL)
     {
@@ -219,8 +162,8 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     //底盘角度pid值
     const static float chassis_yaw_pid[3] = {CHASSIS_FOLLOW_GIMBAL_PID_KP, CHASSIS_FOLLOW_GIMBAL_PID_KI, CHASSIS_FOLLOW_GIMBAL_PID_KD};
     
-    const static float chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
-    const static float chassis_y_order_filter[1] = {CHASSIS_ACCEL_Y_NUM};
+    // const static float chassis_x_order_filter[1] = {CHASSIS_ACCEL_X_NUM};
+    // const static float chassis_y_order_filter[1] = {CHASSIS_ACCEL_Y_NUM};
     uint8_t i;
 
     //in beginning， chassis mode is raw 
@@ -231,7 +174,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
     chassis_move_init->chassis_RC = get_remote_control_point();
     //get gyro sensor euler angle point
     //获取陀螺仪姿态角指针
-    chassis_move_init->chassis_INS_angle = get_INS_angle_point();
+    // chassis_move_init->chassis_INS_angle = get_INS_angle_point();
     //get gimbal motor data point
     //获取云台电机数据指针
 //    chassis_move_init->chassis_yaw_motor = get_yaw_motor_point();
@@ -276,7 +219,7 @@ static void chassis_init(chassis_move_t *chassis_move_init)
   * @param[out]     chassis_move_mode:"chassis_move"变量指针.
   * @retval         none
   */
-static void chassis_set_mode(chassis_move_t *chassis_move_mode)
+void chassis_set_mode(chassis_move_t *chassis_move_mode)
 {
     if (chassis_move_mode == NULL)
     {
@@ -340,7 +283,7 @@ static void chassis_mode_change_control_transit(chassis_move_t *chassis_move_tra
   * @param[out]     chassis_move_update:"chassis_move"变量指针.
   * @retval         none
   */
-static void chassis_feedback_update(chassis_move_t *chassis_move_update)
+void chassis_feedback_update(chassis_move_t *chassis_move_update)
 {
     if (chassis_move_update == NULL)
     {
@@ -450,7 +393,7 @@ void chassis_rc_to_control_vector(float *vx_set, float *vy_set, chassis_move_t *
   * @param[out]     chassis_move_update:"chassis_move"变量指针.
   * @retval         none
   */
-static void chassis_set_contorl(chassis_move_t *chassis_move_control)
+void chassis_set_contorl(chassis_move_t *chassis_move_control)
 {
 
     if (chassis_move_control == NULL)
@@ -560,7 +503,7 @@ static void chassis_vector_to_mecanum_wheel_speed(const float vx_set, const floa
   * @param[out]     chassis_move_control_loop:"chassis_move"变量指针.
   * @retval         none
   */
-static void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
+void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
 {
     float max_vector = 0.0f, vector_rate = 0.0f;
     float temp = 0.0f;

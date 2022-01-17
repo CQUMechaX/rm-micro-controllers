@@ -87,7 +87,7 @@ uint32_t detect_task_stack;
   * @param[in]      pvParameters: NULL
   * @retval         none
   */
-void detect_task(void const *pvParameters)
+void detect_task(void *pvParameters)
 {
     static uint32_t system_time;
     system_time = xTaskGetTickCount();

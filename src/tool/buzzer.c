@@ -23,26 +23,26 @@ uint8_t buzzerList(__IO uint32_t *CCR, const uint16_t freqList[], uint32_t freqL
 uint8_t buzzerStartUp(void)
 {
     HAL_TIM_PWM_Start(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
-    (HTIM_BUZZER.Instance -> CCR1) = 10;
-    // (HTIM_BUZZER.Instance -> PSC) = 100;
-    // HAL_Delay(700);
-    // (HTIM_BUZZER.Instance -> PSC) = 200;
-    // HAL_Delay(700);
+    (HTIM_BUZZER.Instance -> CCR1) = 1000;
+    (HTIM_BUZZER.Instance -> PSC) = 100;
+    HAL_Delay(700);
+    (HTIM_BUZZER.Instance -> PSC) = 200;
+    HAL_Delay(700);
     (HTIM_BUZZER.Instance -> PSC) = 50;
-    HAL_Delay(200);
+    HAL_Delay(700);
     // (HTIM_BUZZER.Instance -> PSC) = 40;
     // HAL_Delay(700);
     // (HTIM_BUZZER.Instance -> PSC) = 30;
     // HAL_Delay(700);
     // (HTIM_BUZZER.Instance -> PSC) = 20;
     // HAL_Delay(700);
-    // (HTIM_BUZZER.Instance -> CCR1) = 100;
-    // (HTIM_BUZZER.Instance -> PSC) = 10;
-    // HAL_Delay(700);
-    // (HTIM_BUZZER.Instance -> CCR1) = 1000;
-    // (HTIM_BUZZER.Instance -> PSC) = 10;
-    // HAL_Delay(700);
-    // buzzerList(&HTIM_BUZZER.Instance -> CCR1, toneFreq, 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 5);
+    (HTIM_BUZZER.Instance -> CCR1) = 100;
+    (HTIM_BUZZER.Instance -> PSC) = 10;
+    HAL_Delay(700);
+    (HTIM_BUZZER.Instance -> CCR1) = 1000;
+    (HTIM_BUZZER.Instance -> PSC) = 10;
+    HAL_Delay(700);
+    buzzerList(&HTIM_BUZZER.Instance -> CCR1, toneFreq, 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 5);
     HAL_TIM_PWM_Stop(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
     return HAL_OK;
 }
