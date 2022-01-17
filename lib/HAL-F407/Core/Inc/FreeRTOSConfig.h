@@ -1,0 +1,1 @@
+../../../HAL-Describe/Core/Inc/FreeRTOSConfig.h

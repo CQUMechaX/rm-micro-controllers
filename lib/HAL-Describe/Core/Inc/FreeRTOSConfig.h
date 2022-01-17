@@ -69,7 +69,7 @@ void Error_Handler();
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 56 )
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)5000)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)3000)
 #define configTOTAL_HEAP_SIZE                    ((size_t)50000)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
@@ -93,7 +93,7 @@ void Error_Handler();
 #define configUSE_TIMERS                         1
 #define configTIMER_TASK_PRIORITY                ( 2 )
 #define configTIMER_QUEUE_LENGTH                 10
-#define configTIMER_TASK_STACK_DEPTH             10000
+#define configTIMER_TASK_STACK_DEPTH             6000
 
 /* CMSIS-RTOS V2 flags */
 #define configUSE_OS2_THREAD_SUSPEND_RESUME  1

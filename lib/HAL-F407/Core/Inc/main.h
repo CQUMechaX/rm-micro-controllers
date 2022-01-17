@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "app.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,50 +58,28 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define IMU_IST_RESET_Pin GPIO_PIN_2
-#define IMU_IST_RESET_GPIO_Port GPIOE
-#define IMU_HEAT_PWM_Pin GPIO_PIN_5
-#define IMU_HEAT_PWM_GPIO_Port GPIOB
-#define LASER_SHOOT_Pin GPIO_PIN_13
-#define LASER_SHOOT_GPIO_Port GPIOG
-#define BL_RX_Pin GPIO_PIN_6
-#define BL_RX_GPIO_Port GPIOD
 #define USB_DP_Pin GPIO_PIN_12
 #define USB_DP_GPIO_Port GPIOA
-#define BL_TX_Pin GPIO_PIN_5
-#define BL_TX_GPIO_Port GPIOD
 #define USB_DM_Pin GPIO_PIN_11
 #define USB_DM_GPIO_Port GPIOA
-#define USB_ID_Pin GPIO_PIN_10
-#define USB_ID_GPIO_Port GPIOA
-#define LED_GREEN_A_Pin GPIO_PIN_8
-#define LED_GREEN_A_GPIO_Port GPIOG
-#define LED_GREEN_B_Pin GPIO_PIN_7
-#define LED_GREEN_B_GPIO_Port GPIOG
-#define LED_GREEN_C_Pin GPIO_PIN_6
-#define LED_GREEN_C_GPIO_Port GPIOG
-#define LED_GREEN_D_Pin GPIO_PIN_5
-#define LED_GREEN_D_GPIO_Port GPIOG
-#define LED_GREEN_E_Pin GPIO_PIN_4
-#define LED_GREEN_E_GPIO_Port GPIOG
-#define LED_GREEN_F_Pin GPIO_PIN_3
-#define LED_GREEN_F_GPIO_Port GPIOG
-#define LED_GREEN_G_Pin GPIO_PIN_2
-#define LED_GREEN_G_GPIO_Port GPIOG
-#define KEY_Pin GPIO_PIN_2
-#define KEY_GPIO_Port GPIOB
-#define LED_GREEN_H_Pin GPIO_PIN_1
-#define LED_GREEN_H_GPIO_Port GPIOG
-#define BUZZER_Pin GPIO_PIN_6
-#define BUZZER_GPIO_Port GPIOH
-#define LED_RED_Pin GPIO_PIN_11
-#define LED_RED_GPIO_Port GPIOE
-#define LED_GREEN_Pin GPIO_PIN_14
-#define LED_GREEN_GPIO_Port GPIOF
-#define SNYCHOR_1_Pin GPIO_PIN_14
-#define SNYCHOR_1_GPIO_Port GPIOB
-#define SNYCHOR_2_Pin GPIO_PIN_15
-#define SNYCHOR_2_GPIO_Port GPIOB
+#define HEAT_Pin GPIO_PIN_6
+#define HEAT_GPIO_Port GPIOF
+#define LED_RED_Pin GPIO_PIN_12
+#define LED_RED_GPIO_Port GPIOH
+#define ADC_BAT_Pin GPIO_PIN_10
+#define ADC_BAT_GPIO_Port GPIOF
+#define LED_GREEN_Pin GPIO_PIN_11
+#define LED_GREEN_GPIO_Port GPIOH
+#define LED_BLUE_Pin GPIO_PIN_10
+#define LED_BLUE_GPIO_Port GPIOH
+#define BUZZER_Pin GPIO_PIN_14
+#define BUZZER_GPIO_Port GPIOD
+#define KEY_Pin GPIO_PIN_0
+#define KEY_GPIO_Port GPIOA
+#define INT1_ACCEL_Pin GPIO_PIN_4
+#define INT1_ACCEL_GPIO_Port GPIOC
+#define INT1_GRYO_Pin GPIO_PIN_5
+#define INT1_GRYO_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

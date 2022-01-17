@@ -1,6 +1,7 @@
 *
 !*/
-!Core/*
+!Core/Inc/*
+!Core/Src/*
 !*.json
 !*.ioc
 !*.py
