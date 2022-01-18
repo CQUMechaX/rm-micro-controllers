@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -26,6 +26,22 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
+#include "allocators.h"
+#include "cmsis_os2.h"
+#include <usart.h>
+
+#include <rcl/rcl.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <ucdr/microcdr.h>
+#include <uxr/client/client.h>
+
+#include <rmw_microros/rmw_microros.h> 
+
+#include <microros_transports.h> 
+#include "app.h"
+#include "dji/detect_task.h"
+#include "tool/pid_mcu.h"
 
 /* USER CODE END Includes */
 
@@ -51,65 +67,61 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-#t.name = "defaultTask",
-#t.stack_size = 3000 * 4,
-#t.priority = (osPriority_t) osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 3000 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
-#n
-void StartDefaultTask(void *argument);#n
-#n
+
+void StartDefaultTask(void *argument);
+
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
-#n
 
-#n
 /**
   * @brief  FreeRTOS initialization
   * @param  None
   * @retval None
   */
 void MX_FREERTOS_Init(void) {
-#t/* USER CODE BEGIN Init */
-#t
-#t/* USER CODE END Init */
-#n
-#t/* USER CODE BEGIN RTOS_MUTEX */
-#t/* add mutexes, ... */
-#t/* USER CODE END RTOS_MUTEX */
-#n
-#t/* USER CODE BEGIN RTOS_SEMAPHORES */
-#t/* add semaphores, ... */
-#t/* USER CODE END RTOS_SEMAPHORES */
-#n
-#t/* USER CODE BEGIN RTOS_TIMERS */
-#t/* start timers, add new ones, ... */
-#t/* USER CODE END RTOS_TIMERS */
-#n
-#t/* USER CODE BEGIN RTOS_QUEUES */
-#t/* add queues, ... */
-#t/* USER CODE END RTOS_QUEUES */
-#n#t/* Create the thread(s) */
-#t/* creation of defaultTask */
-#tdefaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-#n
-#n
-#t/* USER CODE BEGIN RTOS_THREADS */
-#t/* add threads, ... */
-#t/* USER CODE END RTOS_THREADS */
-#n
-#n
-#t/* USER CODE BEGIN RTOS_EVENTS */
-#t/* add events, ... */
-#t/* USER CODE END RTOS_EVENTS */
-#n
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
 }
 
-#n#n
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
   * @brief  Function implementing the defaultTask thread.
@@ -119,16 +131,96 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-#t/* init code for USB_DEVICE */
-#tMX_USB_DEVICE_Init();#n#t/* USER CODE BEGIN StartDefaultTask */
-#t/* Infinite loop */
-#tfor(;;)
-#t{
-#t#tosDelay(1);
-#t}
-#t/* USER CODE END StartDefaultTask */
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
+  /* USER CODE BEGIN StartDefaultTask */
+  // printf("Hello I'm here!\n");
+  
+  /* Infinite loop */
+  bool availableNetwork = false;
+
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM 
+  availableNetwork = true; 
+  rmw_uros_set_custom_transport( 
+    true, 
+    (void *) NULL, 
+    CDCUxrOpen, 
+    CDCUxrClose, 
+    CDCUxrWrite, 
+    CDCUxrRead); 
+#elif defined(RMW_UXRCE_TRANSPORT_UDP) 
+  printf("Ethernet Initialization\r\n");
+
+  // Waiting for an IP
+  printf("Waiting for IP\r\n");
+  int retries = 0;
+  while (gnetif.ip_addr.addr == 0 && retries < 10) {
+    osDelay(500);
+    retries++;
+  };
+
+  availableNetwork = (gnetif.ip_addr.addr != 0);
+  if (availableNetwork) {
+    printf("IP: %s\r\n", ip4addr_ntoa(&gnetif.ip_addr));
+  } else {
+    printf("Impossible to retrieve an IP\n");
+  }
+#endif
+
+  // Launch app thread when IP configured
+  rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
+  freeRTOS_allocator.allocate = __freertos_allocate;
+  freeRTOS_allocator.deallocate = __freertos_deallocate;
+  freeRTOS_allocator.reallocate = __freertos_reallocate;
+  freeRTOS_allocator.zero_allocate = __freertos_zero_allocate;
+
+  if (!rcutils_set_default_allocator(&freeRTOS_allocator))
+  {
+    printf("Error on default allocators (line %d)\n", __LINE__);
+  }
+
+  osThreadAttr_t attributes;
+  memset(&attributes, 0x0, sizeof(osThreadAttr_t));
+  attributes.name = "microROS_app";
+  attributes.stack_size = 5 * 3000;
+  attributes.priority = (osPriority_t)osPriorityNormal;
+  osThreadNew(appMain, NULL, &attributes);
+  osDelay(500);
+  attributes.name = "microROS_app";
+  osThreadNew(detect_task, NULL, &attributes);
+  osDelay(500);
+  attributes.name = "microROS_app";
+  osThreadNew(chassisTaskSimple, NULL, &attributes);
+  char ptrTaskList[500];
+  vTaskList(ptrTaskList);
+  printf("**********************************\n");
+  printf("Task  State   Prio    Stack    Num\n");
+  printf("**********************************\n");
+  printf(ptrTaskList);
+  printf("**********************************\n");
+
+  TaskHandle_t xHandle;
+  xHandle = xTaskGetHandle("microROS_app");
+
+  while (1) 
+  {
+    if (eTaskGetState(xHandle) != eSuspended && availableNetwork)
+    // if(1)
+    {
+		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
+						  !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
+      printf("1\n");
+    } 
+    else 
+    {
+		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin,
+						  !HAL_GPIO_ReadPin(LED_GREEN_GPIO_Port, LED_GREEN_Pin));
+      printf("2");
+    }
+    osDelay(200);
+  }
+  /* USER CODE END StartDefaultTask */
 }
-#n
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */

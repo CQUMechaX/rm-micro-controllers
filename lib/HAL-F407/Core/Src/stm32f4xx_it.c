@@ -23,6 +23,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app/connectivity.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -216,6 +217,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+  dmaProcessHandler(huart1, hdma_usart1_rx, LEGACY_CACHE_CHAR_LEN, LEGACY_FRAME_CHAR_LEN);
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);

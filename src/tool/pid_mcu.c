@@ -5,7 +5,7 @@
 #include "tool/pid_mcu.h"
 
 chassis_move_t chassis_move;
-void chassis_task_simple(void const *pvParameters)
+void chassisTaskSimple(void const *pvParameters)
 {
     //wait a time 
     //空闲一段时间

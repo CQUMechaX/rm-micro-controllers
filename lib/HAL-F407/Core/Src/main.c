@@ -32,7 +32,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "init.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,6 +107,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  userCodeInit();
 
   /* USER CODE END 2 */
 
