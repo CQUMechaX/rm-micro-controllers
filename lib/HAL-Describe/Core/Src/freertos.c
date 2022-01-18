@@ -184,9 +184,9 @@ void StartDefaultTask(void *argument)
   attributes.name = "microROS_app";
   attributes.stack_size = 5 * 3000;
   attributes.priority = (osPriority_t)osPriorityNormal;
-  osThreadNew(appMain, NULL, &attributes);
+  //osThreadNew(appMain, NULL, &attributes);
   osDelay(500);
-  attributes.name = "microROS_app";
+  attributes.name = "detect";
   osThreadNew(detect_task, NULL, &attributes);
   osDelay(500);
   attributes.name = "microROS_app";

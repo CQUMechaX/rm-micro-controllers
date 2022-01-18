@@ -34,8 +34,8 @@
 #define KEY_PRESSED_OFFSET_V            ((uint16_t)1 << 14)
 #define KEY_PRESSED_OFFSET_B            ((uint16_t)1 << 15)
 
-#define LEGACY_CACHE_CHAR_LEN 5
-#define LEGACY_FRAME_CHAR_LEN 4
+#define LEGACY_CACHE_INT8_LEN 8
+#define LEGACY_FRAME_INT8_LEN 8
 
 // struct definition for custom 
 typedef struct GCC_PACKED
@@ -60,8 +60,8 @@ typedef struct GCC_PACKED
 
 } RC_ctrl_t;
 
-extern int8_t cacheArray[2][LEGACY_CACHE_CHAR_LEN];
-extern int8_t *resultArray;
+extern int8_t cacheArray[2][LEGACY_CACHE_INT8_LEN];
+extern double *resultArray;
 
 void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t frameCharLen, uint8_t cacheCharLen);
 void initDmaCache(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);

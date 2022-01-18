@@ -5,8 +5,8 @@
 
 #include "dji/chassis_task.h"
 
-int8_t cacheArray[2][5];
-int8_t *resultArray;
+int8_t cacheArray[2][LEGACY_CACHE_INT8_LEN];
+double *resultArray;
 
 //串口中断
 void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t frameCharLen, uint8_t cacheCharLen)
@@ -40,7 +40,7 @@ void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t
             {
                 //editCallback(sbus_rx_buf[0], &rc_ctrl);
                 //chassis_move.
-                resultArray = cacheArray[0];
+                resultArray = (double*)cacheArray[0];
             }
         }
         else
@@ -61,7 +61,7 @@ void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t
             {
                 //处理遥控器数据
                 //sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
-                resultArray = cacheArray[1];
+                resultArray = (double*)cacheArray[1];
             }
         }
     }

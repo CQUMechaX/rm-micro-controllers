@@ -15,13 +15,13 @@ void chassisTaskSimple(void const *pvParameters)
     chassis_init(&chassis_move);
     //make sure all chassis motor is online,
     //判断底盘电机是否都在线
-    while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE))// || toe_is_error(DBUS_TOE))
+    while (toe_is_error(CHASSIS_MOTOR1_TOE) || toe_is_error(CHASSIS_MOTOR2_TOE) )// || toe_is_error(CHASSIS_MOTOR3_TOE) || toe_is_error(CHASSIS_MOTOR4_TOE))// || toe_is_error(DBUS_TOE))
     {
         vTaskDelay(CHASSIS_CONTROL_TIME_MS);
     }
 
-    // chassis_move.motor_chassis[0].speed_set = chassis_move.motor_chassis[1].speed_set = 3;
-    // chassis_move.motor_chassis[2].speed_set = chassis_move.motor_chassis[3].speed_set = -3;
+    //chassis_move.motor_chassis[0].speed_set = chassis_move.motor_chassis[1].speed_set = 0.5;
+    //chassis_move.motor_chassis[2].speed_set = chassis_move.motor_chassis[3].speed_set = -3;
     while (1)
     {
         //set chassis control mode
@@ -32,9 +32,9 @@ void chassisTaskSimple(void const *pvParameters)
         // chassis_mode_change_control_transit(&chassis_move);
         //chassis data update
         //底盘数据更新
-        // chassis_feedback_update(&chassis_move);
-        chassis_move.motor_chassis[0].speed = resultArray[0];
-        chassis_move.motor_chassis[1].speed = resultArray[1];
+        chassis_feedback_update(&chassis_move);
+        chassis_move.motor_chassis[0].speed_set = resultArray[0];
+        chassis_move.motor_chassis[1].speed_set = resultArray[1];
         //set chassis control set-point 
         //底盘控制量设置
         // chassis_set_contorl(&chassis_move);
@@ -62,10 +62,10 @@ void chassisTaskSimple(void const *pvParameters)
             {
                 //send control current
                 //发送控制电流
-                // CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
-                //                 chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
-                CAN_cmd_chassis(0x4000, 0x4000,
-                                -0x4000, -0x4000);
+                 CAN_cmd_chassis(chassis_move.motor_chassis[0].give_current, chassis_move.motor_chassis[1].give_current,
+                                 chassis_move.motor_chassis[2].give_current, chassis_move.motor_chassis[3].give_current);
+                //CAN_cmd_chassis(0x4000, 0x4000,
+                //                -0x4000, -0x4000);
             }
         }
         //os delay

@@ -18,6 +18,6 @@ HAL_StatusTypeDef userCodeInit(void)
     // buzzerStartUp();
     startRedLED();
     canFilterInit();
-    initDmaCache(cacheArray[0], cacheArray[1], LEGACY_CACHE_CHAR_LEN);
+    initDmaCache(cacheArray[0], cacheArray[1], LEGACY_CACHE_INT8_LEN);
     return HAL_OK;
 }

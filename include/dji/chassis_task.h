@@ -83,7 +83,7 @@
 #define CHASSIS_CONTROL_FREQUENCE 500.0f
 //chassis 3508 max motor control current
 //底盘3508最大can发送电流值
-#define MAX_MOTOR_CAN_CURRENT 16000.0f
+#define MAX_MOTOR_CAN_CURRENT 30000.0f
 //press the key, chassis will swing
 //底盘摇摆按键
 #define SWING_KEY KEY_PRESSED_OFFSET_CTRL
@@ -97,7 +97,8 @@
 //m3508 rmp change to chassis speed,
 //m3508转化成底盘速度(m/s)的比例，
 #define M3508_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f
-#define CHASSIS_MOTOR_RPM_TO_VECTOR_SEN M3508_MOTOR_RPM_TO_VECTOR
+#define M6020_MOTOR_RPM_TO_VECTOR 0.000415809748903494517209f
+#define CHASSIS_MOTOR_RPM_TO_VECTOR_SEN M6020_MOTOR_RPM_TO_VECTOR
 
 //single chassis motor max speed
 //单个底盘电机最大速度
@@ -120,9 +121,9 @@
 
 //chassis motor speed PID
 //底盘电机速度环PID
-#define M3505_MOTOR_SPEED_PID_KP 15000.0f
-#define M3505_MOTOR_SPEED_PID_KI 10.0f
-#define M3505_MOTOR_SPEED_PID_KD 0.0f
+#define M3505_MOTOR_SPEED_PID_KP 10000.0f
+#define M3505_MOTOR_SPEED_PID_KI 0.0f
+#define M3505_MOTOR_SPEED_PID_KD 0.2f
 #define M3505_MOTOR_SPEED_PID_MAX_OUT MAX_MOTOR_CAN_CURRENT
 #define M3505_MOTOR_SPEED_PID_MAX_IOUT 2000.0f
 

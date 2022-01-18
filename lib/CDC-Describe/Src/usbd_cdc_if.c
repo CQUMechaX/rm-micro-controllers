@@ -253,6 +253,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_
   /* USER CODE END 5 */
 }
 
+#include "dji/chassis_task.h"	
 /**
   * @brief  Data received over USB OUT endpoint are sent over CDC interface
   *         through this function.
@@ -272,11 +273,16 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len, uint8_t epindex)
 {
   /* USER CODE BEGIN 6 */
+  static double *temp;
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS, epindex);
-	
-	// HAL_UART_Transmit_DMA(&huart6, Buf, *Len);
-  // CDC_Transmit_FS(Buf, *Len, epindex);
+  if(*Len == 16u)
+  {
+    temp = (double*)Buf;
+    resultArray = temp;
+  }
+	//HAL_UART_Transmit_DMA(&huart1, Buf, *Len);
+  CDC_Transmit_FS(Buf, *Len, epindex);
 	
   return (USBD_OK);
   /* USER CODE END 6 */
