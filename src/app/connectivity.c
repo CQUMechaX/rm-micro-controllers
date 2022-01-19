@@ -5,7 +5,7 @@
 
 #include "dji/chassis_task.h"
 
-int8_t cacheArray[2][LEGACY_CACHE_INT8_LEN];
+uint8_t cacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
 double *resultArray;
 
 //串口中断
@@ -13,7 +13,7 @@ void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t
 {
     if(UART.Instance->SR & UART_FLAG_RXNE)//接收到数据
     {
-        __HAL_UART_CLEAR_PEFLAG(&UART);
+        __HAL_UART_CLEAR_FLAG(&UART, UART_FLAG_RXNE);
     }
     else if(UART.Instance->SR & UART_FLAG_IDLE)
     {

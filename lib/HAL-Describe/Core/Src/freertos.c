@@ -185,11 +185,11 @@ void StartDefaultTask(void *argument)
   attributes.stack_size = 5 * 3000;
   attributes.priority = (osPriority_t)osPriorityNormal;
   //osThreadNew(appMain, NULL, &attributes);
-  osDelay(500);
+  //osDelay(500);
   attributes.name = "detect";
   osThreadNew(detect_task, NULL, &attributes);
-  osDelay(500);
-  attributes.name = "microROS_app";
+  osDelay(100);
+  attributes.name = "chassis";
   osThreadNew(chassisTaskSimple, NULL, &attributes);
   char ptrTaskList[500];
   vTaskList(ptrTaskList);
@@ -199,24 +199,12 @@ void StartDefaultTask(void *argument)
   printf(ptrTaskList);
   printf("**********************************\n");
 
-  TaskHandle_t xHandle;
-  xHandle = xTaskGetHandle("microROS_app");
+  //TaskHandle_t xHandle;
+  //xHandle = xTaskGetHandle("microROS_app");
 
+  HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET); // off
   while (1) 
   {
-    if (eTaskGetState(xHandle) != eSuspended && availableNetwork)
-    // if(1)
-    {
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
-						  !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
-      printf("1\n");
-    } 
-    else 
-    {
-		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin,
-						  !HAL_GPIO_ReadPin(LED_GREEN_GPIO_Port, LED_GREEN_Pin));
-      printf("2");
-    }
     osDelay(200);
   }
   /* USER CODE END StartDefaultTask */

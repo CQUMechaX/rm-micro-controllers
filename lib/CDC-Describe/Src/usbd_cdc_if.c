@@ -273,16 +273,15 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len, uint8_t epindex)
 {
   /* USER CODE BEGIN 6 */
-  static double *temp;
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS, epindex);
   if(*Len == 16u)
   {
-    temp = (double*)Buf;
-    resultArray = temp;
+    memcpy(acmCacheArray, Buf, sizeof(acmCacheArray));
+    resultArray = (double*)acmCacheArray;
   }
-	//HAL_UART_Transmit_DMA(&huart1, Buf, *Len);
-  CDC_Transmit_FS(Buf, *Len, epindex);
+	// HAL_UART_Transmit_DMA(&huart1, Buf, *Len);
+  // CDC_Transmit_FS(Buf, *Len, epindex);
 	
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -351,7 +350,7 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 void ComPort_Config(uint8_t* pbuf, uint16_t length)
 {	
 	
-	uint32_t DMA_FLAGS;
+	// uint32_t DMA_FLAGS;
 	// DMA_FLAGS = __HAL_DMA_GET_TC_FLAG_INDEX(huart6.hdmarx);
 	// __HAL_DMA_DISABLE(huart6.hdmarx);
 	// __HAL_DMA_CLEAR_FLAG(huart6.hdmarx,DMA_FLAGS);

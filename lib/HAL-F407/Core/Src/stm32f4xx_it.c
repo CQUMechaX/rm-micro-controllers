@@ -217,7 +217,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-  dmaProcessHandler(huart1, hdma_usart1_rx, LEGACY_CACHE_INT8_LEN, LEGACY_FRAME_INT8_LEN);
+  dmaProcessHandler(huart1, hdma_usart1_rx, LEGACY_CACHE_BYTE_LEN, LEGACY_FRAME_BYTE_LEN);
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
