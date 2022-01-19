@@ -39,7 +39,9 @@
 #include <rmw_microros/rmw_microros.h> 
 
 #include <microros_transports.h> 
-#include "app.h"
+#include "app/pingpong.h"
+#include "app/gimbal_control.h"
+#include "app/device_detect.h"
 #include "dji/detect_task.h"
 #include "tool/pid_mcu.h"
 
@@ -144,7 +146,7 @@ void StartDefaultTask(void *argument)
   rmw_uros_set_custom_transport( 
     true, 
     (void *) NULL, 
-    CDCUxrOpen, 
+    CDCUxrOpen,
     CDCUxrClose, 
     CDCUxrWrite, 
     CDCUxrRead); 
@@ -186,11 +188,13 @@ void StartDefaultTask(void *argument)
   attributes.priority = (osPriority_t)osPriorityNormal;
   //osThreadNew(appMain, NULL, &attributes);
   //osDelay(500);
-  attributes.name = "detect";
-  osThreadNew(detect_task, NULL, &attributes);
+  attributes.name = "gimbal";
+  osThreadNew(gimbalControlExternC, NULL, &attributes);
   osDelay(100);
+  attributes.name = "detect";
+  // osThreadNew(detect_task, NULL, &attributes);
   attributes.name = "chassis";
-  osThreadNew(chassisTaskSimple, NULL, &attributes);
+  // osThreadNew(chassisTaskSimple, NULL, &attributes);
   char ptrTaskList[500];
   vTaskList(ptrTaskList);
   printf("**********************************\n");

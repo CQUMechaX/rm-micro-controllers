@@ -21,7 +21,7 @@
 
 // function
 
-void chassisTaskSimple(void const *pvParameters);
+void chassisTaskSimple(void * pvParameters);
  
 #ifdef __cplusplus
  }

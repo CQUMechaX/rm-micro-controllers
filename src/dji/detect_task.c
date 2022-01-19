@@ -154,7 +154,7 @@ void detect_task(void *pvParameters)
                 error_list[i].is_lost = 0;
                 //判断是否存在数据错误
                 //judge if exist data error
-                if (error_list[i].data_is_error != NULL)
+                if (error_list[i].data_is_error != 0)
                 {
                     error_list[i].error_exist = 1;
                 }

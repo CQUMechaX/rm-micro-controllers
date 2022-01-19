@@ -22,7 +22,7 @@
 // #include "struct_typedef.h"
 // #include "bsp_rc.h"
 #include <stdint.h>
-#include "app/connectivity.h"
+#include "tool/transimition.h"
 #include "override.h"
 
 #define SBUS_RX_BUF_NUM 36u

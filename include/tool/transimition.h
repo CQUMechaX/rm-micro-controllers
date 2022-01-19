@@ -1,11 +1,11 @@
-/** @file connectivity.c/h
+/** @file transimition.c/h
  * @brief unlike override.c/h, any port can be configured by EEPROM's settings.
  * This file controls dbus(usart), motor_message(can), computer_layer_legacy(usart),
  * and the function of 
  */
 #pragma once
-#ifndef __CONNECTIVITY_H__
-#define __CONNECTIVITY_H__
+#ifndef __TRANSIMITION_H__
+#define __TRANSIMITION_H__
 
 #ifdef __cplusplus
  extern "C" {
@@ -64,10 +64,10 @@ extern uint8_t cacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_
 extern double *resultArray;
 
 void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t frameCharLen, uint8_t cacheCharLen);
-void initDmaCache(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);
+void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);
 
 #ifdef __cplusplus
  }
 #endif
 
-#endif /* __CONNECTIVITY_H__ */
+#endif /* __TRANSIMITION_H__ */

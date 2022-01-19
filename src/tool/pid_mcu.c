@@ -11,7 +11,7 @@
 #define ISNAN_OR_ZERO(val) (isnan(val) ? 0 : val)
 
 chassis_move_t chassis_move;
-void chassisTaskSimple(void const *pvParameters)
+void chassisTaskSimple(void * pvParameters)
 {
     //wait a time 
     //空闲一段时间
@@ -41,11 +41,11 @@ void chassisTaskSimple(void const *pvParameters)
         //确保至少一个电机在线， 这样CAN控制包可以被接收到
         if (!(toe_is_error(CHASSIS_MOTOR1_TOE) && toe_is_error(CHASSIS_MOTOR2_TOE)))// && toe_is_error(CHASSIS_MOTOR3_TOE) && toe_is_error(CHASSIS_MOTOR4_TOE)))
         {
-            HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET); // on
+            // HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET); // on
         }
         else
         {
-            HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET); // off
+            // HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET); // off
 
         }
         //os delay

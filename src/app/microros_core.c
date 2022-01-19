@@ -1,4 +1,4 @@
-#include "app.h"
+#include "app/pingpong.h"
 #include "FreeRTOS.h"
 #include "FreeRTOS_POSIX/time.h" // Which has self-implemented type
 #include "FreeRTOS_POSIX/unistd.h"
