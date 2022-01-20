@@ -40,6 +40,8 @@
 
 #include <microros_transports.h> 
 #include "app.h"
+#include "tool/pid_mcu.h"
+#include "dji/detect_task.h"
 
 /* USER CODE END Includes */
 
@@ -182,7 +184,10 @@ void StartDefaultTask(void *argument)
   attributes.name = "microROS_app";
   attributes.stack_size = 5 * 3000;
   attributes.priority = (osPriority_t)osPriorityNormal;
-  osThreadNew(appMain, NULL, &attributes);
+  osThreadNew(chassis_task_simple, NULL, &attributes);
+  osDelay(500);
+  attributes.name = "miOS_app";
+  osThreadNew(detect_task, NULL, &attributes);
   osDelay(500);
   char ptrTaskList[500];
   vTaskList(ptrTaskList);

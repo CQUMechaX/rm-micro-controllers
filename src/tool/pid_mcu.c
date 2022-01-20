@@ -67,6 +67,12 @@ void chassis_task_simple(void const *pvParameters)
                 CAN_cmd_chassis(0x4000, 0x4000,
                                 -0x4000, -0x4000);
             }
+            #include "main.h"
+		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
+        }
+        else{
+            
+		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
         }
         //os delay
         //系统延时

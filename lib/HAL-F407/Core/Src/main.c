@@ -107,6 +107,8 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  #include "init.h"
+  userCodeInit();
 
   /* USER CODE END 2 */
 
