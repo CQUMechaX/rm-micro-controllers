@@ -1,9 +1,12 @@
-#include "tool/buzzer.h"
+#include "tool/pwm.h"
 #include "tim.h"
 #include "override.h"
+#include "marco.h"
 #include <stdarg.h>
 
 const uint16_t toneFreq[CM_BUZZER_TF_SIZE] = {0, 350, 650, 950, 1250, 100, 1650, 2250, 2450, 2650, 2750, 1350};
+
+bool g_state_pwm[10][10] = {0};
 
 uint8_t buzzerList(__IO uint32_t *CCR, const uint16_t freqList[], uint32_t freqLen, uint32_t freqSelect, ...)
 {
@@ -20,9 +23,23 @@ uint8_t buzzerList(__IO uint32_t *CCR, const uint16_t freqList[], uint32_t freqL
     return HAL_OK;
 }
 
-uint8_t buzzerStartUp(void)
+static HAL_StatusTypeDef buzzerTrigger(uint16_t psc, uint16_t pwm)
 {
-    HAL_TIM_PWM_Start(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
+    if(HAL_TIM_PWM_Start(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+    __HAL_TIM_PRESCALER(&HTIM_BUZZER, psc);
+    __HAL_TIM_SetCompare(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL, pwm);
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef buzzerTone(void)
+{
+    if(HAL_TIM_PWM_Start(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
     (HTIM_BUZZER.Instance -> CCR1) = 1000;
     (HTIM_BUZZER.Instance -> PSC) = 100;
     HAL_Delay(700);

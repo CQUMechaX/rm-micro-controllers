@@ -16,9 +16,9 @@
 // definition
 
 // variable
-extern void (* gimbalControlExternC)(void * pvParameters);
 
 // function and class
+void gimbalControl(void * pvParameters);
 
 
 #ifdef __cplusplus

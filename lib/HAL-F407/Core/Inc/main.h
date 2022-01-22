@@ -62,10 +62,14 @@ void Error_Handler(void);
 #define USB_DP_GPIO_Port GPIOA
 #define USB_DM_Pin GPIO_PIN_11
 #define USB_DM_GPIO_Port GPIOA
+#define RST_CMPS_Pin GPIO_PIN_6
+#define RST_CMPS_GPIO_Port GPIOG
 #define HEAT_Pin GPIO_PIN_6
 #define HEAT_GPIO_Port GPIOF
 #define LED_RED_Pin GPIO_PIN_12
 #define LED_RED_GPIO_Port GPIOH
+#define INT1_CMPS_Pin GPIO_PIN_3
+#define INT1_CMPS_GPIO_Port GPIOG
 #define ADC_BAT_Pin GPIO_PIN_10
 #define ADC_BAT_GPIO_Port GPIOF
 #define LED_GREEN_Pin GPIO_PIN_11
@@ -76,10 +80,14 @@ void Error_Handler(void);
 #define BUZZER_GPIO_Port GPIOD
 #define KEY_Pin GPIO_PIN_0
 #define KEY_GPIO_Port GPIOA
+#define CS1_ACCEL_Pin GPIO_PIN_4
+#define CS1_ACCEL_GPIO_Port GPIOA
 #define INT1_ACCEL_Pin GPIO_PIN_4
 #define INT1_ACCEL_GPIO_Port GPIOC
-#define INT1_GRYO_Pin GPIO_PIN_5
-#define INT1_GRYO_GPIO_Port GPIOC
+#define INT1_GYRO_Pin GPIO_PIN_5
+#define INT1_GYRO_GPIO_Port GPIOC
+#define CS1_GYRO_Pin GPIO_PIN_0
+#define CS1_GYRO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

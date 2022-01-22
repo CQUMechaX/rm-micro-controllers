@@ -18,6 +18,22 @@
 // definition
 
 // struct
+/** kp, ki, kd, frequency, ki_limit, k_limit
+ * @see class BaseControl
+ */
+struct PidCoeff
+{
+    double kp, ki, kd; /** coefficient of pid */
+    double frequency; /** reserved for future use */
+    double ki_limit, k_limit; /** 0 means no limit, used with @see CONSTRAIN_ABS */
+};
+/** feed, cmd, error[3], tick[3], p_out, i_out, d_out, out
+ * @see class BaseControl
+ */
+struct PidInfo
+{
+    double feed, cmd, error[3], tick[3], p_out, i_out, d_out, out;
+};
 
 // function
 

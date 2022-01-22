@@ -189,10 +189,10 @@ void StartDefaultTask(void *argument)
   //osThreadNew(appMain, NULL, &attributes);
   //osDelay(500);
   attributes.name = "gimbal";
-  osThreadNew(gimbalControlExternC, NULL, &attributes);
+  osThreadNew(gimbalControl, NULL, &attributes);
   osDelay(100);
   attributes.name = "detect";
-  // osThreadNew(detect_task, NULL, &attributes);
+  // osThreadNew(deviceDetect, NULL, &attributes);
   attributes.name = "chassis";
   // osThreadNew(chassisTaskSimple, NULL, &attributes);
   char ptrTaskList[500];

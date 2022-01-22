@@ -10,8 +10,6 @@
 // variable
 
 // function and class
-void deviceDetect(void * pvParameters);
-void (* deviceDetectExternC)(void * pvParameters) = deviceDetect;
 
 
 #endif /* __DEVICE_DETECT_HPP__ */

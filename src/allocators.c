@@ -1,7 +1,11 @@
 #include <allocators.h>
+#include <cmsis_os2.h>
 
 int absoluteUsedMemory = 0;
 int usedMemory = 0;
+void *pvPortCalloc(size_t num, size_t xWantedSize);
+void *pvPortRealloc(void *pv, size_t xWantedSize);
+size_t getBlockSize(void *pv);
 
 void * __freertos_allocate(size_t size, void * state){
   (void) state;

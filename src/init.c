@@ -2,7 +2,7 @@
 #include "init.h"
 #include "main.h"
 #include "usart.h"
-#include "tool/buzzer.h"
+#include "tool/pwm.h"
 #include "tool/can_filter.h"
 #include "tool/transimition.h"
 
@@ -23,10 +23,13 @@ HAL_StatusTypeDef userCodeInit(void)
     // buzzerStartUp();
     startRedLED();
     canFilterInit();
-#ifdef RM_DEV_C
+#if defined(RM_DEV_A)
+#elif defined(RM_DEV_C)
     extern DMA_HandleTypeDef hdma_usart1_rx;
     initDmaCache(huart1, hdma_usart1_rx, cacheArray[0], cacheArray[1], LEGACY_CACHE_BYTE_LEN);
 #endif /* RM_DEV_C */
+// while(1)
+    HAL_UART_Transmit(&huart1, "help", 4, 1000);
     return HAL_OK;
 }
 

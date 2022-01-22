@@ -10,6 +10,7 @@
 #endif /* ! __cplusplus */
 
 #define rad_format(ang) (ang)
+#define RAD_FORMAT(ang) (ang)
 #define float_constrain(val, min, max) ((val < max) ? ((val < min) ? min : val) : max)
 #define CONSTRAIN(val, min, max) ((val < max) ? ((val < min) ? min : val) : max)
 #define CONSTRAIN_ABS(val, max) (max ? ((val < max) ? ((val < -max) ? -max : val) : max) : val)

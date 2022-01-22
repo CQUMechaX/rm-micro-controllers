@@ -1,11 +1,13 @@
 #include <stm32f4xx_hal.h>
-#include "tool/transimition.h"
 #include "usart.h"
 #include "stm32f4xx_it.h"
+#include <stm32f4xx_hal_can.h>
+#include <cstring>
 
 #include "dji/chassis_task.h"
 #include "app/gimbal_control.hpp"
 #include "app/microros_param.h"
+#include "tool/transimition.hpp"
 
 uint8_t cacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
 double *resultArray;
@@ -73,39 +75,27 @@ void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t
 void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
 {
     //enable the DMA transfer for the receiver request
-    //使能DMA串口接收
     SET_BIT(huart.Instance->CR3, USART_CR3_DMAR);
-
     //enalbe idle interrupt
-    //使能空闲中断
     __HAL_UART_ENABLE_IT(&huart, UART_IT_IDLE);
-
     //disable DMA
-    //失效DMA
-    __HAL_DMA_DISABLE(&hdma);
+    // __HAL_DMA_DISABLE(&hdma);
     while(hdma.Instance->CR & DMA_SxCR_EN)
     {
         __HAL_DMA_DISABLE(&hdma);
     }
 
+    //memory buffer
     hdma.Instance->PAR = (uint32_t) & (USART3->DR);
-    //memory buffer 1
-    //内存缓冲区1
     hdma.Instance->M0AR = (uint32_t)(rx1_buf);
-    //memory buffer 2
-    //内存缓冲区2
     hdma.Instance->M1AR = (uint32_t)(rx2_buf);
     //data length
-    //数据长度
     hdma.Instance->NDTR = dma_buf_num;
+
     //enable double memory buffer
-    //使能双缓冲区
     SET_BIT(hdma.Instance->CR, DMA_SxCR_DBM);
-
     //enable DMA
-    //使能DMA
     __HAL_DMA_ENABLE(&hdma);
-
 }
 
 /**
@@ -121,19 +111,31 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
     if(hcan == g_ros_param.hcan_gimbal)
     {
-        if (rx_header.StdId == g_gimbal.joint[0].head_feedback)
-        {
-
-        }
-        else if(rx_header.StdId == g_gimbal.joint[1].head_feedback)
-        {
-                // static uint8_t i = 0;
-                //get motor id
-                // get_motor_measure(&motor_chassis[i], rx_data);
-                // detect_hook(CHASSIS_MOTOR1_TOE + i);
-                
-        }
-
+        jointUpdate(&g_gimbal, rx_header.StdId, rx_data);
     }
 
+}
+
+template<typename T>
+bool jointUpdate(T * baseControl, uint32_t std_id, uint8_t * rx_data)
+{
+    for(JointData & iter_joint : baseControl->joint)
+    {
+        if(iter_joint.head_feedback == std_id)
+        {
+            iter_joint.locked = true;
+
+            memmove(&iter_joint.feedback[1], &iter_joint.feedback[0],
+                sizeof(JointData::CtrlInfo));
+            JointData::CtrlInfo & ref = iter_joint.feedback[0];
+            ref.angle = (static_cast<uint16_t>(rx_data[0]) << 8 | rx_data[1]);
+            ref.speed = (static_cast<uint16_t>(rx_data[2]) << 8 | rx_data[3]);
+            ref.current = (static_cast<uint16_t>(rx_data[4]) << 8 | rx_data[5]);
+            ref.temperature = rx_data[6];
+            
+            iter_joint.locked = false;
+            return true;
+        }
+    }
+    return false;
 }

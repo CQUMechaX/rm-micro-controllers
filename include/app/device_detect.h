@@ -16,9 +16,9 @@
 // definition
 
 // variable
-extern void (* deviceDetectExternC)(void * pvParameters);
 
 // function and class
+void deviceDetect(void * pvParameters);
 
 
 #ifdef __cplusplus

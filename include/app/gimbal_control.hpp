@@ -5,27 +5,25 @@
 // include
 #include "gimbal_control.h"
 #include "tool/joint_struct.h"
+#include "tool/base_control.hpp"
 
 // definition
 
 // variable
 
 // function and class
-void gimbalControl(void * pvParameters);
-
-class GimbalControl
+class GimbalControl : public BaseControl
 {
     public:
-    uint32_t frequency = 1000, tick_ms = 1;
     enum ControllerMode
     {
         test
     } mode;
     JointData joint[3];
-    bool init(void);
+    bool on_init(void);
     bool update(void);
-    double pid_speed(uint8_t tick, JointData * joint);
-    double pid_angle(uint8_t tick, JointData * joint, double get, double set, double error_delta);
+    double pid_speed(uint32_t tick, JointData * joint, double get, double set);
+    double pid_angle(uint32_t tick, JointData * joint, double get, double set);
 };
 
 extern GimbalControl g_gimbal;

@@ -3,8 +3,8 @@
  * @author Tiger3018
  */
 #pragma once
-#ifndef __BUZZER_H__
-#define __BUZZER_H__
+#ifndef __PWM_H__
+#define __PWM_H__
 
 #ifdef __cplusplus
  extern "C" {
@@ -17,10 +17,10 @@
 
 extern const uint16_t toneFreq[CM_BUZZER_TF_SIZE];
 
-uint8_t buzzerStartUp(void);
+HAL_StatusTypeDef buzzerTone(void);
 
 #ifdef __cplusplus
  }
 #endif
 
-#endif /* __BUZZER_H__ */
+#endif /* __PWM_H__ */
