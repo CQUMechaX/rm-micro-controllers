@@ -253,7 +253,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length, uint8_
   /* USER CODE END 5 */
 }
 
-#include "dji/chassis_task.h"	
+// #include "dji/chassis_task.h"	
 /**
   * @brief  Data received over USB OUT endpoint are sent over CDC interface
   *         through this function.
@@ -277,8 +277,8 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len, uint8_t epindex)
   USBD_CDC_ReceivePacket(&hUsbDeviceFS, epindex);
   if(*Len == 16u)
   {
-    memcpy(acmCacheArray, Buf, sizeof(acmCacheArray));
-    resultArray = (double*)acmCacheArray;
+    // memcpy(acmCacheArray, Buf, sizeof(acmCacheArray));
+    // resultArray = (double*)acmCacheArray;
   }
 	// HAL_UART_Transmit_DMA(&huart1, Buf, *Len);
   // CDC_Transmit_FS(Buf, *Len, epindex);
@@ -299,7 +299,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len, uint8_t epindex)
   * @param  epindex: endpoint index ( 0 or 2 )
   * @retval USBD_OK if all operations are OK else USBD_FAIL or USBD_BUSY
   */
-uint8_t CDC_Transmit_FS(const uint8_t* Buf, uint16_t Len, uint8_t epindex)
+uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len, uint8_t epindex)
 {
   uint8_t result = USBD_OK;
   /* USER CODE BEGIN 7 */

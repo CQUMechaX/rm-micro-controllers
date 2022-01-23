@@ -1,31 +1,55 @@
 #include <cmsis_os2.h>
 #include "marco.hpp"
 #include "app/gimbal_control.hpp"
+#include "app/device_monitor.hpp"
+#include "app/microros_param.h"
+#include "tool/transimition.hpp"
 
-GimbalControl g_gimbal;
+GimbalControl gGimbal;
 
 void gimbalControl(void * pvParameters)
 {
-    g_gimbal.on_init();
+    gGimbal.on_init();
     osDelay(100);
     while(true)
     {
         if(true);
-        g_gimbal.update();
-        osDelay(g_gimbal.tick_ms);
+        gGimbal.update();
+        osDelay(gGimbal.tick_ms_);
     }
     return;
 }
 
 bool GimbalControl::on_init(void)
 {
-    this -> joint[0] = JointData{g_joint_default[JointType::RM6020], 0x209, 0x2FF};
-    this -> joint[1] = JointData{g_joint_default[JointType::RM6020], 0x20A, 0x2FF};
+    this->hcan_ = gRosParam.hcan_gimbal;
+    this->joint_[0] = JointData{g_joint_default[JointType::RM6020], 5};//, 0x209, 0x2FF};
+    this->joint_id_ptr_[5] = &this->joint_[0];
+    gDeviceMonitor.register_and_init(*this->hcan_, this->joint_[0]);
+    this->joint_[1] = JointData{g_joint_default[JointType::RM6020], 6};//, 0x20A, 0x2FF};
+    this->joint_id_ptr_[6] = &this->joint_[1];
+    gDeviceMonitor.register_and_init(*this->hcan_, this->joint_[1]);
+    this->joint_cnt_ = 2;
     return true;
 }
 
 bool GimbalControl::update(void)
 {
+    for(uint8_t i = 0; i != this->joint_cnt_; ++ i)
+    {
+        gDeviceMonitor.get_online(this->joint_[i]);
+        this->pid_speed(0, &this->joint_[i], this->joint_[i].feedback[0].speed, 30);
+    }
+    for(uint8_t i = 0; i != 4; ++ i)
+    {
+        if(this->joint_target_cnt_[i])
+            transimitionCanTx(this->hcan_, gCanHeadTarget[(i << 2) | 1],
+                this->get_cmd_current(joint_id_ptr_[(i << 2) | 1]),
+                this->get_cmd_current(joint_id_ptr_[(i << 2) | 2]),
+                this->get_cmd_current(joint_id_ptr_[(i << 2) | 3]),
+                this->get_cmd_current(joint_id_ptr_[(i << 2) | 4])
+                );
+    }
     return true;
 }
 
@@ -33,7 +57,11 @@ double GimbalControl::pid_speed(uint32_t tick, JointData * joint, double get, do
 {
     PidCoeff coeff = joint->coeff.pid[0];
     PidInfo * pid = &joint->pid_calc[0];
-    return pid->out;
+    pid->feed = get;
+    pid->cmd = set;
+    pid->error[1] = pid->error[0];
+    pid->error[0] = set - get;
+    return this->pid_delta(tick, pid, coeff);
 } 
 
 double GimbalControl::pid_angle(uint32_t tick, JointData * joint, double get, double set)

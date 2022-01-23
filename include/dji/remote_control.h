@@ -42,6 +42,8 @@
 #define switch_is_up(s)         (s == RC_SW_UP)
 /* ----------------------- Internal Data ----------------------------------- */
 
+typedef DbusData RC_ctrl_t;
+
 void remote_control_init(void);
 const RC_ctrl_t *get_remote_control_point(void);
 uint8_t RC_data_is_error(void);

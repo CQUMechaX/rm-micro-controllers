@@ -22,14 +22,15 @@ HAL_StatusTypeDef userCodeInit(void)
 {
     // buzzerStartUp();
     startRedLED();
-    canFilterInit();
+    transimitionCanStart();
+    // transimitionImuStart();
+    initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
+    initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
 #if defined(RM_DEV_A)
 #elif defined(RM_DEV_C)
-    extern DMA_HandleTypeDef hdma_usart1_rx;
-    initDmaCache(huart1, hdma_usart1_rx, cacheArray[0], cacheArray[1], LEGACY_CACHE_BYTE_LEN);
 #endif /* RM_DEV_C */
 // while(1)
-    HAL_UART_Transmit(&huart1, "help", 4, 1000);
+    // HAL_UART_Transmit(&huart1, "help", 4, 1000);
     return HAL_OK;
 }
 

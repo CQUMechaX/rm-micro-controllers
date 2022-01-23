@@ -1,14 +1,16 @@
-/** @file gimbal_control.h/hpp
+/** @file device_monitor.h/hpp
  * @dir app
  * @brief task and its class.
  * @author Tiger3018
  * @date 2022-01-20
  */
 #pragma once
-#ifndef __GIMBAL_CONTROL_H__
-#define __GIMBAL_CONTROL_H__
+#ifndef __DEVICE_MONITOR_H__
+#define __DEVICE_MONITOR_H__
 
 // include
+#include "tool/joint_struct.h"
+#include "tool/transimition.h"
 
 #ifdef __cplusplus
  extern "C" {
@@ -19,11 +21,10 @@
 // variable
 
 // function and class
-void gimbalControl(void * pvParameters);
-
+void deviceMonitor(void * pvParameters);
 
 #ifdef __cplusplus
  }
 #endif
 
-#endif /* __GIMBAL_CONTROL_HPP__ */
+#endif /* __DEVICE_MONITOR_HPP__ */

@@ -8,7 +8,7 @@
 #include <freertos_os2.h>
 #include <task.h>
 
-#define ISNAN_OR_ZERO(val) (isnan(val) ? 0 : val)
+#define ISNAN_OR_ZERO(val) (isnan(val) ? 0 : val) // isnormal
 
 chassis_move_t chassis_move;
 void chassisTaskSimple(void * pvParameters)

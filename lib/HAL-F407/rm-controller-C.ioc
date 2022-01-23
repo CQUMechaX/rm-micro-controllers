@@ -205,6 +205,7 @@ NVIC.TIM1_UP_TIM10_IRQn=true\:15\:0\:true\:false\:true\:false\:true\:true
 NVIC.TimeBase=TIM1_UP_TIM10_IRQn
 NVIC.TimeBaseIP=TIM1
 NVIC.USART1_IRQn=true\:5\:0\:false\:false\:true\:true\:true\:true
+NVIC.USART3_IRQn=true\:5\:0\:false\:false\:true\:true\:true\:true
 NVIC.UsageFault_IRQn=true\:5\:0\:false\:false\:true\:true\:false\:false
 PA0/WKUP.GPIOParameters=GPIO_Label
 PA0/WKUP.GPIO_Label=KEY

@@ -1,5 +1,10 @@
 #include "tool/base_control.hpp"
 
+int16_t BaseControl::get_cmd_current(JointData * joint)
+{
+    return ( joint ? joint->target.current : 0 );
+}
+
 double BaseControl::pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff)
 {
     pid->p_out = coeff.kp * (pid->error[0] - pid->error[1]);

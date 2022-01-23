@@ -7,13 +7,14 @@
 #ifndef __TRANSIMITION_H__
 #define __TRANSIMITION_H__
 
+// include
+#include <stdint.h>
+#include <stdbool.h>
+#include "override.h"
+
 #ifdef __cplusplus
  extern "C" {
 #endif
-
-// include
-#include <stdint.h>
-#include "override.h"
 
 // definition
 /* ----------------------- PC Key Definition-------------------------------- */
@@ -33,19 +34,25 @@
 #define KEY_PRESSED_OFFSET_C            ((uint16_t)1 << 13)
 #define KEY_PRESSED_OFFSET_V            ((uint16_t)1 << 14)
 #define KEY_PRESSED_OFFSET_B            ((uint16_t)1 << 15)
+#define RC_CH_VALUE_MIN         ((uint16_t)364)
+#define RC_CH_VALUE_OFFSET      ((uint16_t)1024)
+#define RC_CH_VALUE_MAX         ((uint16_t)1684)
 
+/** DMA cache length */
 #define LEGACY_CACHE_BYTE_LEN 32
 #define LEGACY_FRAME_BYTE_LEN 16
+#define DBUS_CACHE_BYTE_LEN 36
+#define DBUS_FRAME_BYTE_LEN 18
 
 // struct definition for custom 
-typedef struct GCC_PACKED
+typedef struct GCC_PACKED DbusData
 {
-    struct GCC_PACKED
+    struct GCC_PACKED Rc
     {
-        int16_t ch[5];
-        char s[2];
+        int16_t channel[5];
+        uint8_t button[2];
     } rc;
-    struct GCC_PACKED
+    struct GCC_PACKED Mouse
     {
         int16_t x;
         int16_t y;
@@ -53,19 +60,33 @@ typedef struct GCC_PACKED
         uint8_t press_l;
         uint8_t press_r;
     } mouse;
-    struct GCC_PACKED
+    struct GCC_PACKED Key
     {
         uint16_t v;
     } key;
+}DbusData;
 
-} RC_ctrl_t;
-
-extern uint8_t cacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
+extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
 extern double *resultArray;
+extern uint8_t gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
+/** CAN id marco */
+extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** GM6020 id1 == id9 */
 
-void dmaProcessHandler(UART_HandleTypeDef UART, DMA_HandleTypeDef rxDma, uint8_t frameCharLen, uint8_t cacheCharLen);
+
+void dmaProcessHandler(
+    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t frame_byte_len,
+    uint8_t cache_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
+    );
 void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);
+HAL_StatusTypeDef transimitionLegacyRx(bool section);
+HAL_StatusTypeDef transimitionDbusRx(bool section);
+HAL_StatusTypeDef transimitionCanStart(void);
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+bool dbusUpdate(uint8_t * rx_data);
+HAL_StatusTypeDef transimitionCanTx(
+    CAN_HandleTypeDef * hcan, uint32_t std_id,
+    uint16_t motor1, uint16_t motor2, uint16_t motor3, uint16_t motor4
+    );
 
 #ifdef __cplusplus
  }

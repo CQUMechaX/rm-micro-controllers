@@ -21,7 +21,7 @@
 
 // function
 
-void canFilterInit(void);
+// void canFilterInit(void);
 
 #ifdef __cplusplus
  }

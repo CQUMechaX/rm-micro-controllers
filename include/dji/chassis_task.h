@@ -24,6 +24,7 @@
 #include "pid.h"
 #include "tool/transimition.h"
 #include "marco.h"
+#include "dji/remote_control.h"
 // #include "remote_control.h"
 // #include "user_lib.h"
 

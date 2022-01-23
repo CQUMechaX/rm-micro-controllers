@@ -83,6 +83,7 @@
 // #include "struct_typedef.h"
 #include <stdint.h>
 #include "chassis_task.h"
+#include "dji/remote_control.h"
 
 typedef enum
 {
