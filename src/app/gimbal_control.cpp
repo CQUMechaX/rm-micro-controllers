@@ -3,14 +3,13 @@
 #include "app/gimbal_control.hpp"
 #include "app/device_monitor.hpp"
 #include "app/microros_param.h"
-#include "tool/transimition.hpp"
 
 GimbalControl gGimbal;
 
 void gimbalControl(void * pvParameters)
 {
     gGimbal.on_init();
-    osDelay(100);
+    // osDelay(100);
     while(true)
     {
         if(true);
@@ -40,16 +39,7 @@ bool GimbalControl::update(void)
         gDeviceMonitor.get_online(this->joint_[i]);
         this->pid_speed(0, &this->joint_[i], this->joint_[i].feedback[0].speed, 30);
     }
-    for(uint8_t i = 0; i != 4; ++ i)
-    {
-        if(this->joint_target_cnt_[i])
-            transimitionCanTx(this->hcan_, gCanHeadTarget[(i << 2) | 1],
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 1]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 2]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 3]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 4])
-                );
-    }
+    this->update_cmd_current();
     return true;
 }
 

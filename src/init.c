@@ -24,13 +24,22 @@ HAL_StatusTypeDef userCodeInit(void)
     startRedLED();
     transimitionCanStart();
     // transimitionImuStart();
-    initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
-    initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
+    // while(1)
+    {
+        // HAL_UART_Receive(&HUART_DBUS, gDbusCacheArray[0], DBUS_CACHE_BYTE_LEN, 10000);
+        // transimitionDbusRx(0);
+    }
+    //HAL_UART_Receive_DMA(&HUART2, gDbusCacheArray[0], 16);
+    // initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
+    // initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
 #if defined(RM_DEV_A)
 #elif defined(RM_DEV_C)
 #endif /* RM_DEV_C */
-// while(1)
-    // HAL_UART_Transmit(&huart1, "help", 4, 1000);
+while(1)
+{
+    HAL_UART_Transmit(&HUART2, "a", 1, 1000);
+    HAL_Delay(100);
+}
     return HAL_OK;
 }
 

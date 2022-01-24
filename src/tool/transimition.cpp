@@ -25,23 +25,32 @@ gCanHeadFeedback[17] = {
 };
 
 
+uint16_t this_time_rx_len = 0;
+
 //串口中断
 void dmaProcessHandler(
-    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t frame_byte_len,
-    uint8_t cache_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
+    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t cache_byte_len,
+    uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     )
 {
     if(uart.Instance->SR & UART_FLAG_RXNE)//接收到数据
     {
         __HAL_UART_CLEAR_FLAG(&uart, UART_FLAG_RXNE);
+
+        // __HAL_UART_CLEAR_PEFLAG(&uart);
     }
     else if(uart.Instance->SR & UART_FLAG_IDLE)
     {
-        static uint16_t this_time_rx_len = 0;;
         __HAL_UART_CLEAR_PEFLAG(&uart);
 
         __HAL_DMA_DISABLE(&rx_dma); // disable DMA
         this_time_rx_len = cache_byte_len - rx_dma.Instance->NDTR; // get receive data length, length = set_data_length - remain_length
+#ifdef __TRANSIMITION_DBUS_PART
+        if(this_time_rx_len == 9)
+        {
+            this_time_rx_len = 18;
+        }
+#endif /* __TRANSIMITION_DBUS_PART */
         rx_dma.Instance->NDTR = cache_byte_len; // reset set_data_length
         if(rx_dma.Instance->CR & DMA_SxCR_CT)
         {// used is 1, changed to 0
@@ -66,14 +75,14 @@ void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1
     //enalbe idle interrupt
     __HAL_UART_ENABLE_IT(&huart, UART_IT_IDLE);
     //disable DMA
-    // __HAL_DMA_DISABLE(&hdma);
+    //__HAL_DMA_DISABLE(&hdma);
     while(hdma.Instance->CR & DMA_SxCR_EN)
     {
         __HAL_DMA_DISABLE(&hdma);
     }
 
     //memory buffer
-    hdma.Instance->PAR = (uint32_t) & (USART3->DR);
+    hdma.Instance->PAR = (uint32_t) & (huart.Instance->DR);
     hdma.Instance->M0AR = (uint32_t)(rx1_buf);
     hdma.Instance->M1AR = (uint32_t)(rx2_buf);
     //data length
@@ -162,16 +171,48 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
     return false;
 }
 
-bool dbusUpdate(uint8_t * rx_data)
+bool dbusUpdate(uint8_t * rx_data_part)
 {
+    static uint8_t rx_data[18], cnt = 0;
+    #ifdef __TRANSIMITION_DBUS_PART
+    if(!cnt)
+    {
+        memmove(rx_data, rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t) / 2);
+        cnt ++;
+        return false;
+    }
+    else
+    {
+        cnt = 0;
+        memmove(rx_data + DBUS_FRAME_BYTE_LEN / 2 , rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t) / 2);
+    }
+    #else /* __TRANSIMITION_DBUS_PART */
+    memmove(rx_data, rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t));
+    #endif /* __TRANSIMITION_DBUS_PART */
     DbusData & rc_ctrl = gDeviceMonitor.device_dbus_.data.dbus;
     rc_ctrl.rc.channel[0] = (rx_data[0] | (rx_data[1] << 8)) & 0x07FF;        //!< Channel 0
     rc_ctrl.rc.channel[1] = ((rx_data[1] >> 3) | (rx_data[2] << 5)) & 0x07FF; //!< Channel 1
     rc_ctrl.rc.channel[2] = ((rx_data[2] >> 6) | (rx_data[3] << 2) |          //!< Channel 2
                              (rx_data[4] << 10)) &0x07FF;
     rc_ctrl.rc.channel[3] = ((rx_data[4] >> 1) | (rx_data[5] << 7)) & 0x07FF; //!< Channel 3
+    rc_ctrl.rc.channel[0] -= RC_CH_VALUE_OFFSET;
+    rc_ctrl.rc.channel[1] -= RC_CH_VALUE_OFFSET;
+    rc_ctrl.rc.channel[2] -= RC_CH_VALUE_OFFSET;
+    rc_ctrl.rc.channel[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl.rc.button[0] = ((rx_data[5] >> 4) & 0x0003);                  //!< Switch left
     rc_ctrl.rc.button[1] = ((rx_data[5] >> 4) & 0x000C) >> 2;                       //!< Switch right
+    if(
+        abs(rc_ctrl.rc.channel[0]) > RC_CHANNEL_VALUE_ERROR ||
+        abs(rc_ctrl.rc.channel[1]) > RC_CHANNEL_VALUE_ERROR ||
+        abs(rc_ctrl.rc.channel[2]) > RC_CHANNEL_VALUE_ERROR ||
+        abs(rc_ctrl.rc.channel[3]) > RC_CHANNEL_VALUE_ERROR ||
+        !rc_ctrl.rc.button[0] || !rc_ctrl.rc.button[1]
+    )
+    {
+        // memset(&rc_ctrl, 0, sizeof(rc_ctrl));
+        return false;
+    }
+
     rc_ctrl.mouse.x = rx_data[6] | (rx_data[7] << 8);                    //!< Mouse X axis
     rc_ctrl.mouse.y = rx_data[8] | (rx_data[9] << 8);                    //!< Mouse Y axis
     rc_ctrl.mouse.z = rx_data[10] | (rx_data[11] << 8);                  //!< Mouse Z axis
@@ -179,12 +220,8 @@ bool dbusUpdate(uint8_t * rx_data)
     rc_ctrl.mouse.press_r = rx_data[13];                                  //!< Mouse Right Is Press ?
     rc_ctrl.key.v = rx_data[14] | (rx_data[15] << 8);                    //!< KeyBoard value
     rc_ctrl.rc.channel[4] = rx_data[16] | (rx_data[17] << 8);                 //NULL
+    // rc_ctrl.rc.channel[4] -= RC_CH_VALUE_OFFSET;
 
-    rc_ctrl.rc.channel[0] -= RC_CH_VALUE_OFFSET;
-    rc_ctrl.rc.channel[1] -= RC_CH_VALUE_OFFSET;
-    rc_ctrl.rc.channel[2] -= RC_CH_VALUE_OFFSET;
-    rc_ctrl.rc.channel[3] -= RC_CH_VALUE_OFFSET;
-    rc_ctrl.rc.channel[4] -= RC_CH_VALUE_OFFSET;
     gDeviceMonitor.update_single_isr(gDeviceMonitor.device_dbus_);
     return true;
 }

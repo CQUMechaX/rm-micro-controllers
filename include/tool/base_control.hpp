@@ -11,6 +11,8 @@
 #include "tool/joint_struct.h"
 #include "marco.hpp"
 
+#define __BASECONTROL_JOINT_NUM 6
+
 class TaskControl
 {
 public:
@@ -22,11 +24,15 @@ public:
 class BaseControl : public TaskControl
 {
 protected:
-    uint8_t joint_cnt_, joint_target_cnt_[4] = {};
+    uint8_t joint_cnt_, /** a tot of joint_ */
+        joint_target_cnt_[4] = {}; /** register to different cmd packet. @see gCanHeadTarget */
+    JointData joint_[__BASECONTROL_JOINT_NUM];
     JointData * joint_id_ptr_[17] = {};
     int16_t get_cmd_current(JointData * joint);
 public:
     CAN_HandleTypeDef * hcan_;
+
+    bool update_cmd_current(void);
 
     double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff);
     double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff, double get, double set);

@@ -1,9 +1,9 @@
 #pragma once
-#ifndef __GIMBAL_CONTROL_HPP__
-#define __GIMBAL_CONTROL_HPP__
+#ifndef __CHASSIS_CONTROL_HPP__
+#define __CHASSIS_CONTROL_HPP__
 
 // include
-#include "gimbal_control.h"
+#include "chassis_control.h"
 #include "tool/base_control.hpp"
 
 // definition
@@ -11,7 +11,7 @@
 // variable
 
 // function and class
-class GimbalControl : public BaseControl
+class ChassisControl : public BaseControl
 {
 public:
     enum ControllerMode
@@ -24,6 +24,6 @@ public:
     double pid_angle(uint32_t tick, JointData * joint, double get, double set);
 };
 
-extern GimbalControl gGimbal;
+extern ChassisControl gChassis;
 
-#endif /* __GIMBAL_CONTROL_HPP__ */
+#endif /* __CHASSIS_CONTROL_HPP__ */

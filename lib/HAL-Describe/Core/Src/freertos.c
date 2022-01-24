@@ -41,7 +41,7 @@
 #include <microros_transports.h> 
 #include "app/pingpong.h"
 #include "app/gimbal_control.h"
-#include "app/device_detect.h"
+#include "app/device_monitor.h"
 #include "dji/detect_task.h"
 #include "tool/pid_mcu.h"
 
@@ -191,10 +191,10 @@ void StartDefaultTask(void *argument)
   attributes.name = "gimbal";
   osThreadNew(gimbalControl, NULL, &attributes);
   osDelay(100);
-  attributes.name = "detect";
-  // osThreadNew(deviceDetect, NULL, &attributes);
+  attributes.name = "monitor";
+  osThreadNew(deviceMonitor, NULL, &attributes);
   attributes.name = "chassis";
-  // osThreadNew(chassisTaskSimple, NULL, &attributes);
+  // osThreadNew(chassisControl, NULL, &attributes);
   char ptrTaskList[500];
   vTaskList(ptrTaskList);
   printf("**********************************\n");

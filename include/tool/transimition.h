@@ -37,11 +37,12 @@
 #define RC_CH_VALUE_MIN         ((uint16_t)364)
 #define RC_CH_VALUE_OFFSET      ((uint16_t)1024)
 #define RC_CH_VALUE_MAX         ((uint16_t)1684)
+#define RC_CHANNEL_VALUE_ERROR      ((uint16_t)660)
 
 /** DMA cache length */
 #define LEGACY_CACHE_BYTE_LEN 32
 #define LEGACY_FRAME_BYTE_LEN 16
-#define DBUS_CACHE_BYTE_LEN 36
+#define DBUS_CACHE_BYTE_LEN 72
 #define DBUS_FRAME_BYTE_LEN 18
 
 // struct definition for custom 
@@ -74,8 +75,8 @@ extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** GM6020 id1 ==
 
 
 void dmaProcessHandler(
-    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t frame_byte_len,
-    uint8_t cache_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
+    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t cache_byte_len,
+    uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     );
 void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);
 HAL_StatusTypeDef transimitionLegacyRx(bool section);
