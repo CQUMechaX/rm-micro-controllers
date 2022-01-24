@@ -5,15 +5,14 @@
  * @brief          : Main program body
  ******************************************************************************
  * @attention
- *
- * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under Ultimate Liberty license
- * SLA0044, the "License"; You may not use this file except in compliance with
- * the License. You may obtain a copy of the License at:
- *                             www.st.com/SLA0044
- *
+  *
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
  ******************************************************************************
  */
 /* USER CODE END Header */
@@ -95,16 +94,16 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC3_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
-  MX_ADC3_Init();
   MX_I2C3_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM10_Init();
   MX_USART1_UART_Init();
-  MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -230,4 +229,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
