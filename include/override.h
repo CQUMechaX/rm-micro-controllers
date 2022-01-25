@@ -2,6 +2,7 @@
 #define __OVERRIDE__H__
 
 #include <stm32f4xx_hal.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
  extern "C" {
@@ -48,13 +49,14 @@
 #define HDMA_DBUS_RX __OVERRIDE_CONCAT3(hdma_usart, UART_DBUS_ID, _rx)
 
 void delay_us(uint16_t nus);
+void freertosErrorHandler(const char *file, uint32_t line);
 
 extern TIM_HandleTypeDef HTIM_BUZZER;
 extern CAN_HandleTypeDef HCAN1, HCAN2;
 extern UART_HandleTypeDef HUART1, HUART2, HUART_DBUS;
 extern DMA_HandleTypeDef HDMA2_RX, HDMA_DBUS_RX;
-// extern SPI_HandleTypeDef HSPI_IMU;
-// extern I2C_HandleTypeDef HIIC_IMU;
+extern SPI_HandleTypeDef HSPI_IMU;
+extern I2C_HandleTypeDef HIIC_IMU;
 
 #ifdef __cplusplus
  }

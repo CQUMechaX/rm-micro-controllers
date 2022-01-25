@@ -14,8 +14,11 @@
 class ExtraControl : public BaseControl
 {
 public:
+    bool on_init(void);
+    bool update(void);
+    double pid_speed(uint32_t tick, JointData * joint, double get, double set);
 };
 
-extern ExtraControl gExtraMotor;
+extern ExtraControl gBulletMotor;
 
 #endif /* __EXTRA_CONTROL_HPP__ */

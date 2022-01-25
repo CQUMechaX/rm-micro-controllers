@@ -19,7 +19,7 @@
 // variable
 
 // function and class
-void chassisControl(void * pvParameters);
+void extraControl(void * pvParameters);
 
 
 #ifdef __cplusplus

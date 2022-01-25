@@ -3,6 +3,6 @@
 
 typedef struct
 {
-    CAN_HandleTypeDef * hcan_chassis, * hcan_gimbal;
+    CAN_HandleTypeDef * hcan_chassis, * hcan_gimbal, * hcan_bullet;
 } PersistParam;
 extern PersistParam gRosParam;

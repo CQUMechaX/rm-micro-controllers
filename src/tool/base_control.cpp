@@ -1,5 +1,30 @@
 #include "tool/base_control.hpp"
 #include "tool/transimition.hpp"
+#include "app/device_monitor.hpp"
+#include "override.h"
+
+bool BaseControl::joint_add(JointType joint_type, uint8_t id)
+{
+    if(joint_type == JointType::RM6020)
+    {
+        id += 4; /** GM6020 id1 :=> JointData::id = 5 @see gCanHeadTarget */
+    }
+    if(this->joint_id_ptr_[id])
+    {
+        freertosErrorHandler(__FILE__, __LINE__);
+    }
+    this->joint_[this->joint_cnt_] = JointData{g_joint_default[joint_type], id};
+    this->joint_id_ptr_[id] = &this->joint_[this->joint_cnt_];
+    gDeviceMonitor.register_and_init(*this->hcan_, this->joint_[this->joint_cnt_]);
+    this->joint_target_cnt_[id >> 2] ++;
+    this->joint_cnt_ ++;
+    return true;
+}
+
+bool BaseControl::joint_clear(void)
+{
+    return true;
+}
 
 int16_t BaseControl::get_cmd_current(JointData * joint)
 {
@@ -29,9 +54,9 @@ double BaseControl::pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff)
         coeff.ki * pid->error[0],
         coeff.ki_limit
     );
-    pid->d_out = coeff.kd * (pid->error[0] - pid->error[1]);
+    pid->d_out = coeff.kd * (pid->error[0] - 2 * pid->error[1] + pid->error[2]);
     pid->out = CONSTRAIN_ABS(
-        pid->p_out + pid->i_out + pid->d_out,
+        pid->out + pid->p_out + pid->i_out + pid->d_out,
         coeff.k_limit
     );
     return pid->out;

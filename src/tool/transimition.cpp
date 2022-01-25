@@ -7,25 +7,24 @@
 #include "override.h"
 // #include "dji/chassis_task.h"
 // #include "app/gimbal_control.hpp"
-#include "app/device_monitor.hpp"
 #include "app/microros_param.h"
 #include "tool/transimition.hpp"
 
 uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
 uint8_t gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
-double *resultArray;
+static double gSafeArray[2];
+double *gLegacyResultArray = gSafeArray;
 
 const uint32_t gCanHeadTarget[17] = {
  0, 0x200, 0x200, 0x200, 0x200, 0x1FF, 0x1FF, 0x1FF, 0x1FF,
-    0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x2FF, 0x2FF, 0x2FF, 0
+    0x2FF, 0x2FF, 0x2FF, 0x000, 0x000, 0x000, 0x000, 0
 },
 gCanHeadFeedback[17] = {
  0, 0x201, 0x202, 0x203, 0x204, 0x205, 0x206, 0x207, 0x208,
-    0x205, 0x206, 0x207, 0x208, 0x209, 0x20A, 0x20B, 0
+    0x209, 0x20A, 0x20B, 0x000, 0x000, 0x000, 0x000, 0
 };
 
 
-uint16_t this_time_rx_len = 0;
 
 //串口中断
 void dmaProcessHandler(
@@ -44,13 +43,8 @@ void dmaProcessHandler(
         __HAL_UART_CLEAR_PEFLAG(&uart);
 
         __HAL_DMA_DISABLE(&rx_dma); // disable DMA
+        static uint16_t this_time_rx_len = 0;
         this_time_rx_len = cache_byte_len - rx_dma.Instance->NDTR; // get receive data length, length = set_data_length - remain_length
-#ifdef __TRANSIMITION_DBUS_PART
-        if(this_time_rx_len == 9)
-        {
-            this_time_rx_len = 18;
-        }
-#endif /* __TRANSIMITION_DBUS_PART */
         rx_dma.Instance->NDTR = cache_byte_len; // reset set_data_length
         if(rx_dma.Instance->CR & DMA_SxCR_CT)
         {// used is 1, changed to 0
@@ -125,7 +119,7 @@ HAL_StatusTypeDef transimitionCanStart(void)
 
 HAL_StatusTypeDef transimitionLegacyRx(bool section)
 {
-    resultArray = (double*)gLegacyCacheArray[section];
+    gLegacyResultArray = (double*)gLegacyCacheArray[section];
     return HAL_OK;
 }
 
@@ -142,14 +136,18 @@ HAL_StatusTypeDef transimitionDbusRx(bool section)
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8];
+    uint8_t rx_data[8], can_num;
 
     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
-    if(hcan == gRosParam.hcan_gimbal)
+    if((can_num = gDeviceMonitor.can_cast_to_num(hcan)))
     {
-        // jointUpdate(&gGimbal, rx_header.StdId, rx_data);
+        jointUpdate(gDeviceMonitor.device_joint_[can_num], rx_header.StdId, rx_data);
     }
-
+    else
+    {
+        freertosErrorHandler(__FILE__, __LINE__);
+    }
+    return;
 }
 
 bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data)
@@ -171,24 +169,8 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
     return false;
 }
 
-bool dbusUpdate(uint8_t * rx_data_part)
+bool dbusUpdate(uint8_t * rx_data)
 {
-    static uint8_t rx_data[18], cnt = 0;
-    #ifdef __TRANSIMITION_DBUS_PART
-    if(!cnt)
-    {
-        memmove(rx_data, rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t) / 2);
-        cnt ++;
-        return false;
-    }
-    else
-    {
-        cnt = 0;
-        memmove(rx_data + DBUS_FRAME_BYTE_LEN / 2 , rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t) / 2);
-    }
-    #else /* __TRANSIMITION_DBUS_PART */
-    memmove(rx_data, rx_data_part, DBUS_FRAME_BYTE_LEN * sizeof(uint8_t));
-    #endif /* __TRANSIMITION_DBUS_PART */
     DbusData & rc_ctrl = gDeviceMonitor.device_dbus_.data.dbus;
     rc_ctrl.rc.channel[0] = (rx_data[0] | (rx_data[1] << 8)) & 0x07FF;        //!< Channel 0
     rc_ctrl.rc.channel[1] = ((rx_data[1] >> 3) | (rx_data[2] << 5)) & 0x07FF; //!< Channel 1
@@ -209,7 +191,8 @@ bool dbusUpdate(uint8_t * rx_data_part)
         !rc_ctrl.rc.button[0] || !rc_ctrl.rc.button[1]
     )
     {
-        // memset(&rc_ctrl, 0, sizeof(rc_ctrl));
+        memset(&rc_ctrl, 0, sizeof(rc_ctrl));
+        gDeviceMonitor.update_single_isr(gDeviceMonitor.device_dbus_, DeviceErrorList::kDataMismatch);
         return false;
     }
 
@@ -228,7 +211,7 @@ bool dbusUpdate(uint8_t * rx_data_part)
 
 HAL_StatusTypeDef transimitionCanTx(
     CAN_HandleTypeDef * hcan, uint32_t std_id,
-    uint16_t motor1, uint16_t motor2, uint16_t motor3, uint16_t motor4
+    int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
     )
 {
     static CAN_TxHeaderTypeDef tx_message;

@@ -40,9 +40,9 @@
 #define RC_CHANNEL_VALUE_ERROR      ((uint16_t)660)
 
 /** DMA cache length */
-#define LEGACY_CACHE_BYTE_LEN 32
-#define LEGACY_FRAME_BYTE_LEN 16
-#define DBUS_CACHE_BYTE_LEN 72
+#define LEGACY_CACHE_BYTE_LEN 64
+#define LEGACY_FRAME_BYTE_LEN 32
+#define DBUS_CACHE_BYTE_LEN 32
 #define DBUS_FRAME_BYTE_LEN 18
 
 // struct definition for custom 
@@ -68,10 +68,10 @@ typedef struct GCC_PACKED DbusData
 }DbusData;
 
 extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
-extern double *resultArray;
+extern double *gLegacyResultArray;
 extern uint8_t gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
 /** CAN id marco */
-extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** GM6020 id1 == id9 */
+extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** GM6020 id1 :=> id5 */
 
 
 void dmaProcessHandler(
@@ -86,7 +86,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 bool dbusUpdate(uint8_t * rx_data);
 HAL_StatusTypeDef transimitionCanTx(
     CAN_HandleTypeDef * hcan, uint32_t std_id,
-    uint16_t motor1, uint16_t motor2, uint16_t motor3, uint16_t motor4
+    int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
     );
 
 #ifdef __cplusplus

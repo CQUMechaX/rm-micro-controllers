@@ -26,8 +26,8 @@ void chassisTaskSimple(void * pvParameters)
         //chassis data update
         //底盘数据更新
         chassis_feedback_update(&chassis_move);
-        chassis_move.motor_chassis[0].speed_set = ISNAN_OR_ZERO(resultArray[0]);
-        chassis_move.motor_chassis[1].speed_set = ISNAN_OR_ZERO(resultArray[1]);
+        chassis_move.motor_chassis[0].speed_set = ISNAN_OR_ZERO(gLegacyResultArray[0]);
+        chassis_move.motor_chassis[1].speed_set = ISNAN_OR_ZERO(gLegacyResultArray[1]);
         //chassis control pid calculate
         //底盘控制PID计算
         for (int i = 0; i < 2; i++)

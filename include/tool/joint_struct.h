@@ -38,7 +38,7 @@ typedef struct JointData
     {
         int16_t angle, speed, current;
         int8_t temperature;
-    } feedback[2], target;
+    } feedback[5], target;
     bool halted, need_calibration, calibrated, calibration_reading;
     bool locked;
     double cmd_degree, cmd_position;
@@ -62,7 +62,7 @@ const JointCoeff g_joint_default[3] = {
     .pos2act = 0, .vel2act = 0, .effort2act = 52437.561519,
     .act2pos_offset = 0.0, .act2vel_offset = 0.0, .act2effort_offset = 0.0,
     .pid = {
-        {.kp = 10000, .ki = 0, .kd = 0.2, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
+        {.kp = 3, .ki = 0.01, .kd = 0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
     },
     .angle_limit = {0, 8191}, .speed_limit = {0}, .current_limit = {-16384, 16384}
     },{/** RM 2006 */
@@ -70,7 +70,7 @@ const JointCoeff g_joint_default[3] = {
     .pos2act = 0, .vel2act = 0, .effort2act = 5555.55555555,
     .act2pos_offset = 0.0, .act2vel_offset = 0.0, .act2effort_offset = 0.0,
     .pid = {
-        {.kp = 10000, .ki = 0, .kd = 0.2, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
+        {.kp = 3, .ki = 0.01, .kd = 0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
     },
     .angle_limit = {0, 8191}, .speed_limit = {0}, .current_limit = {-10000, 10000}
     },{/** RM 6020 */
@@ -78,7 +78,7 @@ const JointCoeff g_joint_default[3] = {
     .pos2act = 0, .vel2act = 0, .effort2act = 17004.0,
     .act2pos_offset = 0.0, .act2vel_offset = 0.0, .act2effort_offset = 0.0,
     .pid = {
-        {.kp = 10000, .ki = 0, .kd = 0.2, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
+        {.kp = 3, .ki = 0.01, .kd = 0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
     },
     .angle_limit = {0, 8191}, .speed_limit = {0}, .current_limit = {-30000, 30000}
     }

@@ -28,13 +28,19 @@ bool DeviceMonitor::update(void)
 
 bool DeviceMonitor::update_single_isr(DeviceStatus & device)
 {
+    return this->update_single_isr(device, (DeviceErrorList)0);
+}
+
+bool DeviceMonitor::update_single_isr(DeviceStatus & device, DeviceErrorList error)
+{
     device.tick = xTaskGetTickCountFromISR();
+    device.error = error;
     return true;
 }
 
 bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & joint)
 {
-    uint8_t at_location = this->can_cast_to_joint(hcan);
+    uint8_t at_location = this->can_cast_to_num(hcan);
     this->device_joint_[at_location].push_back(
         DeviceStatus{10, &joint}
         );
@@ -48,7 +54,7 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
 
 std::vector<DeviceStatus> & DeviceMonitor::get_register_list(CAN_HandleTypeDef & hcan)
 {
-    return this->device_joint_[this->can_cast_to_joint(hcan)];
+    return this->device_joint_[this->can_cast_to_num(hcan)];
 }
 
 bool DeviceMonitor::get_online(JointData & joint)
@@ -69,10 +75,6 @@ DeviceStatus & DeviceMonitor::device_dict_find(void * key)
     /** @todo error catch */
 }
 
-uint8_t DeviceMonitor::can_cast_to_joint(CAN_HandleTypeDef & hcan)
-{
-    return ( (&hcan == &HCAN1) ? 1 : ( (&hcan == &HCAN2) ? 2 : 0 ) );
-}
 
 bool DeviceMonitor::update_to_controller(void)
 {
@@ -82,9 +84,10 @@ bool DeviceMonitor::update_to_controller(void)
         {
             JointData *& joint = device.ptr.joint;
             memmove(&joint->feedback[1], &joint->feedback[0],
-                 sizeof(JointData::CtrlInfo));
+                 sizeof(JointData::CtrlInfo) * 4);
             memmove(&joint->feedback[0], &device.data.joint,
                  sizeof(JointData::CtrlInfo));
+            __NOP();
         }
     }
     return true;

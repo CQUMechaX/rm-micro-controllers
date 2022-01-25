@@ -3,4 +3,5 @@
 PersistParam gRosParam = {
     // .hcan_chassis = &hcan1,
     .hcan_gimbal = &hcan1,
+    .hcan_bullet = &hcan1,
 };

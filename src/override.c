@@ -1,11 +1,12 @@
 #include <errno.h>
 #include <sys/unistd.h> // STDOUT_FILENO, STDERR_FILENO
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "override.h"
 #include "usart.h"
-#include "cmsis_os2.h"
+#include <cmsis_os.h>
 
 
 #ifdef __GNUC__
@@ -70,3 +71,27 @@ void delay_us(uint16_t nus)
         }
     }
 }
+
+
+void freertosErrorHandler(const char *file, uint32_t line)
+{
+#ifndef __RELEASE_BUILD
+    taskENTER_CRITICAL();
+    while(true)
+    {
+        printf("Error on %s:%ld.", file, line);
+        osDelay(100);
+    }
+    taskEXIT_CRITICAL();
+#endif /* __RELEASE_BUILD */
+}
+
+#define TickType_t 
+#define C(x)    x
+#define D(x)    C x
+#include "FreeRTOSConfig.h"
+#if D(D(configTICK_RATE_HZ)) != 1000
+# error "configTICK_RATE_HZ != 1000 cause incorrect call of vTaskDelay(). Aborting."
+#endif
+#undef TickType_t
+/* https://stackoverflow.com/questions/19406246/remove-cast-from-constant-in-preprocessor */

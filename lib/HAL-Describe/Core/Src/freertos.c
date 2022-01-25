@@ -41,6 +41,7 @@
 #include <microros_transports.h> 
 #include "app/pingpong.h"
 #include "app/gimbal_control.h"
+#include "app/extra_control.h"
 #include "app/device_monitor.h"
 #include "dji/detect_task.h"
 #include "tool/pid_mcu.h"
@@ -71,7 +72,7 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 3000 * 4,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -189,12 +190,15 @@ void StartDefaultTask(void *argument)
   //osThreadNew(appMain, NULL, &attributes);
   //osDelay(500);
   attributes.name = "gimbal";
-  osThreadNew(gimbalControl, NULL, &attributes);
+  // osThreadNew(gimbalControl, NULL, &attributes);
   osDelay(100);
-  attributes.name = "monitor";
-  osThreadNew(deviceMonitor, NULL, &attributes);
+  attributes.name = "extra";
+  osThreadNew(extraControl, NULL, &attributes);
+  osDelay(100);
   attributes.name = "chassis";
   // osThreadNew(chassisControl, NULL, &attributes);
+  attributes.name = "monitor";
+  osThreadNew(deviceMonitor, NULL, &attributes);
   char ptrTaskList[500];
   vTaskList(ptrTaskList);
   printf("**********************************\n");

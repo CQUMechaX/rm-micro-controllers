@@ -18,6 +18,7 @@ HAL_StatusTypeDef startRedLED(void)
     return HAL_OK;
 }
 
+    // uint8_t help_me_g[4] = {5};//{15, 64, 128, 255};
 HAL_StatusTypeDef userCodeInit(void)
 {
     // buzzerStartUp();
@@ -30,25 +31,10 @@ HAL_StatusTypeDef userCodeInit(void)
         // transimitionDbusRx(0);
     }
     //HAL_UART_Receive_DMA(&HUART2, gDbusCacheArray[0], 16);
-    // initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
-    // initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
+    initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
+    initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
 #if defined(RM_DEV_A)
 #elif defined(RM_DEV_C)
 #endif /* RM_DEV_C */
-while(1)
-{
-    HAL_UART_Transmit(&HUART2, "a", 1, 1000);
-    HAL_Delay(100);
-}
     return HAL_OK;
 }
-
-#define TickType_t 
-#define C(x)    x
-#define D(x)    C x
-#include "FreeRTOSConfig.h"
-#if D(D(configTICK_RATE_HZ)) != 1000
-# error "configTICK_RATE_HZ != 1000 cause incorrect call of vTaskDelay(). Aborting."
-#endif
-#undef TickType_t
-/* https://stackoverflow.com/questions/19406246/remove-cast-from-constant-in-preprocessor */
