@@ -41,9 +41,6 @@ bool DeviceMonitor::update_single_isr(DeviceStatus & device, DeviceErrorList err
 bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & joint)
 {
     uint8_t at_location = this->can_cast_to_num(hcan);
-    this->device_joint_[at_location].push_back(
-        DeviceStatus{10, &joint}
-        );
 
     joint.head_feedback = gCanHeadFeedback[joint.id];
     joint.head_target = gCanHeadTarget[joint.id];
@@ -54,6 +51,10 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
             freertosErrorHandler(__FILE__, __LINE__);
         }
     }
+    this->device_joint_[at_location].push_back(
+        DeviceStatus{10, &joint}
+        );
+
 
     /** bad practice: probably lose the pointer */
     this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));

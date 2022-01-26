@@ -6,6 +6,7 @@
 
 #include "override.h"
 #include "usart.h"
+#include "tool/pwm.h"
 #include <cmsis_os.h>
 
 
@@ -80,7 +81,7 @@ void freertosErrorHandler(const char *file, uint32_t line)
     while(true)
     {
         printf("Error on %s:%ld.", file, line);
-        osDelay(100);
+        buzzerTrigger(100, 10);
     }
     taskEXIT_CRITICAL();
 #endif /* __RELEASE_BUILD */

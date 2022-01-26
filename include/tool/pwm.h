@@ -17,6 +17,7 @@
 
 extern const uint16_t toneFreq[CM_BUZZER_TF_SIZE];
 
+HAL_StatusTypeDef buzzerTrigger(uint16_t psc, uint16_t pwm);
 HAL_StatusTypeDef buzzerTone(void);
 
 #ifdef __cplusplus

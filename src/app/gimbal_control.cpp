@@ -23,7 +23,7 @@ void gimbalControl(void * pvParameters)
 bool GimbalControl::on_init(void)
 {
     this->hcan_ = gRosParam.hcan_gimbal;
-    this->joint_add(JointType::RM3508, 4);/** orbit */
+    this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid->ki_limit = 200;
     this->joint_add(JointType::RM6020, 5);/** yaw */
     this->joint_add(JointType::RM6020, 6);/** pitch */
@@ -34,7 +34,7 @@ bool GimbalControl::update(void)
 {
     this->joint_[0].target.current = 
         this->pid_speed(0, this->joint_[0], this->get_mean_speed(this->joint_[0]), 
-            1200 * [](uint8_t channel)->double{
+            1800 * [](uint8_t channel)->double{
                 return 1.0 * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] / RC_CHANNEL_VALUE_ERROR;
             }(0));
 
@@ -62,7 +62,7 @@ bool GimbalControl::update(void)
                 // this->pid_angle(0, this->joint_[i], this->joint_[i].feedback[0].angle, ?);
             this->joint_[i].target.current = 
                 this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), 
-                10 * [](uint8_t channel)->double{
+                100 * [](uint8_t channel)->double{
                     return 1.0 * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] / RC_CHANNEL_VALUE_ERROR;
                 }(i + 1));
         }
@@ -87,6 +87,7 @@ bool GimbalControl::update(void)
     //     {this->joint_[0].pid_calc->out = 0;}
     // this->pid_speed(0, &this->joint_[0], this->get_mean_speed(this->joint_[0]), _temp);
     // gGimbalTest = this->get_mean_speed(this->joint_[0]);
+    this->hcan_ = &hcan1; //???
     this->update_cmd_current();
     return true;
 }
