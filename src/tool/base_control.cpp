@@ -26,9 +26,13 @@ bool BaseControl::joint_clear(void)
     return true;
 }
 
-int16_t BaseControl::get_cmd_current(JointData * joint)
+int16_t BaseControl::get_cmd_current(uint8_t id)
 {
-    return ( joint ? joint->target.current : 0 );
+    JointData * joint = this->joint_id_ptr_[id];
+    return ( joint ? 
+        (gDeviceMonitor.set_target(*this->hcan_, *joint), joint->target.current) :
+        (gDeviceMonitor.get_target_current(*this->hcan_, id))
+        );
 }
 
 
@@ -37,12 +41,14 @@ bool BaseControl::update_cmd_current(void)
     for(uint8_t i = 0; i != 4; ++ i)
     {
         if(this->joint_target_cnt_[i])
+        {
             transimitionCanTx(this->hcan_, gCanHeadTarget[(i << 2) | 1],
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 1]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 2]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 3]),
-                this->get_cmd_current(joint_id_ptr_[(i << 2) | 4])
+                this->get_cmd_current((i << 2) | 1),
+                this->get_cmd_current((i << 2) | 2),
+                this->get_cmd_current((i << 2) | 3),
+                this->get_cmd_current((i << 2) | 4)
                 );
+        }
     }
     return true;
 }

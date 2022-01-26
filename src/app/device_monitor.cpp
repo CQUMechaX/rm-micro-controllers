@@ -44,11 +44,26 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
     this->device_joint_[at_location].push_back(
         DeviceStatus{10, &joint}
         );
-    /** bad practice: probably lose the pointer */
-    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));
 
     joint.head_feedback = gCanHeadFeedback[joint.id];
     joint.head_target = gCanHeadTarget[joint.id];
+    for(DeviceStatus & device_iter : this->device_joint_[at_location])
+    {
+        if(device_iter.ptr.joint->head_feedback == joint.head_feedback)
+        {
+            freertosErrorHandler(__FILE__, __LINE__);
+        }
+    }
+
+    /** bad practice: probably lose the pointer */
+    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));
+
+    return true;
+}
+
+bool DeviceMonitor::set_target(CAN_HandleTypeDef & hcan, JointData & joint)
+{
+    this->device_target_[this->can_cast_to_num(hcan)][joint.id] = joint.target;
     return true;
 }
 

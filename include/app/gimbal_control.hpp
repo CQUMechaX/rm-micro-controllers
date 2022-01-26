@@ -16,12 +16,12 @@ class GimbalControl : public BaseControl
 public:
     enum ControllerMode
     {
-        test
-    } mode;
+        test, zero_speed
+    } mode_;
     bool on_init(void);
     bool update(void);
-    double pid_speed(uint32_t tick, JointData * joint, double get, double set);
-    double pid_angle(uint32_t tick, JointData * joint, double get, double set);
+    double pid_speed(uint32_t tick, JointData & joint, double get, double set);
+    double pid_angle(uint32_t tick, JointData & joint, double get, double set);
 };
 
 extern GimbalControl gGimbal;

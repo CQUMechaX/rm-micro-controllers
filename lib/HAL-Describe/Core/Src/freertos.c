@@ -185,12 +185,12 @@ void StartDefaultTask(void *argument)
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
   attributes.name = "microROS_app";
-  attributes.stack_size = 5 * 3000;
+  attributes.stack_size = 1000;
   attributes.priority = (osPriority_t)osPriorityNormal;
   //osThreadNew(appMain, NULL, &attributes);
   //osDelay(500);
   attributes.name = "gimbal";
-  // osThreadNew(gimbalControl, NULL, &attributes);
+  osThreadNew(gimbalControl, NULL, &attributes);
   osDelay(100);
   attributes.name = "extra";
   osThreadNew(extraControl, NULL, &attributes);

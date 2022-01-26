@@ -14,6 +14,10 @@
 class ExtraControl : public BaseControl
 {
 public:
+    enum ControllerMode
+    {
+        on, off
+    }mode_;
     bool on_init(void);
     bool update(void);
     double pid_speed(uint32_t tick, JointData * joint, double get, double set);

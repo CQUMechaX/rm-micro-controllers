@@ -12,6 +12,7 @@
 #include "marco.hpp"
 
 #define __BASECONTROL_JOINT_NUM 6
+#define __BASECONTROL_ID_MAX_NUM 16
 
 class TaskControl
 {
@@ -29,14 +30,21 @@ protected:
     uint8_t joint_cnt_, /** a tot of joint_ */
         joint_target_cnt_[4] = {}; /** register to different cmd packet. @see gCanHeadTarget */
     JointData joint_[__BASECONTROL_JOINT_NUM];
-    JointData * joint_id_ptr_[17] = {};
+    JointData * joint_id_ptr_[__BASECONTROL_ID_MAX_NUM] = {};
+
     bool joint_add(JointType joint_type, uint8_t id);
     bool joint_clear(void);
-    int16_t get_cmd_current(JointData * joint);
+    int16_t get_cmd_current(uint8_t id);
+    bool update_cmd_current(void);
+
+    template<typename T> bool get_mode_change(T now_mode)
+    {
+        static T mode;
+        return ((mode != now_mode) ? (mode = now_mode, true) : false);
+    }
 public:
     CAN_HandleTypeDef * hcan_;
 
-    bool update_cmd_current(void);
 
     double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff);
     double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff, double get, double set);

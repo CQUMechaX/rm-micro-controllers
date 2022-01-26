@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 // definition
+#define __MONITOR_CAN_INTERFACE_MAX_NUM 2
 
 // variable
 
@@ -49,6 +50,9 @@ class DeviceMonitor : public TaskControl
 
     bool update_to_controller(void);
 
+    JointData::CtrlInfo device_target_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
+        [__BASECONTROL_ID_MAX_NUM + 1] = {};
+
     public:
     explicit DeviceMonitor() {
         for(auto & iter : this->device_joint_)
@@ -59,14 +63,16 @@ class DeviceMonitor : public TaskControl
     }
     ~DeviceMonitor() = default;
 
-    std::vector<DeviceStatus> device_joint_[3];
+    std::vector<DeviceStatus> device_joint_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1];
     DeviceStatus device_dbus_{}, device_imu_{};
 
     bool update(void);
+    /** static process of saving device feedback message's tick, with xTaskGetTickCountFromISR(). @param[in] device as a reference*/
     bool update_single_isr(DeviceStatus & device);
     bool update_single_isr(DeviceStatus & device, DeviceErrorList error);
 
     bool register_and_init(CAN_HandleTypeDef & hcan, JointData & joint);
+    bool set_target(CAN_HandleTypeDef & hcan, JointData & joint);
     std::vector<DeviceStatus> & get_register_list(CAN_HandleTypeDef & hcan);
     bool get_online(JointData & joint);
 
@@ -77,6 +83,10 @@ class DeviceMonitor : public TaskControl
     constexpr uint8_t can_cast_to_num(CAN_HandleTypeDef * hcan)
     {
         return ( (hcan == &HCAN1) ? 1 : ( (hcan == &HCAN2) ? 2 : 0 ) );
+    }
+    constexpr int16_t get_target_current(CAN_HandleTypeDef & hcan, uint8_t id)
+    {
+        return this->device_target_[this->can_cast_to_num(hcan)][id].current;
     }
     
 };
