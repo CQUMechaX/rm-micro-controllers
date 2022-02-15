@@ -230,6 +230,9 @@ HAL_StatusTypeDef transimitionCanTx(
     can_send_data[6] = motor4 >> 8;
     can_send_data[7] = motor4;
 
-    HAL_CAN_AddTxMessage(hcan, &tx_message, can_send_data, send_mail_box);
+    while(HAL_CAN_AddTxMessage(hcan, &tx_message, can_send_data, send_mail_box) == HAL_ERROR)
+    {
+        hcan->ErrorCode = 0;
+    }
     return HAL_OK;
 }

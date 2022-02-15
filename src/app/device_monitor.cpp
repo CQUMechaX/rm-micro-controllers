@@ -98,12 +98,19 @@ bool DeviceMonitor::update_to_controller(void)
     {
         for(DeviceStatus & device : list_iter)
         {
-            JointData *& joint = device.ptr.joint;
-            memmove(&joint->feedback[1], &joint->feedback[0],
-                 sizeof(JointData::CtrlInfo) * 4);
-            memmove(&joint->feedback[0], &device.data.joint,
-                 sizeof(JointData::CtrlInfo));
-            __NOP();
+            if((device.offline_time = xTaskGetTickCount() - device.tick) > 10)
+            {
+                device.online = false;
+            }
+            else
+            {
+                JointData *& joint = device.ptr.joint;
+                memmove(&joint->feedback[1], &joint->feedback[0],
+                    sizeof(JointData::CtrlInfo) * 4);
+                memmove(&joint->feedback[0], &device.data.joint,
+                    sizeof(JointData::CtrlInfo));
+                device.online = true;
+            }
         }
     }
     return true;
