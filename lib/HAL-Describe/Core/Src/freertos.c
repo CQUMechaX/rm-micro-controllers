@@ -193,7 +193,7 @@ void StartDefaultTask(void *argument)
   osThreadNew(gimbalControl, NULL, &attributes);
   osDelay(100);
   attributes.name = "extra";
-  // osThreadNew(extraControl, NULL, &attributes);
+  osThreadNew(extraControl, NULL, &attributes);
   osDelay(100);
   attributes.name = "chassis";
   // osThreadNew(chassisControl, NULL, &attributes);

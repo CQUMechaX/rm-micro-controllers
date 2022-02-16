@@ -51,13 +51,15 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
             freertosErrorHandler(__FILE__, __LINE__);
         }
     }
+
+    /** bad practice: probably lose the pointer.
+     *  @brief Refer to STL vector, end() point to the next to last element, which is
+     *  the element to be pushed back. 
+     */
+    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));
     this->device_joint_[at_location].push_back(
         DeviceStatus{10, &joint}
         );
-
-
-    /** bad practice: probably lose the pointer */
-    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));
 
     return true;
 }
@@ -98,7 +100,7 @@ bool DeviceMonitor::update_to_controller(void)
     {
         for(DeviceStatus & device : list_iter)
         {
-            if((device.offline_time = xTaskGetTickCount() - device.tick) > 10)
+            if((device.offline_time = xTaskGetTickCount() - device.tick) > 100)
             {
                 device.online = false;
             }

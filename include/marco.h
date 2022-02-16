@@ -36,4 +36,5 @@
 #define CONSTRAIN_ABS(val, max) (max ? ((val < max) ? ((val < -max) ? -max : val) : max) : val)
 #define CONSTRAIN_ARR(val, minmax) ((val < minmax[1]) ? ((val < minmax[0]) ? minmax[0] : val) : minmax[1])
 #define FORMAT_ANGLE(val, max) ((val < max) ? val : val - max )
+#define FORMAT_ANGLE_DELTA(val, range) ((fabs(val) > (range / 2)) ? (((val) > 0) ? -((range) - (val)) : -((val) - (range))) : (val))
 #define NORMAL_OR_ZERO(val) (isnormal(val) ? 1 : val == 0.0)
