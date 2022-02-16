@@ -26,13 +26,16 @@ bool GimbalControl::on_init(void)
     this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid[0].ki_limit = 200;
     this->joint_add(JointType::RM6020, 1);/** pitch H3600 - 4800 - 6000L */
+    this->joint_[1].coeff.pid[0].kp = 200;
+    this->joint_[1].coeff.pid[0].ki = 1;
+    this->joint_[1].coeff.pid[0].kd = 50;
     // this->joint_[1].coeff.pid[1].kp = 3.5;
-    this->joint_[1].coeff.pid[1].ki = 3e-3;
+    // this->joint_[1].coeff.pid[1].ki = 3e-3;
     this->joint_[1].coeff.current_limit[0] = -10000;
     this->joint_[1].coeff.current_limit[1] = 10000;
     this->joint_add(JointType::RM6020, 2);/** yaw L6000 - 7500 - 809(9000)R */
-    this->joint_[2].coeff.current_limit[0] = -10000;
-    this->joint_[2].coeff.current_limit[1] = 10000;
+    this->joint_[2].coeff.current_limit[0] = -14000;
+    this->joint_[2].coeff.current_limit[1] = 14000;
     // this->joint_[2].coeff.pid[1].kd = 0.05;
     // this->joint_[2].coeff.pid[1].ki = 1;
     // this->joint_[2].coeff.pid[1].ki = 0;
@@ -94,7 +97,9 @@ bool GimbalControl::update(void)
         {
             this->joint_[i].target.speed = 
                 this->pid_angle(0, this->joint_[i], this->joint_[i].feedback[0].angle, this->joint_[i].target.angle);
-            this->joint_[i].target.current = 
+            // this->joint_[i].target.speed = (fabs(this->joint_[i].target.speed - this->get_mean_speed(this->joint_[i])) > 3) ?
+                // this->joint_[i].target.speed : 0;
+            this->joint_[i].target.current = ((i == 1) ? -1.0 : 1.0) *
                 this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), this->joint_[i].target.speed);
             this->joint_[i].target.current = CONSTRAIN_ARR(this->joint_[i].target.current, this->joint_[i].coeff.current_limit);
         }

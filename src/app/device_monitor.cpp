@@ -20,9 +20,7 @@ void deviceMonitor(void * pvParameters)
 
 bool DeviceMonitor::update(void)
 {
-    taskENTER_CRITICAL();
     this->update_to_controller();
-    taskEXIT_CRITICAL();
     return true;
 }
 
@@ -100,17 +98,19 @@ bool DeviceMonitor::update_to_controller(void)
     {
         for(DeviceStatus & device : list_iter)
         {
-            if((device.offline_time = xTaskGetTickCount() - device.tick) > 100)
+            if((device.offline_time = xTaskGetTickCount() - device.tick) > 10)
             {
                 device.online = false;
             }
             else
             {
                 JointData *& joint = device.ptr.joint;
+                taskENTER_CRITICAL();
                 memmove(&joint->feedback[1], &joint->feedback[0],
                     sizeof(JointData::CtrlInfo) * 4);
                 memmove(&joint->feedback[0], &device.data.joint,
                     sizeof(JointData::CtrlInfo));
+                taskEXIT_CRITICAL();
                 device.online = true;
             }
         }

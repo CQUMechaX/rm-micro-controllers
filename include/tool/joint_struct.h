@@ -78,8 +78,8 @@ const JointCoeff g_joint_default[3] = {
     .pos2act = 0, .vel2act = 0, .effort2act = 17004.0,
     .act2pos_offset = 0.0, .act2vel_offset = 0.0, .act2effort_offset = 0.0,
     .pid = {
-        {.kp = 3, .ki = 0.0, .kd = 0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
-        {.kp = 5, .ki = 0.0, .kd = 0.0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
+        {.kp = 420, .ki = 1, .kd = 50, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
+        {.kp = 0.08, .ki = 0, .kd = 0, .frequency = 1000, .ki_limit = 0, .k_limit = 0},
     },
     .angle_limit = {0, 8191}, .speed_limit = {0}, .current_limit = {-30000, 30000}
     }
