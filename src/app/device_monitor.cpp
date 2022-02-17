@@ -1,7 +1,7 @@
 #include "app/device_monitor.hpp"
 #include "override.h"
 #include <cmsis_os2.h>
-#include <FreeRTOS.h>
+#include <freertos_os2.h>
 #include <task.h>
 #include <utility>
 #include <cstring>

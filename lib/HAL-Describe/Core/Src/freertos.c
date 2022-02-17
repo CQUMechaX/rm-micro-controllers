@@ -42,6 +42,7 @@
 #include "app/pingpong.h"
 #include "app/gimbal_control.h"
 #include "app/extra_control.h"
+#include "app/echo_control.h"
 #include "app/device_monitor.h"
 #include "dji/detect_task.h"
 #include "tool/pid_mcu.h"
@@ -191,12 +192,16 @@ void StartDefaultTask(void *argument)
   //osDelay(500);
   attributes.name = "gimbal";
   osThreadNew(gimbalControl, NULL, &attributes);
-  osDelay(100);
+  osDelay(10);
   attributes.name = "extra";
   osThreadNew(extraControl, NULL, &attributes);
-  osDelay(100);
+  osDelay(10);
   attributes.name = "chassis";
   // osThreadNew(chassisControl, NULL, &attributes);
+  osDelay(10);
+  attributes.name = "echo";
+  osThreadNew(echoControl, NULL, &attributes);
+  osDelay(10);
   attributes.name = "monitor";
   osThreadNew(deviceMonitor, NULL, &attributes);
   char ptrTaskList[500];

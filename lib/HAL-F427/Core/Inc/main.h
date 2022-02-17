@@ -100,6 +100,18 @@ void Error_Handler(void);
 #define SNYCHOR_1_GPIO_Port GPIOB
 #define SNYCHOR_2_Pin GPIO_PIN_15
 #define SNYCHOR_2_GPIO_Port GPIOB
+#define CS1_ACCEL_Pin GPIO_PIN_4
+#define CS1_ACCEL_GPIO_Port GPIOA
+#define INT1_ACCEL_Pin GPIO_PIN_4
+#define INT1_ACCEL_GPIO_Port GPIOC
+#define INT1_GYRO_Pin GPIO_PIN_5
+#define INT1_GYRO_GPIO_Port GPIOC
+#define CS1_GYRO_Pin GPIO_PIN_0
+#define CS1_GYRO_GPIO_Port GPIOB
+#define RST_CMPS_Pin GPIO_PIN_6
+#define RST_CMPS_GPIO_Port GPIOG
+#define HEAT_Pin GPIO_PIN_6
+#define HEAT_GPIO_Port GPIOF
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
