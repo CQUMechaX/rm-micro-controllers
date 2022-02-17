@@ -154,6 +154,7 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
 {
     for(DeviceStatus & joint_device : device_list)
     {
+        gLegacyCacheArray[0][0] = std_id;
         // JointData *& joint = *iter_joint_device.ptr.joint;
         if(joint_device.ptr.joint->head_feedback == std_id)
         {

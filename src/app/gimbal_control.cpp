@@ -25,10 +25,10 @@ bool GimbalControl::on_init(void)
     this->hcan_ = gRosParam.hcan_gimbal;
     this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid[0].ki_limit = 200;
-    this->joint_add(JointType::RM6020, 1);/** pitch H3600 - 4800 - 6000L */
-    this->joint_[1].coeff.pid[0].kp = 200;
+    this->joint_add(JointType::RM6020, 5);/** pitch H3600 - 4800 - 6000L */
+    this->joint_[1].coeff.pid[0].kp = 100;
     this->joint_[1].coeff.pid[0].ki = 1;
-    this->joint_[1].coeff.pid[0].kd = 50;
+    this->joint_[1].coeff.pid[0].kd = 0;
     // this->joint_[1].coeff.pid[1].kp = 3.5;
     // this->joint_[1].coeff.pid[1].ki = 3e-3;
     this->joint_[1].coeff.current_limit[0] = -10000;

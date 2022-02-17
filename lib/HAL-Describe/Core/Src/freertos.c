@@ -183,6 +183,7 @@ void StartDefaultTask(void *argument)
     printf("Error on default allocators (line %d)\n", __LINE__);
   }
 
+  osDelay(1000);
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
   // attributes.name = "microROS_app";
