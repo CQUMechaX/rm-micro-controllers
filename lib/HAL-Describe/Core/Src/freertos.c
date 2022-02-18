@@ -183,7 +183,7 @@ void StartDefaultTask(void *argument)
     printf("Error on default allocators (line %d)\n", __LINE__);
   }
 
-  osDelay(1000);
+  osDelay(100);
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
   // attributes.name = "microROS_app";
@@ -193,18 +193,15 @@ void StartDefaultTask(void *argument)
   //osDelay(500);
   attributes.name = "gimbal";
   osThreadNew(gimbalControl, NULL, &attributes);
-  osDelay(10);
   attributes.name = "extra";
   osThreadNew(extraControl, NULL, &attributes);
-  osDelay(10);
   attributes.name = "chassis";
   // osThreadNew(chassisControl, NULL, &attributes);
-  osDelay(10);
   attributes.name = "echo";
   osThreadNew(echoControl, NULL, &attributes);
-  osDelay(10);
   attributes.name = "monitor";
   osThreadNew(deviceMonitor, NULL, &attributes);
+
   char ptrTaskList[500];
   vTaskList(ptrTaskList);
   printf("**********************************\n");
@@ -216,7 +213,7 @@ void StartDefaultTask(void *argument)
   //TaskHandle_t xHandle;
   //xHandle = xTaskGetHandle("microROS_app");
 
-  HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET); // off
+  //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET); // on
   while (1) 
   {
     osDelay(200);

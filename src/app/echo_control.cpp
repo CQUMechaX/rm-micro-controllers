@@ -16,13 +16,15 @@ void echoControl(void * pvParameters)
             {
                 if(!device.online)
                 {
-                    buzzerTrigger(10, 100);
+                    buzzerTrigger(10, 50);
                     osDelay(200);
                     HAL_TIM_PWM_Stop(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
                     for(int i = 1; i <= device.ptr.joint->id; i ++)
                     {
+                        buzzerTrigger(20, 70);
                         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET);
                         osDelay(100);
+                        HAL_TIM_PWM_Stop(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
                         HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
                         osDelay(200);
                     }

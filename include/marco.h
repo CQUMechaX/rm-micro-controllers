@@ -33,7 +33,7 @@
 #define RAD_FORMAT(ang) CONSTRAIN_ABS(ang, PI)
 #define float_constrain(val, min, max) ((val < max) ? ((val < min) ? min : val) : max)
 #define CONSTRAIN(val, min, max) ((val < max) ? ((val < min) ? min : val) : max)
-#define CONSTRAIN_ABS(val, max) (max ? ((val < max) ? ((val < -max) ? -max : val) : max) : val)
+#define CONSTRAIN_ABS(val, max) ((max) ? (((val) < max) ? (((val) < -(max)) ? -(max) : (val)) : (max)) : (val))
 #define CONSTRAIN_ARR(val, minmax) ((val < minmax[1]) ? ((val < minmax[0]) ? minmax[0] : val) : minmax[1])
 #define FORMAT_ANGLE(val, max) ((val < max) ? val : val - max )
 #define FORMAT_ANGLE_DELTA(val, range) ((fabs(val) > (range / 2)) ? (((val) > 0) ? -((range) - (val)) : -((val) - (range))) : (val))

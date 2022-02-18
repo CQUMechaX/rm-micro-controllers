@@ -108,11 +108,11 @@ HAL_StatusTypeDef transimitionCanStart(void)
     HAL_CAN_Start(&HCAN1);
     HAL_CAN_ActivateNotification(&HCAN1, CAN_IT_RX_FIFO0_MSG_PENDING);
 
-    can_filter_st.SlaveStartFilterBank = 14;
+    /*can_filter_st.SlaveStartFilterBank = 14;
     can_filter_st.FilterBank = 14;
     HAL_CAN_ConfigFilter(&HCAN2, &can_filter_st);
     HAL_CAN_Start(&HCAN2);
-    HAL_CAN_ActivateNotification(&HCAN2, CAN_IT_RX_FIFO0_MSG_PENDING);
+    HAL_CAN_ActivateNotification(&HCAN2, CAN_IT_RX_FIFO0_MSG_PENDING);*/
 
     return HAL_OK;
 }
@@ -154,7 +154,6 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
 {
     for(DeviceStatus & joint_device : device_list)
     {
-        gLegacyCacheArray[0][0] = std_id;
         // JointData *& joint = *iter_joint_device.ptr.joint;
         if(joint_device.ptr.joint->head_feedback == std_id)
         {
@@ -163,6 +162,7 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
             ref.speed = (static_cast<uint16_t>(rx_data[2]) << 8 | rx_data[3]);
             ref.current = (static_cast<uint16_t>(rx_data[4]) << 8 | rx_data[5]);
             ref.temperature = rx_data[6];
+
             gDeviceMonitor.update_single_isr(joint_device);
             return true;
         }

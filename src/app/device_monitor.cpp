@@ -98,7 +98,7 @@ bool DeviceMonitor::update_to_controller(void)
     {
         for(DeviceStatus & device : list_iter)
         {
-            if((device.offline_time = xTaskGetTickCount() - device.tick) > 10)
+            if((device.offline_time = xTaskGetTickCount() - device.tick) > 30)
             {
                 device.online = false;
             }

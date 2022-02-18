@@ -18,7 +18,9 @@ HAL_StatusTypeDef startRedLED(void)
     return HAL_OK;
 }
 
-    // uint8_t help_me_g[4] = {5};//{15, 64, 128, 255};
+/** @return HAL_StatusTypeDef::HAL_OK
+ * This function should be called before any task, to initilize CAN communication.
+ */
 HAL_StatusTypeDef userCodeInit(void)
 {
     // buzzerStartUp();

@@ -77,13 +77,16 @@ void delay_us(uint16_t nus)
 void freertosErrorHandler(const char *file, uint32_t line)
 {
 #ifndef __RELEASE_BUILD
-    taskENTER_CRITICAL();
+    UBaseType_t uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
+    vTaskSuspendAll();
     while(true)
     {
         printf("Error on %s:%ld.", file, line);
-        buzzerTrigger(100, 10);
+        buzzerTrigger(30, 150);
+        HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
     }
-    taskEXIT_CRITICAL();
+    vTaskResumeAll();
+    taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
 #endif /* __RELEASE_BUILD */
 }
 

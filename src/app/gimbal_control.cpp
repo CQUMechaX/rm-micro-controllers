@@ -25,15 +25,20 @@ bool GimbalControl::on_init(void)
     this->hcan_ = gRosParam.hcan_gimbal;
     this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid[0].ki_limit = 200;
-    this->joint_add(JointType::RM6020, 5);/** pitch H3600 - 4800 - 6000L */
-    this->joint_[1].coeff.pid[0].kp = 100;
-    this->joint_[1].coeff.pid[0].ki = 1;
+    this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
+    this->joint_[1].coeff.pid[0].kp = 140;
+    this->joint_[1].coeff.pid[0].ki = 5e-2;
     this->joint_[1].coeff.pid[0].kd = 0;
+    this->joint_[1].coeff.pid[1].kp = 0.04;
+    this->joint_[1].coeff.pid[1].ki = 1.5e-5;
     // this->joint_[1].coeff.pid[1].kp = 3.5;
     // this->joint_[1].coeff.pid[1].ki = 3e-3;
-    this->joint_[1].coeff.current_limit[0] = -10000;
-    this->joint_[1].coeff.current_limit[1] = 10000;
-    this->joint_add(JointType::RM6020, 2);/** yaw L6000 - 7500 - 809(9000)R */
+    this->joint_[1].coeff.current_limit[0] = -14000;
+    this->joint_[1].coeff.current_limit[1] = 14000;
+    this->joint_add(JointType::RM6020, 1);/** yaw L6000 - 7500 - 809(9000)R */
+    this->joint_[2].coeff.pid[0].kp = 240;
+    this->joint_[2].coeff.pid[0].ki = 5;
+    this->joint_[2].coeff.pid[0].kd = 1;
     this->joint_[2].coeff.current_limit[0] = -14000;
     this->joint_[2].coeff.current_limit[1] = 14000;
     // this->joint_[2].coeff.pid[1].kd = 0.05;
@@ -44,7 +49,7 @@ bool GimbalControl::on_init(void)
 
 bool GimbalControl::update(void)
 {
-    static int16_t angle_list[3][3] = {{0, 0}, {2000, 1200}, {7500, 1500}};
+    static int16_t angle_list[3][3] = {{0, 0}, {5000, 1200}, {7500, 1500}};
     this->joint_[0].target.current = 
         this->pid_speed(0, this->joint_[0], this->get_mean_speed(this->joint_[0]), 
             2700 * [](uint8_t channel)->double{
@@ -79,6 +84,10 @@ bool GimbalControl::update(void)
     {
         if(!gDeviceMonitor.get_online(this->joint_[i]) || mode_changed)
         {
+            if(i == 1)
+            {
+                this->joint_[1].target.speed = 0;
+            }
             this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
             this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
         }
@@ -99,7 +108,7 @@ bool GimbalControl::update(void)
                 this->pid_angle(0, this->joint_[i], this->joint_[i].feedback[0].angle, this->joint_[i].target.angle);
             // this->joint_[i].target.speed = (fabs(this->joint_[i].target.speed - this->get_mean_speed(this->joint_[i])) > 3) ?
                 // this->joint_[i].target.speed : 0;
-            this->joint_[i].target.current = ((i == 1) ? -1.0 : 1.0) *
+            this->joint_[i].target.current = 
                 this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), this->joint_[i].target.speed);
             this->joint_[i].target.current = CONSTRAIN_ARR(this->joint_[i].target.current, this->joint_[i].coeff.current_limit);
         }
@@ -131,12 +140,7 @@ double GimbalControl::pid_angle(uint32_t tick, JointData & joint, double get, do
     PidInfo * pid = &joint.pid_calc[1];
     pid->feed = get;
     pid->cmd = set;
-    // pid->error[2] = pid->error[1];
-    // pid->error[1] = pid->error[0];
-    // pid->error[0] = set - get;
-    // return this->pid_delta(tick, pid, coeff);
     pid->error[1] = pid->error[0];
-    // pid->error[0] = RAD_FORMAT(set - get);
     pid->error[0] = FORMAT_ANGLE_DELTA(set - get, joint.coeff.angle_limit[1]);
     return this->pid_target(tick, pid, coeff);
 } 
