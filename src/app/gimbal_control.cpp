@@ -26,11 +26,11 @@ bool GimbalControl::on_init(void)
     this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid[0].ki_limit = 200;
     this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
-    this->joint_[1].coeff.pid[0].kp = 140;
-    this->joint_[1].coeff.pid[0].ki = 5e-2;
+    this->joint_[1].coeff.pid[0].kp = 90;
+    this->joint_[1].coeff.pid[0].ki = 8e-1;
     this->joint_[1].coeff.pid[0].kd = 0;
-    this->joint_[1].coeff.pid[1].kp = 0.04;
-    this->joint_[1].coeff.pid[1].ki = 1.5e-5;
+    this->joint_[1].coeff.pid[1].kp = 0.10;
+    this->joint_[1].coeff.pid[1].ki = 2.5e-5;
     // this->joint_[1].coeff.pid[1].kp = 3.5;
     // this->joint_[1].coeff.pid[1].ki = 3e-3;
     this->joint_[1].coeff.current_limit[0] = -14000;
@@ -86,7 +86,8 @@ bool GimbalControl::update(void)
         {
             if(i == 1)
             {
-                this->joint_[1].target.speed = 0;
+                // this->joint_[1].target.speed = 0;
+                // this->joint_[i].pid_calc[0].p_out = 0;
             }
             this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
             this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
