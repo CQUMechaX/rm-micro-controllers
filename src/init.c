@@ -33,8 +33,8 @@ HAL_StatusTypeDef userCodeInit(void)
         // transimitionDbusRx(0);
     }
     //HAL_UART_Receive_DMA(&HUART2, gDbusCacheArray[0], 16);
-    initDmaCache(HUART2, HDMA2_RX, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
-    initDmaCache(HUART_DBUS, HDMA_DBUS_RX, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
+    initDmaCache(&HUART2, gLegacyCacheArray[0], gLegacyCacheArray[1], LEGACY_CACHE_BYTE_LEN);
+    initDmaCache(&HUART_DBUS, gDbusCacheArray[0], gDbusCacheArray[1], DBUS_CACHE_BYTE_LEN);
 #if defined(RM_DEV_A)
 #elif defined(RM_DEV_C)
 #endif /* RM_DEV_C */

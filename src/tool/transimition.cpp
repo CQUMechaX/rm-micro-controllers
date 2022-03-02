@@ -24,68 +24,70 @@ gCanHeadFeedback[17] = {
     0x209, 0x20A, 0x20B, 0x000, 0x000, 0x000, 0x000, 0
 };
 
+static bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data);
+static bool dbusUpdate(uint8_t * rx_data);
 
-
-//串口中断
 void dmaProcessHandler(
-    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t cache_byte_len,
+    UART_HandleTypeDef * huart, uint8_t buffer_byte_len,
     uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     )
 {
-    if(uart.Instance->SR & UART_FLAG_RXNE)//接收到数据
+    DMA_HandleTypeDef * & hdmarx = huart->hdmarx;
     {
-        __HAL_UART_CLEAR_FLAG(&uart, UART_FLAG_RXNE);
+        __HAL_UART_CLEAR_PEFLAG(huart);
 
-        // __HAL_UART_CLEAR_PEFLAG(&uart);
-    }
-    else if(uart.Instance->SR & UART_FLAG_IDLE)
-    {
-        __HAL_UART_CLEAR_PEFLAG(&uart);
-
-        __HAL_DMA_DISABLE(&rx_dma); // disable DMA
+        __HAL_DMA_DISABLE(hdmarx); // disable DMA
         static uint16_t this_time_rx_len = 0;
-        this_time_rx_len = cache_byte_len - rx_dma.Instance->NDTR; // get receive data length, length = set_data_length - remain_length
-        rx_dma.Instance->NDTR = cache_byte_len; // reset set_data_length
-        if(rx_dma.Instance->CR & DMA_SxCR_CT)
+        this_time_rx_len = buffer_byte_len - hdmarx->Instance->NDTR; // get receive data length, length = set_data_length - remain_length
+        hdmarx->Instance->NDTR = buffer_byte_len; // reset set_data_length
+        if(hdmarx->Instance->CR & DMA_SxCR_CT)
         {// used is 1, changed to 0
-            rx_dma.Instance->CR ^= DMA_SxCR_CT;
-            __HAL_DMA_ENABLE(&rx_dma); // enable DMA
+            hdmarx->Instance->CR ^= DMA_SxCR_CT;
+            __HAL_DMA_ENABLE(hdmarx); // enable DMA
             ((this_time_rx_len == frame_byte_len) ? callback_function(1) : HAL_ERROR);
         }
         else
         {// used is 0, changed to 1 (== RESET)
-            rx_dma.Instance->CR |= DMA_SxCR_CT;
-            __HAL_DMA_ENABLE(&rx_dma); // enable DMA
+            hdmarx->Instance->CR |= DMA_SxCR_CT;
+            __HAL_DMA_ENABLE(hdmarx); // enable DMA
             ((this_time_rx_len == frame_byte_len) ? callback_function(0) : HAL_ERROR);
         }
+        ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);/** Enable idle interrupt. */
+        huart->ReceptionType = HAL_UART_RECEPTION_TOIDLE;/** Like HAL_UARTEx_ReceiveToIdle_DMA,
+            but omit its M0AR and error handler configs in UART_Start_Receive_DMA.*/
+    
     }
 }
 
 
-void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
+bool initDmaCache(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t buffer_byte_len)
 {
-    //enable the DMA transfer for the receiver request
-    SET_BIT(huart.Instance->CR3, USART_CR3_DMAR);
-    //enalbe idle interrupt
-    __HAL_UART_ENABLE_IT(&huart, UART_IT_IDLE);
+    DMA_HandleTypeDef * & hdmarx = huart->hdmarx;
+
     //disable DMA
-    //__HAL_DMA_DISABLE(&hdma);
-    while(hdma.Instance->CR & DMA_SxCR_EN)
+    while(hdmarx->Instance->CR & DMA_SxCR_EN)
     {
-        __HAL_DMA_DISABLE(&hdma);
+        __HAL_DMA_DISABLE(hdmarx);
     }
 
-    //memory buffer
-    hdma.Instance->PAR = (uint32_t) & (huart.Instance->DR);
-    hdma.Instance->M0AR = (uint32_t)(rx1_buf);
-    hdma.Instance->M1AR = (uint32_t)(rx2_buf);
-    //data length
-    hdma.Instance->NDTR = dma_buf_num;
-
     //enable double memory buffer
-    SET_BIT(hdma.Instance->CR, DMA_SxCR_DBM);
-    //enable DMA
-    __HAL_DMA_ENABLE(&hdma);
+    SET_BIT(hdmarx->Instance->CR, DMA_SxCR_DBM);
+    //memory buffer
+    hdmarx->Instance->PAR = reinterpret_cast<uint32_t>( & (huart->Instance->DR));
+    hdmarx->Instance->M0AR = reinterpret_cast<uint32_t>(rx1_buf);
+    hdmarx->Instance->M1AR = reinterpret_cast<uint32_t>(rx2_buf);
+    //data length
+    hdmarx->Instance->NDTR = buffer_byte_len;
+    
+    __HAL_UART_CLEAR_IDLEFLAG(huart);
+    __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
+    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);/** Enable idle interrupt. */
+    //__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);/** Enable idle interrupt. */
+    huart->ReceptionType = HAL_UART_RECEPTION_TOIDLE;/** Like HAL_UARTEx_ReceiveToIdle_DMA,
+        but omit its M0AR and error handler configs in UART_Start_Receive_DMA.*/
+    
+    SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);/** Enable the DMA transfer for the receiver request */
+    __HAL_DMA_ENABLE(hdmarx);/** Enable DMA */
 }
 
 /** This function enables HCAN1 & HCAN2's function with filter and notification.
@@ -128,11 +130,6 @@ HAL_StatusTypeDef transimitionDbusRx(bool section)
     return dbusUpdate(gDbusCacheArray[section]) ? HAL_OK : HAL_ERROR;
 }
 
-/**
-  * @brief          hal库CAN回调函数,接收电机数据
-  * @param[in]      hcan:CAN句柄指针
-  * @retval         none
-  */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RxHeaderTypeDef rx_header;
@@ -150,7 +147,19 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     return;
 }
 
-bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data)
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t Size)
+{
+    if(huart == &HUART_LEGACY)
+    {
+        dmaProcessHandler(huart, LEGACY_CACHE_BYTE_LEN, LEGACY_FRAME_BYTE_LEN, transimitionLegacyRx);
+    }
+    else if(huart == &HUART_DBUS)
+    {
+        dmaProcessHandler(huart, DBUS_CACHE_BYTE_LEN, DBUS_FRAME_BYTE_LEN, transimitionDbusRx);
+    }
+}
+
+static bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data)
 {
     for(DeviceStatus & joint_device : device_list)
     {
@@ -170,7 +179,7 @@ bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8
     return false;
 }
 
-bool dbusUpdate(uint8_t * rx_data)
+static bool dbusUpdate(uint8_t * rx_data)
 {
     DbusData & rc_ctrl = gDeviceMonitor.device_dbus_.data.dbus;
     rc_ctrl.rc.channel[0] = (rx_data[0] | (rx_data[1] << 8)) & 0x07FF;        //!< Channel 0

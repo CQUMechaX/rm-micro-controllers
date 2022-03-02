@@ -67,23 +67,45 @@ typedef struct GCC_PACKED DbusData
     } key;
 }DbusData;
 
-extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
+extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN],
+    gAcmCacheArray[LEGACY_CACHE_BYTE_LEN];
 extern double *gLegacyResultArray;
-extern uint8_t gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
-/** CAN id marco */
-extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** GM6020 id1 :=> id5 */
+
+extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** CAN StdId marco for RM motor, GM6020 id1 :=> id5 */
 
 
+/** @brief Requested by USARTx_IRQHandler in CubeMX-Generated code stm32fxxx_it.c
+ * @file transimition.cpp
+ * 
+ */
 void dmaProcessHandler(
-    UART_HandleTypeDef uart, DMA_HandleTypeDef rx_dma, uint8_t cache_byte_len,
+    UART_HandleTypeDef * huart, uint8_t buffer_byte_len,
     uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     );
-void initDmaCache(UART_HandleTypeDef huart, DMA_HandleTypeDef hdma, uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num);
+bool initDmaCache(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t bufer_byte_len);
 HAL_StatusTypeDef transimitionLegacyRx(bool section);
 HAL_StatusTypeDef transimitionDbusRx(bool section);
 HAL_StatusTypeDef transimitionCanStart(void);
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
-bool dbusUpdate(uint8_t * rx_data);
+
+/** @brief Implement of __weak function in stm32f4xx_hal_can.c:
+ */
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef * hcan);
+/* @brief Implement of __weak function in stm32f4xx_hal_uart.c:2618,
+ *  HAL_UART_IRQHandler -> UART_Receive_IT -> Transfer completed callbacks.
+ * @param  huart  Pointer to a UART_HandleTypeDef structure that contains
+ *                the configuration information for the specified UART module.
+ * @retval None
+ *
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);*/
+/** @brief Implement of __weak function in stm32f4xx_hal_uart.c:2709,
+ *   Reception Event Callback (Rx event notification called after use of advanced reception service).
+ * @param  huart UART handle
+ * @param  Size  Number of data available in application reception buffer (indicates a position in
+ *               reception buffer until which, data are available)
+ * @retval None
+ */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t Size);
+
 HAL_StatusTypeDef transimitionCanTx(
     CAN_HandleTypeDef * hcan, uint32_t std_id,
     int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
