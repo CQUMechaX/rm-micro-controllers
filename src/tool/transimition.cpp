@@ -10,8 +10,8 @@
 #include "app/microros_param.h"
 #include "tool/transimition.hpp"
 
-uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], acmCacheArray[LEGACY_CACHE_BYTE_LEN];
-uint8_t gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
+uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN],
+    gAcmCacheArray[LEGACY_CACHE_BYTE_LEN];
 static double gSafeArray[2];
 double *gLegacyResultArray = gSafeArray;
 
@@ -27,40 +27,38 @@ gCanHeadFeedback[17] = {
 static bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data);
 static bool dbusUpdate(uint8_t * rx_data);
 
-void dmaProcessHandler(
-    UART_HandleTypeDef * huart, uint8_t buffer_byte_len,
-    uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
+HAL_StatusTypeDef transimitionIdleHandler(
+    UART_HandleTypeDef * huart, uint16_t rx_byte_len, uint16_t buffer_byte_len,
+    uint16_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     )
 {
     DMA_HandleTypeDef * & hdmarx = huart->hdmarx;
-    {
-        __HAL_UART_CLEAR_PEFLAG(huart);
+    HAL_StatusTypeDef ret_val;
 
-        __HAL_DMA_DISABLE(hdmarx); // disable DMA
-        static uint16_t this_time_rx_len = 0;
-        this_time_rx_len = buffer_byte_len - hdmarx->Instance->NDTR; // get receive data length, length = set_data_length - remain_length
-        hdmarx->Instance->NDTR = buffer_byte_len; // reset set_data_length
-        if(hdmarx->Instance->CR & DMA_SxCR_CT)
-        {// used is 1, changed to 0
-            hdmarx->Instance->CR ^= DMA_SxCR_CT;
-            __HAL_DMA_ENABLE(hdmarx); // enable DMA
-            ((this_time_rx_len == frame_byte_len) ? callback_function(1) : HAL_ERROR);
-        }
-        else
-        {// used is 0, changed to 1 (== RESET)
-            hdmarx->Instance->CR |= DMA_SxCR_CT;
-            __HAL_DMA_ENABLE(hdmarx); // enable DMA
-            ((this_time_rx_len == frame_byte_len) ? callback_function(0) : HAL_ERROR);
-        }
-        ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);/** Enable idle interrupt. */
-        huart->ReceptionType = HAL_UART_RECEPTION_TOIDLE;/** Like HAL_UARTEx_ReceiveToIdle_DMA,
-            but omit its M0AR and error handler configs in UART_Start_Receive_DMA.*/
-    
+    //__HAL_DMA_DISABLE(hdmarx); // disable DMA in UARTEx_RxEventCallback
+    hdmarx->Instance->NDTR = buffer_byte_len; /** Reset buffer_data_length before DMA_ENABLE */
+
+    if(hdmarx->Instance->CR & DMA_SxCR_CT)
+    {// used is 1, changed to 0
+        hdmarx->Instance->CR ^= DMA_SxCR_CT;
+        __HAL_DMA_ENABLE(hdmarx); // enable DMA
+        ret_val = ((rx_byte_len ^ frame_byte_len) ? HAL_ERROR : callback_function(1));
     }
+    else
+    {// used is 0, changed to 1 (== RESET)
+        hdmarx->Instance->CR |= DMA_SxCR_CT;
+        __HAL_DMA_ENABLE(hdmarx); // enable DMA
+        ret_val = ((rx_byte_len ^ frame_byte_len) ? HAL_ERROR : callback_function(0));
+    }
+
+    __HAL_UART_CLEAR_IDLEFLAG(huart);
+    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);/** Enable idle interrupt. */
+    huart->ReceptionType = HAL_UART_RECEPTION_TOIDLE;/** Wait for next IDLE event or full buffer.*/
+    return ret_val;
 }
 
 
-bool initDmaCache(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t buffer_byte_len)
+bool transimitionDmaInit(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t buffer_byte_len)
 {
     DMA_HandleTypeDef * & hdmarx = huart->hdmarx;
 
@@ -82,7 +80,7 @@ bool initDmaCache(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_b
     __HAL_UART_CLEAR_IDLEFLAG(huart);
     __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
     ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);/** Enable idle interrupt. */
-    //__HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);/** Enable idle interrupt. */
+    huart->RxXferSize = buffer_byte_len;
     huart->ReceptionType = HAL_UART_RECEPTION_TOIDLE;/** Like HAL_UARTEx_ReceiveToIdle_DMA,
         but omit its M0AR and error handler configs in UART_Start_Receive_DMA.*/
     
@@ -128,35 +126,6 @@ HAL_StatusTypeDef transimitionLegacyRx(bool section)
 HAL_StatusTypeDef transimitionDbusRx(bool section)
 {
     return dbusUpdate(gDbusCacheArray[section]) ? HAL_OK : HAL_ERROR;
-}
-
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
-    CAN_RxHeaderTypeDef rx_header;
-    uint8_t rx_data[8], can_num;
-
-    HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
-    if((can_num = gDeviceMonitor.can_cast_to_num(hcan)))
-    {
-        jointUpdate(gDeviceMonitor.device_joint_[can_num], rx_header.StdId, rx_data);
-    }
-    else
-    {
-        freertosErrorHandler(__FILE__, __LINE__);
-    }
-    return;
-}
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t Size)
-{
-    if(huart == &HUART_LEGACY)
-    {
-        dmaProcessHandler(huart, LEGACY_CACHE_BYTE_LEN, LEGACY_FRAME_BYTE_LEN, transimitionLegacyRx);
-    }
-    else if(huart == &HUART_DBUS)
-    {
-        dmaProcessHandler(huart, DBUS_CACHE_BYTE_LEN, DBUS_FRAME_BYTE_LEN, transimitionDbusRx);
-    }
 }
 
 static bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data)
@@ -245,4 +214,35 @@ HAL_StatusTypeDef transimitionCanTx(
         hcan->ErrorCode = 0;
     }
     return HAL_OK;
+}
+
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+    CAN_RxHeaderTypeDef rx_header;
+    uint8_t rx_data[8], can_num;
+
+    HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx_header, rx_data);
+    if((can_num = gDeviceMonitor.can_cast_to_num(hcan)))
+    {
+        jointUpdate(gDeviceMonitor.device_joint_[can_num], rx_header.StdId, rx_data);
+    }
+    else
+    {
+        freertosErrorHandler(__FILE__, __LINE__);
+    }
+    return;
+}
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t size)
+{
+    __HAL_DMA_DISABLE(huart->hdmarx); // disable DMA
+    if(huart == &HUART_LEGACY)
+    {
+        transimitionIdleHandler(huart, size, LEGACY_CACHE_BYTE_LEN, LEGACY_FRAME_BYTE_LEN, transimitionLegacyRx);
+    }
+    else if(huart == &HUART_DBUS)
+    {
+        transimitionIdleHandler(huart, size, DBUS_CACHE_BYTE_LEN, DBUS_FRAME_BYTE_LEN, transimitionDbusRx);
+    }
 }

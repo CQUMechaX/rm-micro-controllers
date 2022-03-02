@@ -74,29 +74,35 @@ extern double *gLegacyResultArray;
 extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** CAN StdId marco for RM motor, GM6020 id1 :=> id5 */
 
 
-/** @brief Requested by USARTx_IRQHandler in CubeMX-Generated code stm32fxxx_it.c
+/** @brief Requested by HAL_UARTEx_RxEventCallback
  * @file transimition.cpp
- * 
+ * @see HAL_UARTEx_RxEventCallback
  */
-void dmaProcessHandler(
-    UART_HandleTypeDef * huart, uint8_t buffer_byte_len,
-    uint8_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
+HAL_StatusTypeDef transimitionIdleHandler(
+    UART_HandleTypeDef * huart, uint16_t rx_byte_len, uint16_t buffer_byte_len,
+    uint16_t frame_byte_len, HAL_StatusTypeDef( * callback_function)(bool)
     );
-bool initDmaCache(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t bufer_byte_len);
+/** @brief Requested by userCodeInit. Enable dual dma channel by setting DMA_SxCR_DBM, etc. Enable HAL_UART_RECEPTION_TOIDLE. IT only idle.
+ * @note HAL_UART_RECEPTION_TOIDLE(huart->ReceptionType) is toggled by HAL_UARTEx_ReceiveToIdlexxx(), and in STM32 hal library's 
+ *       UART_IRQ_Handler, this reception type will be recognized to catch IDLE_IT and call HAL_UARTEx_RxEventCallback(), instead of
+ *       HAL_UART_RxCpltCallback() called by RXNE_IT. Before function call, IDLE_IT might be disabled for next HAL_UARTEx_ReceiveToIdlexxx().
+ *       Hence, transimitionDmaInit implements necessary function in UART_Start_Receive_DMA() from ReceiveToIdle_DMA.
+ * @file transimition.cpp
+ * @see init.c
+ */
+bool transimitionDmaInit(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t bufer_byte_len);
 HAL_StatusTypeDef transimitionLegacyRx(bool section);
 HAL_StatusTypeDef transimitionDbusRx(bool section);
 HAL_StatusTypeDef transimitionCanStart(void);
 
+HAL_StatusTypeDef transimitionCanTx(
+    CAN_HandleTypeDef * hcan, uint32_t std_id,
+    int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
+    );
+
 /** @brief Implement of __weak function in stm32f4xx_hal_can.c:
  */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef * hcan);
-/* @brief Implement of __weak function in stm32f4xx_hal_uart.c:2618,
- *  HAL_UART_IRQHandler -> UART_Receive_IT -> Transfer completed callbacks.
- * @param  huart  Pointer to a UART_HandleTypeDef structure that contains
- *                the configuration information for the specified UART module.
- * @retval None
- *
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);*/
 /** @brief Implement of __weak function in stm32f4xx_hal_uart.c:2709,
  *   Reception Event Callback (Rx event notification called after use of advanced reception service).
  * @param  huart UART handle
@@ -105,11 +111,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);*/
  * @retval None
  */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t Size);
-
-HAL_StatusTypeDef transimitionCanTx(
-    CAN_HandleTypeDef * hcan, uint32_t std_id,
-    int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4
-    );
 
 #ifdef __cplusplus
  }
