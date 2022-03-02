@@ -1,5 +1,5 @@
 #include <uxr/client/transport.h>
-#include <cmsis_os2.h>
+#include <cmsis_os.h>
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_dma.h"

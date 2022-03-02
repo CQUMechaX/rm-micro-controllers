@@ -1,5 +1,5 @@
 #include <allocators.h>
-#include <cmsis_os2.h>
+#include <cmsis_os.h>
 #include <freertos_os2.h>
 
 int absoluteUsedMemory = 0;

@@ -85,7 +85,7 @@ void freertosErrorHandler(const char *file, uint32_t line)
         buzzerTrigger(30, 150);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
     }
-    vTaskResumeAll();
+    xTaskResumeAll();
     taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
 #endif /* __RELEASE_BUILD */
 }

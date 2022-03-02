@@ -1,7 +1,7 @@
 #include "bmi088_middleware.h"
 #include "main.h"
 #include "override.h"
-#include <cmsis_os2.h>
+#include <cmsis_os.h>
 // #include "bsp_delay.h"
 
 void bmi088_GPIO_init(void)

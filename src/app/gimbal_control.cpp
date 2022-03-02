@@ -1,4 +1,4 @@
-#include <cmsis_os2.h>
+#include <cmsis_os.h>
 #include "marco.hpp"
 #include "app/gimbal_control.hpp"
 #include "app/device_monitor.hpp"

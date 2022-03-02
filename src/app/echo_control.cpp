@@ -1,6 +1,5 @@
 #include "app/echo_control.h"
-#include <cmsis_os2.h>
-#include <freertos_os2.h>
+#include <cmsis_os.h>
 #include "app/device_monitor.hpp"
 #include "tool/pwm.h"
 #include "main.h"

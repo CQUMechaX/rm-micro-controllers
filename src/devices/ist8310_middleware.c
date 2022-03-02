@@ -1,12 +1,12 @@
 /**
   ****************************(C) COPYRIGHT 2016 DJI****************************
   * @file       IST8310middleware.c/h
-  * @brief      IST8310´ÅÁ¦¼ÆÖÐ¼ä²ã£¬Íê³ÉIST8310µÄIICÍ¨ÐÅ,ÒòÎªÉèÖÃMPU6500µÄSPIÍ¨ÐÅ
-  *             ËùÒÔÉèÖÃµÄÊÇÍ¨¹ýmpu6500µÄIIC_SLV0Íê³É¶ÁÈ¡£¬IIC_SLV4Íê³ÉÐ´Èë¡£
-  * @note       IST8310Ö»Ö§³ÖIIC¶ÁÈ¡
+  * @brief      IST8310ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ã£¬ï¿½ï¿½ï¿½IST8310ï¿½ï¿½IICÍ¨ï¿½ï¿½,ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½MPU6500ï¿½ï¿½SPIÍ¨ï¿½ï¿½
+  *             ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Í¨ï¿½ï¿½mpu6500ï¿½ï¿½IIC_SLV0ï¿½ï¿½É¶ï¿½È¡ï¿½ï¿½IIC_SLV4ï¿½ï¿½ï¿½Ð´ï¿½ë¡£
+  * @note       IST8310Ö»Ö§ï¿½ï¿½IICï¿½ï¿½È¡
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0     Dec-26-2018     RM              1. Íê³É
+  *  V1.0.0     Dec-26-2018     RM              1. ï¿½ï¿½ï¿½
   *
   @verbatim
   ==============================================================================
@@ -18,7 +18,7 @@
 
 #include "ist8310_middleware.h"
 #include "main.h"
-#include <cmsis_os2.h>
+#include <cmsis_os.h>
 #include "override.h"
 // #include "bsp_delay.h"
 
