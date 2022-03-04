@@ -15,6 +15,7 @@ void gimbalControl(void * pvParameters)
     {
         if(true);
         gGimbal.update();
+        MotorsControl::update_can_current();
         osDelay(gGimbal.tick_ms_);
     }
     return;

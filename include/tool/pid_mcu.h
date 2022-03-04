@@ -19,7 +19,7 @@
 
 // struct
 /** kp, ki, kd, frequency, ki_limit, k_limit
- * @see class BaseControl
+ * @see class MotorsControl
  */
 typedef struct PidCoeff
 {
@@ -28,7 +28,7 @@ typedef struct PidCoeff
     double ki_limit, k_limit; /** 0 means no limit, used with @see CONSTRAIN_ABS */
 } PidCoeff;
 /** feed, cmd, error[3], tick[3], p_out, i_out, d_out, out
- * @see class BaseControl
+ * @see class MotorsControl
  */
 typedef struct PidInfo
 {

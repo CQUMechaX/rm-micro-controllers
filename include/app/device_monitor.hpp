@@ -4,10 +4,11 @@
 
 // include
 #include "device_monitor.h"
-#include "tool/base_control.hpp"
+#include "tool/task_control.hpp"
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
+#include "marco.hpp"
 
 // definition
 #define __MONITOR_CAN_INTERFACE_MAX_NUM 2
@@ -50,9 +51,6 @@ class DeviceMonitor : public TaskControl
 
     bool update_to_controller(void);
 
-    JointData::CtrlInfo device_target_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
-        [__BASECONTROL_ID_MAX_NUM + 1] = {};
-
     public:
     explicit DeviceMonitor() {
         for(auto & iter : this->device_joint_)
@@ -72,7 +70,6 @@ class DeviceMonitor : public TaskControl
     bool update_single_isr(DeviceStatus & device, DeviceErrorList error);
 
     bool register_and_init(CAN_HandleTypeDef & hcan, JointData & joint);
-    bool set_target(CAN_HandleTypeDef & hcan, JointData & joint);
     std::vector<DeviceStatus> & get_register_list(CAN_HandleTypeDef & hcan);
     bool get_online(JointData & joint);
 
@@ -84,9 +81,9 @@ class DeviceMonitor : public TaskControl
     {
         return ( (hcan == &HCAN1) ? 1 : ( (hcan == &HCAN2) ? 2 : 0 ) );
     }
-    constexpr int16_t get_target_current(CAN_HandleTypeDef & hcan, uint8_t id)
+    constexpr CAN_HandleTypeDef & num_cast_to_can(uint8_t num)
     {
-        return this->device_target_[this->can_cast_to_num(hcan)][id].current;
+        return ( (num == 1) ? HCAN1 : ( (num == 2) ? HCAN2 : HCAN1 ) );
     }
     
 };

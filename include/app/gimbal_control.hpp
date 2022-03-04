@@ -11,7 +11,7 @@
 // variable
 
 // function and class
-class GimbalControl : public BaseControl
+class GimbalControl : public MotorsControl
 {
 public:
     enum ControllerMode

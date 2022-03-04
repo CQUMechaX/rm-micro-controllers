@@ -1,4 +1,5 @@
 #include "app/device_monitor.hpp"
+#include "tool/base_control.hpp"
 #include "override.h"
 #include <cmsis_os.h>
 #include <utility>
@@ -60,12 +61,6 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
     return true;
 }
 
-bool DeviceMonitor::set_target(CAN_HandleTypeDef & hcan, JointData & joint)
-{
-    this->device_target_[this->can_cast_to_num(hcan)][joint.id] = joint.target;
-    return true;
-}
-
 std::vector<DeviceStatus> & DeviceMonitor::get_register_list(CAN_HandleTypeDef & hcan)
 {
     return this->device_joint_[this->can_cast_to_num(hcan)];
@@ -96,13 +91,14 @@ bool DeviceMonitor::update_to_controller(void)
     {
         for(DeviceStatus & device : list_iter)
         {
+            bool device_online_before = device.online;
+            JointData * & joint = device.ptr.joint;
             if((device.offline_time = xTaskGetTickCount() - device.tick) > 30)
             {
                 device.online = false;
             }
             else
             {
-                JointData *& joint = device.ptr.joint;
                 taskENTER_CRITICAL();
                 memmove(&joint->feedback[1], &joint->feedback[0],
                     sizeof(JointData::CtrlInfo) * 4);
@@ -110,6 +106,10 @@ bool DeviceMonitor::update_to_controller(void)
                     sizeof(JointData::CtrlInfo));
                 taskEXIT_CRITICAL();
                 device.online = true;
+            }
+            if(device_online_before != device.online)
+            {
+                MotorsControl::update_online(joint->can_num, joint->id, device.online ? 1 : -1);
             }
         }
     }

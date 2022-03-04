@@ -11,7 +11,7 @@
 // variable
 
 // function and class
-class ChassisControl : public BaseControl
+class ChassisControl : public MotorsControl
 {
 public:
     enum ControllerMode

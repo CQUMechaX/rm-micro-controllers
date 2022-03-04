@@ -31,7 +31,7 @@ typedef struct JointData
     // std::string type;
     // rclcpp::Time stamp;
     JointCoeff coeff;
-    uint8_t id;
+    uint8_t can_num, id;
     uint32_t head_target, head_feedback;
     PidInfo pid_calc[2];
     struct CtrlInfo
