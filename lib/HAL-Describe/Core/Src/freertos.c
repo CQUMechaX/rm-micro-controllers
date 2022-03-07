@@ -40,8 +40,7 @@
 
 #include <microros_transports.h> 
 #include "app/pingpong.h"
-#include "app/gimbal_control.h"
-#include "app/extra_control.h"
+#include "app/motor_control.h"
 #include "app/echo_control.h"
 #include "app/device_monitor.h"
 #include "dji/detect_task.h"
@@ -186,17 +185,13 @@ void StartDefaultTask(void *argument)
   osDelay(100);
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
-  // attributes.name = "microROS_app";
   attributes.stack_size = 5000;
   attributes.priority = (osPriority_t)osPriorityNormal;
-  //osThreadNew(appMain, NULL, &attributes);
+  attributes.name = "microROS_app";
+  osThreadNew(appMain, NULL, &attributes);
   //osDelay(500);
-  attributes.name = "gimbal";
-  osThreadNew(gimbalControl, NULL, &attributes);
-  attributes.name = "extra";
-  osThreadNew(extraControl, NULL, &attributes);
-  attributes.name = "chassis";
-  // osThreadNew(chassisControl, NULL, &attributes);
+  attributes.name = "motor";
+  osThreadNew(motorControl, NULL, &attributes);
   attributes.name = "echo";
   osThreadNew(echoControl, NULL, &attributes);
   attributes.name = "monitor";

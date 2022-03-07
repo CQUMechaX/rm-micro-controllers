@@ -6,18 +6,6 @@
 
 ExtraControl gBulletMotor;
 
-void extraControl(void * pvParameters)
-{
-    gBulletMotor.on_init();
-    while(true)
-    {
-        if(true);
-        gBulletMotor.update();
-        osDelay(gBulletMotor.tick_ms_);
-    }
-    return;
-}
-
 bool ExtraControl::on_init(void)
 {
     this->hcan_ = gRosParam.hcan_bullet;
@@ -50,25 +38,13 @@ bool ExtraControl::update(void)
             this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
             this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
         }
-        this->pid_speed(0, &this->joint_[i], this->get_mean_speed(this->joint_[i]), 
+        this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), 
             (this->mode_ == ControllerMode::on) ? temp[i] : 0);
     }
     // this->joint_[0].target.current *= 2;
     // this->joint_[1].target.current = -this->joint_[1].target.current / 10;
     // this->joint_[2].target.current = this->joint_[2].target.current / 10;
-    this->update_cmd_current();
+    this->update_target();
     // transimitionCanTx(&HCAN1, 0x200, 0, -10, -50, 50);
     return true;
 }
-
-double ExtraControl::pid_speed(uint32_t tick, JointData * joint, double get, double set)
-{
-    PidCoeff coeff = joint->coeff.pid[0];
-    PidInfo * pid = &joint->pid_calc[0];
-    pid->feed = get;
-    pid->cmd = set;
-    pid->error[2] = pid->error[1];
-    pid->error[1] = pid->error[0];
-    pid->error[0] = set - get;
-    return joint->target.current = static_cast<int16_t>(this->pid_delta(tick, pid, coeff));
-} 

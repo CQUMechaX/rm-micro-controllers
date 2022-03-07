@@ -1,3 +1,9 @@
+/** @file task_control.hpp
+ * @dir tool
+ * implement class TaskControl, with time management.
+ * @author Tiger3018
+ * @date 2022-03-04
+ */
 #pragma once
 
 #include "marco.hpp"

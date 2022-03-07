@@ -7,29 +7,13 @@
 GimbalControl gGimbal;
 double gGimbalTest;
 
-void gimbalControl(void * pvParameters)
-{
-    gGimbal.on_init();
-    // osDelay(100);
-    while(true)
-    {
-        if(true);
-        gGimbal.update();
-        MotorsControl::update_can_current();
-        osDelay(gGimbal.tick_ms_);
-    }
-    return;
-}
-
 bool GimbalControl::on_init(void)
 {
-    this->hcan_ = gRosParam.hcan_gimbal;
+    this->hcan_ = gRosParam.gimbal.hcan;
     this->joint_add(JointType::RM3508, 1);/** orbit */
     this->joint_[0].coeff.pid[0].ki_limit = 200;
     this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
-    this->joint_[1].coeff.pid[0].kp = 90;
-    this->joint_[1].coeff.pid[0].ki = 8e-1;
-    this->joint_[1].coeff.pid[0].kd = 0;
+    this->joint_[1].coeff.pid[0] = {.kp = 90, .ki = 8e-1, .kd = 0};
     this->joint_[1].coeff.pid[1].kp = 0.10;
     this->joint_[1].coeff.pid[1].ki = 2.5e-5;
     // this->joint_[1].coeff.pid[1].kp = 3.5;
@@ -51,11 +35,13 @@ bool GimbalControl::on_init(void)
 bool GimbalControl::update(void)
 {
     static int16_t angle_list[3][3] = {{0, 0}, {5000, 1200}, {7500, 1500}};
+    /*
     this->joint_[0].target.current = 
         this->pid_speed(0, this->joint_[0], this->get_mean_speed(this->joint_[0]), 
             2700 * [](uint8_t channel)->double{
                 return 1.0 * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] / RC_CHANNEL_VALUE_ERROR;
             }(0));
+    */
 
     /** NO DATA or ATTI(1)*/
     if((gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 3)||
@@ -120,29 +106,6 @@ bool GimbalControl::update(void)
         }
     }
     this->hcan_ = &hcan1; //???
-    this->update_cmd_current();
+    this->update_target();
     return true;
 }
-
-double GimbalControl::pid_speed(uint32_t tick, JointData & joint, double get, double set)
-{
-    PidCoeff coeff = joint.coeff.pid[0];
-    PidInfo * pid = &joint.pid_calc[0];
-    pid->feed = get;
-    pid->cmd = set;
-    pid->error[2] = pid->error[1];
-    pid->error[1] = pid->error[0];
-    pid->error[0] = set - get;
-   return this->pid_delta(tick, pid, coeff);
-} 
-
-double GimbalControl::pid_angle(uint32_t tick, JointData & joint, double get, double set)
-{
-    PidCoeff coeff = joint.coeff.pid[1];
-    PidInfo * pid = &joint.pid_calc[1];
-    pid->feed = get;
-    pid->cmd = set;
-    pid->error[1] = pid->error[0];
-    pid->error[0] = FORMAT_ANGLE_DELTA(set - get, joint.coeff.angle_limit[1]);
-    return this->pid_target(tick, pid, coeff);
-} 

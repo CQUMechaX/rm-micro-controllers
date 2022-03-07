@@ -1,5 +1,5 @@
 #include "app/device_monitor.hpp"
-#include "tool/base_control.hpp"
+#include "tool/part_control.hpp"
 #include "override.h"
 #include <cmsis_os.h>
 #include <utility>
@@ -37,15 +37,15 @@ bool DeviceMonitor::update_single_isr(DeviceStatus & device, DeviceErrorList err
 
 bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & joint)
 {
-    uint8_t at_location = this->can_cast_to_num(hcan);
+    uint8_t can_location = this->can_cast_to_num(hcan);
 
     joint.head_feedback = gCanHeadFeedback[joint.id];
     joint.head_target = gCanHeadTarget[joint.id];
-    for(DeviceStatus & device_iter : this->device_joint_[at_location])
+    for(DeviceStatus & device_iter : this->device_joint_[can_location])
     {
         if(device_iter.ptr.joint->head_feedback == joint.head_feedback)
         {
-            freertosErrorHandler(__FILE__, __LINE__);
+            freertosErrorHandler(__FILE__, __LINE__); /** Same feedback StdId in one CAN location */
         }
     }
 
@@ -53,8 +53,8 @@ bool DeviceMonitor::register_and_init(CAN_HandleTypeDef & hcan, JointData & join
      *  @brief Refer to STL vector, end() point to the next to last element, which is
      *  the element to be pushed back. 
      */
-    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[at_location].end()));
-    this->device_joint_[at_location].push_back(
+    this->device_dict_add(static_cast<void*>(&joint), &*(this->device_joint_[can_location].end()));
+    this->device_joint_[can_location].push_back(
         DeviceStatus{10, &joint}
         );
 
@@ -109,7 +109,7 @@ bool DeviceMonitor::update_to_controller(void)
             }
             if(device_online_before != device.online)
             {
-                MotorsControl::update_online(joint->can_num, joint->id, device.online ? 1 : -1);
+                PartControl::update_online(joint->can_num, joint->id, device.online ? 1 : -1);
             }
         }
     }
