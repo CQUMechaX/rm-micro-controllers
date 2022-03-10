@@ -48,5 +48,23 @@ PersistParam gRosParam = {
         }}
     },
     .hcan_gimbal = &hcan1,
+    .gimbal = {
+        .hcan = &HCAN1,
+        .can_id = 1,
+        .joint = {{
+            .id = 3, /** pitch id = 3 feedback_id = 7 */
+            .type = RM6020,
+            .coeff = g_joint_default[RM6020],
+            .coeff.pid[0] = { .kp = 90, .ki = 8e-1, .kd = 0 },
+            .coeff.pid[1] = { .kp = 0.1, .ki = 2.5e-5, .kd = 0 },
+            .coeff.current_limit = {-14000, 14000},
+        },{
+            .id = 1, /** yaw id = 1 feedback_id = 5 */
+            .type = RM6020,
+            .coeff = g_joint_default[RM6020],
+            .coeff.pid[0] = { .kp = 240, .ki = 5, .kd = 0 },
+            .coeff.current_limit = {-14000, 14000},
+        }}
+    },
     .hcan_bullet = &hcan1,
 };

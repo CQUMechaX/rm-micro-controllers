@@ -109,7 +109,7 @@ bool DeviceMonitor::update_to_controller(void)
             }
             if(device_online_before != device.online)
             {
-                PartControl::update_online(joint->can_num, joint->id, device.online ? 1 : -1);
+                PartControl::set_online_cnt(joint->can_num, joint->id, device.online ? 1 : -1);
             }
         }
     }

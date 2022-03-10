@@ -1,111 +1,100 @@
-#include <cmsis_os.h>
-#include "marco.hpp"
 #include "app/gimbal_control.hpp"
+
+#include <cmsis_os.h>
+
 #include "app/device_monitor.hpp"
 #include "app/microros_param.h"
+#include "marco.hpp"
 
 GimbalControl gGimbal;
 double gGimbalTest;
 
 bool GimbalControl::on_init(void)
 {
-    this->hcan_ = gRosParam.gimbal.hcan;
-    this->joint_add(JointType::RM3508, 1);/** orbit */
-    this->joint_[0].coeff.pid[0].ki_limit = 200;
-    this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
-    this->joint_[1].coeff.pid[0] = {.kp = 90, .ki = 8e-1, .kd = 0};
-    this->joint_[1].coeff.pid[1].kp = 0.10;
-    this->joint_[1].coeff.pid[1].ki = 2.5e-5;
-    // this->joint_[1].coeff.pid[1].kp = 3.5;
-    // this->joint_[1].coeff.pid[1].ki = 3e-3;
-    this->joint_[1].coeff.current_limit[0] = -14000;
-    this->joint_[1].coeff.current_limit[1] = 14000;
-    this->joint_add(JointType::RM6020, 1);/** yaw L6000 - 7500 - 809(9000)R */
-    this->joint_[2].coeff.pid[0].kp = 240;
-    this->joint_[2].coeff.pid[0].ki = 5;
-    this->joint_[2].coeff.pid[0].kd = 1;
-    this->joint_[2].coeff.current_limit[0] = -14000;
-    this->joint_[2].coeff.current_limit[1] = 14000;
-    // this->joint_[2].coeff.pid[1].kd = 0.05;
-    // this->joint_[2].coeff.pid[1].ki = 1;
-    // this->joint_[2].coeff.pid[1].ki = 0;
-    return true;
+  this->hcan_ = gRosParam.gimbal.hcan;
+  pitch_sub_ = this->joint_add(
+    gRosParam.gimbal.joint[0].type, gRosParam.gimbal.joint[0].id,
+    const_cast<const JointCoeff &>(gRosParam.gimbal.joint[0].coeff));
+  angle_calibration_[pitch_sub_][0] = 5000;
+  angle_calibration_[pitch_sub_][1] = 1200;
+  yaw_sub_ = this->joint_add(
+    gRosParam.gimbal.joint[1].type, gRosParam.gimbal.joint[1].id,
+    const_cast<const JointCoeff &>(gRosParam.gimbal.joint[1].coeff));
+  angle_calibration_[yaw_sub_][0] = 7500;
+  angle_calibration_[yaw_sub_][1] = 1500;
+  // this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
+  // this->joint_add(JointType::RM6020, 1);/** yaw L6000 - 7500 - 809(9000)R */
+  return true;
 }
 
 bool GimbalControl::update(void)
 {
-    static int16_t angle_list[3][3] = {{0, 0}, {5000, 1200}, {7500, 1500}};
-    /*
-    this->joint_[0].target.current = 
-        this->pid_speed(0, this->joint_[0], this->get_mean_speed(this->joint_[0]), 
-            2700 * [](uint8_t channel)->double{
-                return 1.0 * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] / RC_CHANNEL_VALUE_ERROR;
-            }(0));
-    */
+  JointData &joint_pitch = joint_[pitch_sub_], &joint_yaw = joint_[yaw_sub_];
+  get_command();
 
-    /** NO DATA or ATTI(1)*/
-    if((gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 3)||
-        (gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 0))
-    {
-        this->mode_ = test;
+  bool mode_changed = get_mode_change(this->mode_);
+  if (mode_changed) {
+    if (ControllerMode::zero_speed) {
+      angle_calibration_[1][2] = this->joint_[1].feedback[0].angle;
+      angle_calibration_[2][2] = this->joint_[2].feedback[0].angle;
     }
-    else
-    {
-        this->mode_ = zero_speed;
-    }
+  }
 
-    /** OFF */
-    if(gDeviceMonitor.device_dbus_.data.dbus.rc.button[1] == 1)
-    {
-        angle_list[1][0] = this->joint_[1].feedback[0].angle;
-        angle_list[2][0] = this->joint_[2].feedback[0].angle;
-    }
+  /** OFF */
+  if (gDeviceMonitor.device_dbus_.data.dbus.rc.button[1] == 1) {
+    angle_calibration_[1][0] = this->joint_[1].feedback[0].angle;
+    angle_calibration_[2][0] = this->joint_[2].feedback[0].angle;
+  }
 
-    bool mode_changed = this->get_mode_change(this->mode_);
-    if(mode_changed && this->mode_ == ControllerMode::zero_speed)
-    {
-        angle_list[1][2] = this->joint_[1].feedback[0].angle;
-        angle_list[2][2] = this->joint_[2].feedback[0].angle;
+  for (uint8_t i = 0; i != this->joint_cnt_; ++i) {
+    if (!gDeviceMonitor.get_online(this->joint_[i]) || mode_changed) {
+      if (i == 1) {
+        // this->joint_[1].target.speed = 0;
+        // this->joint_[i].pid_calc[0].p_out = 0;
+      }
+      this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
+      this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
     }
-    for(uint8_t i = 1; i != this->joint_cnt_ ; ++ i)
-    {
-        if(!gDeviceMonitor.get_online(this->joint_[i]) || mode_changed)
-        {
-            if(i == 1)
-            {
-                // this->joint_[1].target.speed = 0;
-                // this->joint_[i].pid_calc[0].p_out = 0;
-            }
-            this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
-            this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
-        }
-        if(this->mode_ == ControllerMode::test)
-        {
-            this->joint_[i].target.angle = 
-                /*FORMAT_ANGLE*/(angle_list[i][0] + angle_list[i][1] * [](uint8_t channel)->double{
-                    return 1.0 * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] / RC_CHANNEL_VALUE_ERROR;
-                }((i==1)?(3):(2)))/*, this->joint_[i].coeff.angle_limit[0])*/;
-        }
-        else
-        {
-            this->joint_[i].target.angle = angle_list[i][2];
-        }
-        if(gDeviceMonitor.get_online(this->joint_[i]) && ! (gDeviceMonitor.device_dbus_.data.dbus.rc.button[1] == 1))
-        {
-            this->joint_[i].target.speed = 
-                this->pid_angle(0, this->joint_[i], this->joint_[i].feedback[0].angle, this->joint_[i].target.angle);
-            // this->joint_[i].target.speed = (fabs(this->joint_[i].target.speed - this->get_mean_speed(this->joint_[i])) > 3) ?
-                // this->joint_[i].target.speed : 0;
-            this->joint_[i].target.current = 
-                this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), this->joint_[i].target.speed);
-            this->joint_[i].target.current = CONSTRAIN_ARR(this->joint_[i].target.current, this->joint_[i].coeff.current_limit);
-        }
-        else
-        {
-            this->joint_[i].target.current = 0;
-        }
+    if (this->mode_ == ControllerMode::test) {
+    } else {
+      this->joint_[i].target.angle = angle_calibration_[i][2];
     }
-    this->hcan_ = &hcan1; //???
-    this->update_target();
-    return true;
+    if (
+      gDeviceMonitor.get_online(this->joint_[i]) &&
+      !(gDeviceMonitor.device_dbus_.data.dbus.rc.button[1] == 1)) {
+      this->joint_[i].target.speed = this->pid_angle(
+        0, this->joint_[i], this->joint_[i].feedback[0].angle, this->joint_[i].target.angle);
+      this->joint_[i].target.current = this->pid_speed(
+        0, this->joint_[i], this->get_mean_speed(this->joint_[i]), this->joint_[i].target.speed);
+      this->joint_[i].target.current =
+        CONSTRAIN_ARR(this->joint_[i].target.current, this->joint_[i].coeff.current_limit);
+    } else {
+      this->joint_[i].target.current = 0;
+    }
+  }
+  this->hcan_ = &hcan1;  //???
+  this->update_target();
+  return true;
+}
+
+bool GimbalControl::get_command(void)
+{
+  // Get mode change.
+  /** NO DATA or ATTI(1)*/
+  if (
+    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 3) ||
+    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 0)) {
+    this->mode_ = test;
+  } else {
+    this->mode_ = zero_speed;
+  }
+
+  // Get control command.
+  joint_[pitch_sub_].target.angle =
+    angle_calibration_[pitch_sub_][0] +
+    command_default(2, angle_calibration_[pitch_sub_][1], 0, 0, 0, 0);
+  joint_[yaw_sub_].target.angle = angle_calibration_[yaw_sub_][0] +
+                                  command_default(3, angle_calibration_[yaw_sub_][1], 0, 0, 0, 0);
+
+  return true;
 }

@@ -1,0 +1,19 @@
+# forked from https://github.com/ament/ament_lint/blob/14178abebbdb90edfbb680e2b4636d5d613ec4de/ament_clang_format/ament_clang_format/configuration/.clang-format
+---
+Language: Cpp
+BasedOnStyle: Google
+
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+BreakBeforeBraces: Custom
+ColumnLimit: 100
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 2
+DerivePointerAlignment: false
+PointerAlignment: Middle
+ReflowComments: false

@@ -72,7 +72,7 @@ protected:
 public:
     CAN_HandleTypeDef * hcan_;
 
-    static void update_online(uint8_t can_num, uint8_t id, uint8_t cnt_change);
+    static void set_online_cnt(uint8_t can_num, uint8_t id, uint8_t cnt_change);
     static bool set_can_current(void);
 
     constexpr double get_mean_speed(JointData j)

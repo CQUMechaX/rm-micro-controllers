@@ -38,7 +38,7 @@ uint8_t PartControl::joint_add(JointType joint_type, uint8_t id, const JointCoef
     gDeviceMonitor.register_and_init(*this->hcan_, this->joint_[this->joint_cnt_]);
     
     this->joint_cmd_group_cnt_[id >> 2] ++;
-    update_online(can_cast_to_num(this->hcan_), id, 1);
+    set_online_cnt(can_cast_to_num(this->hcan_), id, 1);
     
     return this->joint_cnt_ ++;
 }
@@ -87,7 +87,7 @@ bool PartControl::set_can_current(void)
     return true;
 }
 
-void PartControl::update_online(uint8_t can_num, uint8_t id, uint8_t cnt_change)
+void PartControl::set_online_cnt(uint8_t can_num, uint8_t id, uint8_t cnt_change)
 {
     PartControl::joint_cmd_group_online_cnt_[can_num][id >> 2] += cnt_change;
 }
@@ -152,7 +152,7 @@ double PartControl::pid_speed(uint32_t tick, JointData & joint, double get, doub
     pid->error[2] = pid->error[1];
     pid->error[1] = pid->error[0];
     pid->error[0] = set - get;
-    return joint.target.current = static_cast<int16_t>(this->pid_delta(tick, pid, coeff));
+    return static_cast<int16_t>(this->pid_delta(tick, pid, coeff));
 }
 
 double PartControl::pid_angle(uint32_t tick, JointData & joint, double get, double set)
