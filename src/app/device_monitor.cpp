@@ -87,6 +87,7 @@ DeviceStatus & DeviceMonitor::device_dict_find(void * key)
 
 bool DeviceMonitor::update_to_controller(void)
 {
+    device_dbus_.online = true;
     for(auto & list_iter : this->device_joint_)
     {
         for(DeviceStatus & device : list_iter)

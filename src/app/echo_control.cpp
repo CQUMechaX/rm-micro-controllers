@@ -7,6 +7,11 @@
 
 void echoControl(void * pvParameters)
 {
+    buzzerTrigger(50, 900);
+    osDelay(200);
+    buzzerTrigger(50, 50);
+    osDelay(200);
+    HAL_TIM_PWM_Stop(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL);
     while (true)
     {
         for(auto & list_iter : gDeviceMonitor.device_joint_)

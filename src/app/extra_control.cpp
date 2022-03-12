@@ -38,7 +38,7 @@ bool ExtraControl::update(void)
             this->joint_[i].pid_calc[0].i_out = this->joint_[i].pid_calc[0].out = 0;
             this->joint_[i].pid_calc[1].i_out = this->joint_[i].pid_calc[1].out = 0;
         }
-        this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), 
+        joint_[i].target.current = this->pid_speed(0, this->joint_[i], this->get_mean_speed(this->joint_[i]), 
             (this->mode_ == ControllerMode::on) ? temp[i] : 0);
     }
     // this->joint_[0].target.current *= 2;

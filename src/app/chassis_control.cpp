@@ -42,7 +42,7 @@ bool ChassisControl::get_command(void)
   (void)0;
 
   // Get control command.
-  joint_[single_sub_].target.speed = command_default(0, 2700, 0, 0, 0, 0);
+  joint_[single_sub_].target.speed = command_default(4, 2700, 0, 0, 0, 0);
 
   return true;
 }

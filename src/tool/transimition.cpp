@@ -182,6 +182,7 @@ static bool dbusUpdate(uint8_t * rx_data)
     rc_ctrl.mouse.press_r = rx_data[13];                                  //!< Mouse Right Is Press ?
     rc_ctrl.key.v = rx_data[14] | (rx_data[15] << 8);                    //!< KeyBoard value
     rc_ctrl.rc.channel[4] = rx_data[16] | (rx_data[17] << 8);                 //NULL
+    rc_ctrl.rc.channel[4] -= RC_CH_VALUE_OFFSET;
     // rc_ctrl.rc.channel[4] -= RC_CH_VALUE_OFFSET;
 
     gDeviceMonitor.update_single_isr(gDeviceMonitor.device_dbus_);

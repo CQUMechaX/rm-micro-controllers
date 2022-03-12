@@ -57,11 +57,9 @@ bool GimbalControl::update(void)
     }
     if (this->mode_ == ControllerMode::test) {
     } else {
-      this->joint_[i].target.angle = angle_calibration_[i][2];
+      // this->joint_[i].target.angle = angle_calibration_[i][2];
     }
-    if (
-      gDeviceMonitor.get_online(this->joint_[i]) &&
-      !(gDeviceMonitor.device_dbus_.data.dbus.rc.button[1] == 1)) {
+    if (gDeviceMonitor.get_online(this->joint_[i])) {
       this->joint_[i].target.speed = this->pid_angle(
         0, this->joint_[i], this->joint_[i].feedback[0].angle, this->joint_[i].target.angle);
       this->joint_[i].target.current = this->pid_speed(
@@ -72,7 +70,7 @@ bool GimbalControl::update(void)
       this->joint_[i].target.current = 0;
     }
   }
-  this->hcan_ = &hcan1;  //???
+  // this->hcan_ = &hcan1;  //???
   this->update_target();
   return true;
 }
@@ -92,9 +90,9 @@ bool GimbalControl::get_command(void)
   // Get control command.
   joint_[pitch_sub_].target.angle =
     angle_calibration_[pitch_sub_][0] +
-    command_default(2, angle_calibration_[pitch_sub_][1], 0, 0, 0, 0);
+    command_default(3, angle_calibration_[pitch_sub_][1], 0, 0, 0, 0);
   joint_[yaw_sub_].target.angle = angle_calibration_[yaw_sub_][0] +
-                                  command_default(3, angle_calibration_[yaw_sub_][1], 0, 0, 0, 0);
+                                  command_default(2, angle_calibration_[yaw_sub_][1], 0, 0, 0, 0);
 
   return true;
 }
