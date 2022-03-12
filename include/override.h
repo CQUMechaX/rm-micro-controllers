@@ -30,6 +30,7 @@
     #define HCAN1 hcan1
     #define HCAN2 hcan2
 #elif defined(RM_DEV_C)
+    #define STM32_CCMRAM_EXIST
     #define TIM_BUZZER_ID 4
     #define TIM_BUZZER_CHANNEL 3
     #define UART1_ID 6

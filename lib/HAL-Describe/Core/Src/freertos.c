@@ -27,7 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
-#include "allocators.h"
+#include "freertos/allocators.h"
 #include "cmsis_os2.h"
 #include <usart.h>
 
