@@ -19,7 +19,7 @@
 // variable
 
 // function and class
-void echoControl(void * pvParameters);
+void echoControl(void * arguments);
 
 
 #ifdef __cplusplus

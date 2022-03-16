@@ -78,7 +78,7 @@
   #define HCAN1 hcan1
   #define HCAN2 hcan2
   #define HSPI_IMU hspi1
-  #define HIIC_IMU hi2c3
+  #define HI2C_IMU hi2c3
 #endif
 #define HUART1 __OVERRIDE_CONCAT2(huart, UART1_ID)
 #define HUART2 __OVERRIDE_CONCAT2(huart, UART2_ID)
@@ -95,7 +95,7 @@ extern CAN_HandleTypeDef HCAN1, HCAN2;
 extern UART_HandleTypeDef HUART1, HUART2, HUART_DBUS;
 extern DMA_HandleTypeDef HDMA2_RX, HDMA_DBUS_RX;
 extern SPI_HandleTypeDef HSPI_IMU;
-extern I2C_HandleTypeDef HIIC_IMU;
+extern I2C_HandleTypeDef HI2C_IMU;
 
 #ifdef __cplusplus
  }

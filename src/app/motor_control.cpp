@@ -4,7 +4,7 @@
 #include "app/gimbal_control.hpp"
 #include "app/extra_control.hpp"
 
-void motorControl(void * pvParameters)
+void motorControl(void * arguments)
 {
     gChassis.on_init();
     gGimbal.on_init();

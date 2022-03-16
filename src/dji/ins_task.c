@@ -31,7 +31,7 @@
 // #include "bsp_imu_pwm.h"
 // #include "bsp_spi.h"
 #include "devices/bmi088_driver.h"
-#include "devices/ist8310_driver.h"
+#include "devices/ist8310.h"
 // #include "pid.h"
 // #include "ahrs.h"
 
@@ -511,9 +511,10 @@ extern const float *get_mag_data_point(void)
 }
 
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+// void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void __unused(uint16_t GPIO_Pin)
 {
-    if(GPIO_Pin == INT1_ACCEL_Pin)
+    // if(GPIO_Pin == INT1_ACCEL_Pin)
     {
         // detect_hook(BOARD_ACCEL_TOE);
         accel_update_flag |= 1 << IMU_DR_SHFITS;
@@ -523,7 +524,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
             imu_cmd_spi_dma();
         }
     }
-    else if(GPIO_Pin == INT1_GYRO_Pin)
+    // else if(GPIO_Pin == INT1_GYRO_Pin)
     {
         // detect_hook(BOARD_GYRO_TOE);
         gyro_update_flag |= 1 << IMU_DR_SHFITS;

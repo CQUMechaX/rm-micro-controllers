@@ -19,11 +19,14 @@
   */
 
 #pragma once
-#ifndef IST8310_DRIVER_H
-#define IST8310_DRIVER_H
+#ifndef __IST8310_H__
+#define __IST8310_H__
 
-// #include "struct_typedef.h"
 #include <stdint.h>
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 #define IST8310_DATA_READY_BIT 2
 
@@ -37,7 +40,12 @@ typedef struct ist8310_real_data_t
   float mag[3];
 } ist8310_real_data_t;
 
-extern uint8_t ist8310_init(void);
-extern void ist8310_read_over(uint8_t *status_buf, ist8310_real_data_t *mpu6500_real_data);
-extern void ist8310_read_mag(float mag[3]);
+uint8_t deviceIst8310Init(void);
+void ist8310_read_over(uint8_t *status_buf, ist8310_real_data_t *mpu6500_real_data);
+void deviceIst8310ReadMagnitude(float mag[3]);
+
+#ifdef __cplusplus
+ }
 #endif
+
+#endif /* __IST8310_H__ */

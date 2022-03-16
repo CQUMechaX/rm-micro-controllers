@@ -4,35 +4,34 @@
 #include <rcl/rcl.h>
 #include <rmw_microxrcedds_c/config.h>
 // #include <ucdr/microcdr.h>
-// #include <uxr/client/client.h>
-#include <rmw_microros/rmw_microros.h> 
-#include <microros_transports.h> 
+#include <uxr/client/client.h>
+#include <microros_transports.h>
+#include <rmw_microros/rmw_microros.h>
 
-#include "override.h"
-#include "freertos/allocators.h"
-#include "app/pingpong.h"
-#include "app/motor_control.h"
-#include "app/echo_control.h"
+#include "main.h"
 #include "app/device_monitor.h"
+#include "app/echo_control.h"
+#include "app/motor_control.h"
+#include "app/pingpong.h"
+#include "app/sensor_unit.h"
+#include "freertos/allocators.h"
+#include "override.h"
 
 extern void MX_USB_DEVICE_Init();
+
+static osThreadId_t micro_ros_handle, imu_cmps_handle, imu_handle_2;
 
 void defaultTask(void * argument)
 {
   MX_USB_DEVICE_Init();
-  
+
   bool availableNetwork = false;
 
-#ifdef RMW_UXRCE_TRANSPORT_CUSTOM 
-  availableNetwork = true; 
-  rmw_uros_set_custom_transport( 
-    true, 
-    (void *) NULL, 
-    CDCUxrOpen,
-    CDCUxrClose, 
-    CDCUxrWrite, 
-    CDCUxrRead); 
-#elif defined(RMW_UXRCE_TRANSPORT_UDP) 
+#ifdef RMW_UXRCE_TRANSPORT_CUSTOM
+  availableNetwork = true;
+  rmw_uros_set_custom_transport(
+    true, (void *)NULL, CDCUxrOpen, CDCUxrClose, CDCUxrWrite, CDCUxrRead);
+#elif defined(RMW_UXRCE_TRANSPORT_UDP)
   printf("Ethernet Initialization\r\n");
 
   // Waiting for an IP
@@ -58,24 +57,27 @@ void defaultTask(void * argument)
   freeRTOS_allocator.reallocate = __freertos_reallocate;
   freeRTOS_allocator.zero_allocate = __freertos_zero_allocate;
 
-  if (!rcutils_set_default_allocator(&freeRTOS_allocator))
-  {
+  if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
     printf("Error on default allocators (line %d)\n", __LINE__);
   }
 
-  osDelay(100);
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
-  attributes.stack_size = 5000;
+  attributes.stack_size = 500 * 4;
   attributes.priority = (osPriority_t)osPriorityNormal;
   attributes.name = "microROS_app";
-  osThreadNew(appMain, NULL, &attributes);
-  //osDelay(500);
-  attributes.name = "motor";
+  micro_ros_handle = osThreadNew(appMain, NULL, &attributes);
+#ifdef RM_DEV_C
+  attributes.name = "in_board_imu_1";
+  imu_cmps_handle = osThreadNew(sensorPeriodical, NULL, &attributes);
+  attributes.name = "in_board_imu_2";
+  imu_handle_2 = osThreadNew(sensorExternInterrupt, NULL, &attributes);
+#endif /* RM_DEV_C */
+  attributes.name = "motor_control";
   osThreadNew(motorControl, NULL, &attributes);
-  attributes.name = "echo";
+  attributes.name = "echo_control";
   osThreadNew(echoControl, NULL, &attributes);
-  attributes.name = "monitor";
+  attributes.name = "device_monitor";
   osThreadNew(deviceMonitor, NULL, &attributes);
 
   char ptrTaskList[500];
@@ -90,9 +92,25 @@ void defaultTask(void * argument)
   //xHandle = xTaskGetHandle("microROS_app");
 
   //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET); // on
-  while (1) 
-  {
+  while (1) {
     osDelay(200);
   }
   /* USER CODE END StartDefaultTask */
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+#ifdef RM_DEV_C
+  if (GPIO_Pin == ACCEL_INT_Pin) {
+  } else if (GPIO_Pin == GYRO_INT_Pin) {
+  } else if (GPIO_Pin == CMPS_INT_Pin) {
+    //wake up the task
+    //唤醒任务
+    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+      static BaseType_t xHigherPriorityTaskWoken;
+      vTaskNotifyGiveFromISR(imu_cmps_handle, &xHigherPriorityTaskWoken);
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+  }
+#endif /* RM_DEV_C */
 }

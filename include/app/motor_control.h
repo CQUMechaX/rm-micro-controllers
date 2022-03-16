@@ -19,7 +19,7 @@
 // variable
 
 // function and class
-void motorControl(void * pvParameters);
+void motorControl(void * arguments);
 
 
 #ifdef __cplusplus

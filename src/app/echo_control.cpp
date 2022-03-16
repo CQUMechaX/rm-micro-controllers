@@ -5,7 +5,7 @@
 #include "main.h"
 #include "override.h"
 
-void echoControl(void * pvParameters)
+void echoControl(void * arguments)
 {
     buzzerTrigger(50, 900);
     osDelay(200);

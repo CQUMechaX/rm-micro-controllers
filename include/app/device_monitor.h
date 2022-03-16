@@ -21,7 +21,7 @@
 // variable
 
 // function and class
-void deviceMonitor(void * pvParameters);
+void deviceMonitor(void * arguments);
 
 #ifdef __cplusplus
  }

@@ -7,7 +7,7 @@
 
 DeviceMonitor gDeviceMonitor;
 
-void deviceMonitor(void * pvParameters)
+void deviceMonitor(void * arguments)
 {
     while (true)
     {
