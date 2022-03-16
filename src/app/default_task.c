@@ -63,16 +63,19 @@ void defaultTask(void * argument)
 
   osThreadAttr_t attributes;
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
-  attributes.stack_size = 500 * 4;
+  attributes.stack_size = 3000 * 4;
   attributes.priority = (osPriority_t)osPriorityNormal;
   attributes.name = "microROS_app";
   micro_ros_handle = osThreadNew(appMain, NULL, &attributes);
+  attributes.stack_size = 500 * 4;
 #ifdef RM_DEV_C
+  attributes.priority = (osPriority_t)osPriorityRealtime;
   attributes.name = "in_board_imu_1";
   imu_cmps_handle = osThreadNew(sensorPeriodical, NULL, &attributes);
   attributes.name = "in_board_imu_2";
-  imu_handle_2 = osThreadNew(sensorExternInterrupt, NULL, &attributes);
+  // imu_handle_2 = osThreadNew(sensorExternInterrupt, NULL, &attributes);
 #endif /* RM_DEV_C */
+  attributes.priority = (osPriority_t)osPriorityNormal;
   attributes.name = "motor_control";
   osThreadNew(motorControl, NULL, &attributes);
   attributes.name = "echo_control";
@@ -95,7 +98,7 @@ void defaultTask(void * argument)
   while (1) {
     osDelay(200);
   }
-  /* USER CODE END StartDefaultTask */
+  vTaskDelete(NULL);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)

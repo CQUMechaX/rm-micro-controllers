@@ -77,6 +77,7 @@ void Error_Handler(void);
 #define LED_RED_GPIO_Port GPIOH
 #define CMPS_INT_Pin GPIO_PIN_3
 #define CMPS_INT_GPIO_Port GPIOG
+#define CMPS_INT_EXTI_IRQn EXTI3_IRQn
 #define ADC_BAT_Pin GPIO_PIN_10
 #define ADC_BAT_GPIO_Port GPIOF
 #define LED_GREEN_Pin GPIO_PIN_11
@@ -91,8 +92,10 @@ void Error_Handler(void);
 #define CS1_ACCEL_GPIO_Port GPIOA
 #define ACCEL_INT_Pin GPIO_PIN_4
 #define ACCEL_INT_GPIO_Port GPIOC
+#define ACCEL_INT_EXTI_IRQn EXTI4_IRQn
 #define GYRO_INT_Pin GPIO_PIN_5
 #define GYRO_INT_GPIO_Port GPIOC
+#define GYRO_INT_EXTI_IRQn EXTI9_5_IRQn
 #define IMU_SPI_MOSI_Pin GPIO_PIN_7
 #define IMU_SPI_MOSI_GPIO_Port GPIOA
 #define CS1_GYRO_Pin GPIO_PIN_0
