@@ -1,5 +1,5 @@
 Import("env") # post: env + projenv
-
+import os
 # Add semihosting feature
 env.Append(
     # LINKFLAGS=["--specs=rdimon.specs"],
@@ -9,10 +9,11 @@ env.Append(
 	    "-mfloat-abi=hard"
     ],
     CCFLAGS=[
-        # "-Wall",
+        # "-larm_cortexM4lf_math",
+        "-Wall",
         "-D__DSP_PRESENT", # avoid cmsis_gcc.h
         "-DARM_MATH_CM4",
-        # "-larm_cortexM4lf_math",
+        "-D__GIT_COMMIT_ID__=\\\"{}\\\"".format(os.popen("git rev-parse HEAD").read().split()[0]),
         "-mfpu=fpv4-sp-d16",
 	    "-mfloat-abi=hard"
     ],

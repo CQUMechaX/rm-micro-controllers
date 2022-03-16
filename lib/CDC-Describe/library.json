@@ -9,8 +9,7 @@
     "dependencies":
     {
         "STM32_USB_Device_Library-DualCDC": "*",
-        "STM32_USB_Device_Library-Core": "*",
-        "HAL-Describe": "*"
+        "STM32_USB_Device_Library-Core": "*"
     },
     "build":
     {

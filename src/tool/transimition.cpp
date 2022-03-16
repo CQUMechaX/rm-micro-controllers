@@ -86,6 +86,8 @@ bool transimitionDmaInit(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t 
     
     SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);/** Enable the DMA transfer for the receiver request */
     __HAL_DMA_ENABLE(hdmarx);/** Enable DMA */
+
+    return true;
 }
 
 /** This function enables HCAN1 & HCAN2's function with filter and notification.

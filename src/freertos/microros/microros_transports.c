@@ -70,7 +70,7 @@ bool CDCUxrClose(struct uxrCustomTransport * transport){
     return true;
 }
 size_t CDCUxrWrite(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err){
-    return CDC_Transmit_FS(buf, len, 0);
+    return CDC_Transmit_FS((uint8_t *)buf, len, 0);
 }
 size_t CDCUxrRead(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err){
     // return CDC_Receive_FS();

@@ -57,18 +57,26 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define IMU_SPI_MISO_Pin GPIO_PIN_4
+#define IMU_SPI_MISO_GPIO_Port GPIOB
+#define IMU_SPI_SCK_Pin GPIO_PIN_3
+#define IMU_SPI_SCK_GPIO_Port GPIOB
 #define USB_DP_Pin GPIO_PIN_12
 #define USB_DP_GPIO_Port GPIOA
 #define USB_DM_Pin GPIO_PIN_11
 #define USB_DM_GPIO_Port GPIOA
-#define RST_CMPS_Pin GPIO_PIN_6
-#define RST_CMPS_GPIO_Port GPIOG
+#define IMU_I2C_SDA_Pin GPIO_PIN_9
+#define IMU_I2C_SDA_GPIO_Port GPIOC
+#define IMU_I2C_SCL_Pin GPIO_PIN_8
+#define IMU_I2C_SCL_GPIO_Port GPIOA
+#define CMPS_RESET_Pin GPIO_PIN_6
+#define CMPS_RESET_GPIO_Port GPIOG
 #define HEAT_Pin GPIO_PIN_6
 #define HEAT_GPIO_Port GPIOF
 #define LED_RED_Pin GPIO_PIN_12
 #define LED_RED_GPIO_Port GPIOH
-#define INT1_CMPS_Pin GPIO_PIN_3
-#define INT1_CMPS_GPIO_Port GPIOG
+#define CMPS_INT_Pin GPIO_PIN_3
+#define CMPS_INT_GPIO_Port GPIOG
 #define ADC_BAT_Pin GPIO_PIN_10
 #define ADC_BAT_GPIO_Port GPIOF
 #define LED_GREEN_Pin GPIO_PIN_11
@@ -81,10 +89,12 @@ void Error_Handler(void);
 #define KEY_GPIO_Port GPIOA
 #define CS1_ACCEL_Pin GPIO_PIN_4
 #define CS1_ACCEL_GPIO_Port GPIOA
-#define INT1_ACCEL_Pin GPIO_PIN_4
-#define INT1_ACCEL_GPIO_Port GPIOC
-#define INT1_GYRO_Pin GPIO_PIN_5
-#define INT1_GYRO_GPIO_Port GPIOC
+#define ACCEL_INT_Pin GPIO_PIN_4
+#define ACCEL_INT_GPIO_Port GPIOC
+#define GYRO_INT_Pin GPIO_PIN_5
+#define GYRO_INT_GPIO_Port GPIOC
+#define IMU_SPI_MOSI_Pin GPIO_PIN_7
+#define IMU_SPI_MOSI_GPIO_Port GPIOA
 #define CS1_GYRO_Pin GPIO_PIN_0
 #define CS1_GYRO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

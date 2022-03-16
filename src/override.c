@@ -81,7 +81,7 @@ void freertosErrorHandler(const char *file, uint32_t line)
     vTaskSuspendAll();
     while(true)
     {
-        printf("Error on %s:%ld.", file, line);
+        printf("Error on %s:%ld. BUILD %s %s COMMIT %s", file, line, __DATE__, __TIME__, __GIT_COMMIT_ID__);
         buzzerTrigger(30, 150);
         HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
     }

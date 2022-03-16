@@ -8,15 +8,14 @@
     },
     "dependencies":
     {
-        "STM32Cube Middleware-FreeRTOS": "*",
-        "microROS": "*",
-        "CDC-Describe": "*"
+        "STM32Cube Middleware-FreeRTOS": "*"
     },
     "build":
     {
+        "srcFilter": "-<*>",
         "flags": ["-I $PROJECT_SRC_DIR", "-I $PROJECT_INCLUDE_DIR"],
-        "libArchive": false,
-        "includeDir": "Inc",
-        "srcDir": "Src"
+        "libArchive": false, 
+        "includeDir": "Core/Inc",
+        "srcDir": "Core/Src"
     }
 }

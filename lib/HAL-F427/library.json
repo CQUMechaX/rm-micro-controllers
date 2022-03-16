@@ -8,9 +8,7 @@
     },
     "dependencies":
     {
-        "STM32Cube Middleware-FreeRTOS": "*",
-        "microROS": "*",
-        "CDC-Describe": "*"
+        "STM32Cube Middleware-FreeRTOS": "*"
     },
     "build":
     {
