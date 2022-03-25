@@ -11,7 +11,7 @@
 // include
 #include <stdint.h>
 #include <stdbool.h>
-#include "pid_mcu.h"
+#include "tool/pid.h"
 
 #ifdef __cplusplus
  extern "C" {

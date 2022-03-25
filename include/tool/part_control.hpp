@@ -8,6 +8,7 @@
 
 #include "tool/joint_struct.h"
 #include "tool/task_control.hpp"
+#include "tool/pid.hpp"
 #include "app/device_monitor.hpp"
 #include "marco.hpp"
 
@@ -15,7 +16,7 @@
 #define __PARTCONTROL_JOINT_NUM 6
 #define __PARTCONTROL_ID_MAX_NUM 16
 
-class PartControl : public TaskControl
+class PartControl : public TaskControl, private Pid
 {
 protected:
     uint8_t joint_cnt_, /** count of joint_ */
@@ -30,16 +31,15 @@ protected:
     uint8_t joint_add(JointType joint_type, uint8_t id);
     uint8_t joint_add(JointType joint_type, uint8_t id, const JointCoeff & coeff);
     bool joint_clear(void);
-    double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff);
-    double pid_delta(uint32_t tick, PidInfo * pid, PidCoeff coeff, double get, double set);
-    double pid_target(uint32_t tick, PidInfo * pid, PidCoeff coeff);
-    /** try
-     * @todo error memmove
-     */
-    double pid_target(uint32_t tick, PidInfo * pid, PidCoeff coeff, double get, double set);
 
-    double pid_speed(uint32_t tick, JointData & joint, double get, double set);
-    double pid_angle(uint32_t tick, JointData & joint, double get, double set);
+    inline double pid_speed(uint32_t tick, JointData & joint, double get, double set)
+    {
+        return Pid::pid_speed(tick, joint.pid_calc[0], joint.coeff.pid[0], get, set);
+    }
+    inline double pid_angle(uint32_t tick, JointData & joint, double get, double set)
+    {
+        return Pid::pid_angle(tick, joint.pid_calc[0], joint.coeff.pid[0], get, set, static_cast<double>(joint.coeff.angle_limit[1]));
+    } 
     
     double get_command_dbus_channel(uint8_t channel, double channel_coeff);
     int16_t command_default(uint8_t channel, double channel_coeff, uint8_t mouse, double mouse_coeff, uint8_t serial, double serial_coeff);
