@@ -1,18 +1,19 @@
 #include <stm32f4xx_hal.h>
-#include <stm32f4xx_it.h>
 #include <stm32f4xx_hal_can.h>
+#include <stm32f4xx_hal_uart.h>
+#include <cmsis_os.h>
 #include <cstring>
 
 #include "usart.h"
 #include "override.h"
-// #include "dji/chassis_task.h"
-// #include "app/gimbal_control.hpp"
 #include "app/microros_param.h"
+#include "app/device_monitor.hpp"
 #include "tool/transimition.hpp"
 
-uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN],
-    gAcmCacheArray[LEGACY_CACHE_BYTE_LEN];
 static double gSafeArray[2];
+
+uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
+CacheBuffer<1000> gAcmCacheArray[2];
 double *gLegacyResultArray = gSafeArray;
 
 const uint32_t gCanHeadTarget[17] = {
@@ -130,6 +131,11 @@ HAL_StatusTypeDef transimitionDbusRx(bool section)
     return dbusUpdate(gDbusCacheArray[section]) ? HAL_OK : HAL_ERROR;
 }
 
+bool transimitionUsbCdcRx(uint8_t * buf, uint32_t len, uint8_t index)
+{
+    return gAcmCacheArray[index].write(buf, len);
+}
+
 static bool jointUpdate(std::vector<DeviceStatus> & device_list, uint32_t std_id, uint8_t * rx_data)
 {
     for(DeviceStatus & joint_device : device_list)
@@ -219,6 +225,15 @@ HAL_StatusTypeDef transimitionCanTx(
     return HAL_OK;
 }
 
+uint32_t transimitionUsbCdcReadBlock(uint8_t * buf, uint32_t len, uint8_t index, uint32_t time_out)
+{
+    // static uint32_t time_stamp;
+    return gAcmCacheArray[index].read(buf, len, [time_out]()->bool{
+        static uint32_t stamp = xTaskGetTickCount() + time_out;
+        uint32_t now = xTaskGetTickCount();
+        return stamp > now;
+        });
+}
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {

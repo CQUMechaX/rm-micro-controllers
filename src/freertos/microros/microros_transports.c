@@ -3,8 +3,8 @@
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_dma.h"
-#include "usbd_conf.h"
 #include "usbd_cdc_if.h"
+#include "tool/transimition.h"
 
 // #include <unistd.h>
 #include <stdio.h>
@@ -73,6 +73,5 @@ size_t CDCUxrWrite(struct uxrCustomTransport* transport, const uint8_t * buf, si
     return CDC_Transmit_FS((uint8_t *)buf, len, 0);
 }
 size_t CDCUxrRead(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err){
-    // return CDC_Receive_FS();
-    return 0;
+    return transimitionUsbCdcReadBlock(buf, len, 0, timeout);
 }

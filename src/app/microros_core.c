@@ -114,6 +114,7 @@ void appMain(void *argument)
 	rcl_allocator_t allocator = rcl_get_default_allocator();
 	rclc_support_t support;
 	rclc_executor_t executor;
+	osDelay(100);
 
 	// support.context.impl -> init_options.impl -> rmw_init_options -> impl = (rmw_uxrce_transport_params_t){};
 	// create init_options
@@ -169,8 +170,8 @@ void appMain(void *argument)
 
 	while (1)
 	{
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
-						  !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
+		// HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,
+						//   !HAL_GPIO_ReadPin(LED_RED_GPIO_Port, LED_RED_Pin));
 		rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10));
 		usleep(100);
 	}

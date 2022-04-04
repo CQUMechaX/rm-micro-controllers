@@ -108,8 +108,8 @@ void Error_Handler(void);
 #define INT1_GYRO_GPIO_Port GPIOC
 #define CS1_GYRO_Pin GPIO_PIN_0
 #define CS1_GYRO_GPIO_Port GPIOB
-#define RST_CMPS_Pin GPIO_PIN_6
-#define RST_CMPS_GPIO_Port GPIOG
+#define CMPS_RESET_Pin GPIO_PIN_6
+#define CMPS_RESET_GPIO_Port GPIOG
 #define HEAT_Pin GPIO_PIN_6
 #define HEAT_GPIO_Port GPIOF
 /* USER CODE BEGIN Private defines */

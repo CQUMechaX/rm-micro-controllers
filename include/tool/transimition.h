@@ -44,6 +44,7 @@
 #define LEGACY_FRAME_BYTE_LEN 32
 #define DBUS_CACHE_BYTE_LEN 32
 #define DBUS_FRAME_BYTE_LEN 18
+#define ACM_CACHE_BYTE_LEN 32
 
 // struct definition for custom 
 typedef struct GCC_PACKED DbusData
@@ -67,8 +68,7 @@ typedef struct GCC_PACKED DbusData
     } key;
 }DbusData;
 
-extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN],
-    gAcmCacheArray[LEGACY_CACHE_BYTE_LEN];
+extern uint8_t gLegacyCacheArray[2][LEGACY_CACHE_BYTE_LEN], gDbusCacheArray[2][DBUS_CACHE_BYTE_LEN];
 extern double *gLegacyResultArray;
 
 extern const uint32_t gCanHeadTarget[17], gCanHeadFeedback[17];/** CAN StdId marco for RM motor, GM6020 id1 :=> id5 */
@@ -93,6 +93,8 @@ HAL_StatusTypeDef transimitionIdleHandler(
 bool transimitionDmaInit(UART_HandleTypeDef * huart, uint8_t * rx1_buf, uint8_t * rx2_buf, uint16_t bufer_byte_len);
 HAL_StatusTypeDef transimitionLegacyRx(bool section);
 HAL_StatusTypeDef transimitionDbusRx(bool section);
+bool transimitionUsbCdcRx(uint8_t * buf, uint32_t len, uint8_t index);
+uint32_t transimitionUsbCdcReadBlock(uint8_t * buf, uint32_t len, uint8_t index, uint32_t time_out);
 HAL_StatusTypeDef transimitionCanStart(void);
 
 HAL_StatusTypeDef transimitionCanTx(
