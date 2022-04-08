@@ -38,7 +38,7 @@ protected:
     }
     inline double pid_angle(uint32_t tick, JointData & joint, double get, double set)
     {
-        return Pid::pid_angle(tick, joint.pid_calc[0], joint.coeff.pid[0], get, set, static_cast<double>(joint.coeff.angle_limit[1]));
+        return Pid::pid_angle(tick, joint.pid_calc[1], joint.coeff.pid[1], get, set, static_cast<double>(joint.coeff.angle_limit[1]));
     } 
     
     double get_command_dbus_channel(uint8_t channel, double channel_coeff);

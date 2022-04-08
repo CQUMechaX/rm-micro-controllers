@@ -17,6 +17,7 @@ void motorControl(void * arguments)
         gBulletMotor.update();
         PartControl::set_can_current();
         osDelay(gGimbal.tick_ms_);
+        uxTaskGetStackHighWaterMark(NULL);
     }
     return;
 }

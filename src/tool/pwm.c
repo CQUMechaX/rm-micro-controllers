@@ -23,6 +23,12 @@ uint8_t buzzerList(__IO uint32_t *CCR, const uint16_t freqList[], uint32_t freqL
     return HAL_OK;
 }
 
+HAL_StatusTypeDef heatTrigger(uint16_t psc, uint16_t pwm)
+{
+    __HAL_TIM_SetCompare(&htim10, TIM_CHANNEL_1, pwm);
+    return HAL_OK;
+}
+
 HAL_StatusTypeDef buzzerTrigger(uint16_t psc, uint16_t pwm)
 {
     if(HAL_TIM_PWM_Start(&HTIM_BUZZER, HTIM_BUZZER_CHANNEL) != HAL_OK)

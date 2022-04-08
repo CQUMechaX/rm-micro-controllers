@@ -69,11 +69,11 @@ void defaultTask(void * argument)
   micro_ros_handle = osThreadNew(appMain, NULL, &attributes);
   attributes.stack_size = 500 * 4;
 #ifdef RM_DEV_C
-  attributes.priority = (osPriority_t)osPriorityRealtime;
+  //attributes.priority = (osPriority_t)osPriorityRealtime;
   attributes.name = "in_board_imu_1";
   imu_cmps_handle = osThreadNew(sensorPeriodical, NULL, &attributes);
   attributes.name = "in_board_imu_2";
-  // imu_handle_2 = osThreadNew(sensorExternInterrupt, NULL, &attributes);
+  imu_handle_2 = osThreadNew(sensorExternInterrupt, NULL, &attributes);
 #endif /* RM_DEV_C */
   attributes.priority = (osPriority_t)osPriorityNormal;
   attributes.name = "motor_control";
@@ -105,11 +105,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 #ifdef RM_DEV_C
   if (GPIO_Pin == ACCEL_INT_Pin) {
+    if (imu_handle_2 != NULL) {
+      static BaseType_t xHigherPriorityTaskWoken;
+      vTaskNotifyGiveFromISR(imu_handle_2, &xHigherPriorityTaskWoken);
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
   } else if (GPIO_Pin == GYRO_INT_Pin) {
   } else if (GPIO_Pin == CMPS_INT_Pin) {
-    //wake up the task
-    //唤醒任务
-    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+    if (imu_cmps_handle != NULL) {
       static BaseType_t xHigherPriorityTaskWoken;
       vTaskNotifyGiveFromISR(imu_cmps_handle, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

@@ -101,4 +101,23 @@ protected:
   }
 };
 
+class PidControl : protected Pid
+{
+private:
+  PidInfo pid_;
+  PidCoeff coeff_;
+
+public:
+  explicit PidControl() {}
+  explicit PidControl(double kp, double ki, double kd) : coeff_((PidCoeff){kp, ki, kd}) {}
+  explicit PidControl(double kp, double ki, double kd, double cmd)
+  : coeff_((PidCoeff){kp, ki, kd}), pid_((PidInfo){0, cmd})
+  {
+  }
+  inline double feedback(double value)
+  {
+    return pid_target(1, pid_, coeff_, value, pid_.cmd);
+  }
+};
+
 #endif /* __PID_HPP__ */

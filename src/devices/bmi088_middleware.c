@@ -50,7 +50,7 @@ void bmi088_GYRO_NS_H(void)
 
 uint8_t bmi088_read_write_byte(uint8_t txdata)
 {
-    uint8_t rx_data;
+    uint8_t rx_data = 0;
     HAL_SPI_TransmitReceive(&HSPI_IMU, &txdata, &rx_data, 1, 1000);
     return rx_data;
 }

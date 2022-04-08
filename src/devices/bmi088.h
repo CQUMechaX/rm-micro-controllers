@@ -1,10 +1,13 @@
 #pragma once
-#ifndef BMI088_DRIVER_H
-#define BMI088_DRIVER_H
+#ifndef BMI088_H
+#define BMI088_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 #include <stdint.h>
 #include <stdbool.h>
-// #include "main.h"
 
 #define BMI088_TEMP_FACTOR 0.125f
 #define BMI088_TEMP_OFFSET 23.0f
@@ -88,27 +91,27 @@ enum
     BMI088_NO_SENSOR                    = 0xFF,
 };
 
+uint8_t deviceBmi088Init(void);
+bool bmi088_accel_self_test(void);
+bool bmi088_gyro_self_test(void);
+bool bmi088_accel_init(void);
+bool bmi088_gyro_init(void);
+
+void bmi088_accel_read_over(uint8_t *rx_buf, float accel[3], float *time);
+void bmi088_gyro_read_over(uint8_t *rx_buf, float gyro[3]);
+void bmi088_temperature_read_over(uint8_t *rx_buf, float *temperate);
+void deviceBmi088Read(float gyro[3], float accel[3], float *temperate);
+uint32_t get_bmi088_sensor_time(void);
+float get_bmi088_temperate(void);
+void get_bmi088_gyro(int16_t gyro[3]);
+void get_bmi088_accel(float accel[3]);
 
 
+void bmi088_read_gyro_who_am_i(void);
+void bmi088_read_accel_who_am_i(void);
 
-
-extern uint8_t bmi088_init(void);
-extern bool bmi088_accel_self_test(void);
-extern bool bmi088_gyro_self_test(void);
-extern bool bmi088_accel_init(void);
-extern bool bmi088_gyro_init(void);
-
-extern void bmi088_accel_read_over(uint8_t *rx_buf, float accel[3], float *time);
-extern void bmi088_gyro_read_over(uint8_t *rx_buf, float gyro[3]);
-extern void bmi088_temperature_read_over(uint8_t *rx_buf, float *temperate);
-extern void bmi088_read(float gyro[3], float accel[3], float *temperate);
-extern uint32_t get_bmi088_sensor_time(void);
-extern float get_bmi088_temperate(void);
-extern void get_bmi088_gyro(int16_t gyro[3]);
-extern void get_bmi088_accel(float accel[3]);
-
-
-extern void bmi088_read_gyro_who_am_i(void);
-extern void bmi088_read_accel_who_am_i(void);
+#ifdef __cplusplus
+ }
+#endif
 
 #endif

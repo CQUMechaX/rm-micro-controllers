@@ -30,7 +30,7 @@
 
 // #include "bsp_imu_pwm.h"
 // #include "bsp_spi.h"
-#include "devices/bmi088_driver.h"
+#include "devices/bmi088.h"
 #include "devices/ist8310.h"
 // #include "pid.h"
 // #include "ahrs.h"
@@ -178,7 +178,7 @@ void INS_task(void const *pvParameters)
 {
     //wait a time
     osDelay(INS_TASK_INIT_TIME);
-    while(bmi088_init())
+    while(deviceBmi088Init())
     {
         osDelay(100);
     }
@@ -187,7 +187,7 @@ void INS_task(void const *pvParameters)
         osDelay(100);
     }
 
-    bmi088_read(bmi088_real_data.gyro, bmi088_real_data.accel, &bmi088_real_data.temp);
+    deviceBmi088Read(bmi088_real_data.gyro, bmi088_real_data.accel, &bmi088_real_data.temp);
     //rotate and zero drift 
     imu_cali_slove(INS_gyro, INS_accel, INS_mag, &bmi088_real_data, &ist8310_real_data);
 
