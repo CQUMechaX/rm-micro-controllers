@@ -15,7 +15,6 @@ void sensorExternInterrupt(void * arguments)
   PidControl bmi088_temperature(1600, 0.2, 0, 40);
   extern TIM_HandleTypeDef htim10;
   if (HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1) != HAL_OK) {
-    
   }
 
   while (ulTaskNotifyTake(pdFALSE, /*pdMS_TO_TICKS(0))*/ portMAX_DELAY)) {

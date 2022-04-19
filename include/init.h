@@ -9,7 +9,7 @@
 #define __INIT_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // include
@@ -24,7 +24,7 @@
 HAL_StatusTypeDef userCodeInit(void);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __INIT_H__ */

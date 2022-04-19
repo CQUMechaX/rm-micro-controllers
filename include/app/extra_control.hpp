@@ -13,12 +13,9 @@
 class ExtraControl : public PartControl
 {
 public:
-    enum ControllerMode
-    {
-        on, off
-    }mode_;
-    bool on_init(void);
-    bool update(void);
+  enum ControllerMode { on, off } mode_;
+  bool on_init(void);
+  bool update(void);
 };
 
 extern ExtraControl gBulletMotor;

@@ -9,7 +9,7 @@
 #define __CAN_FILTER_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // include
@@ -24,7 +24,7 @@
 // void canFilterInit(void);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __CAN_FILTER_H__ */

@@ -2,9 +2,10 @@
 #ifndef __TRANSIMITION_HPP__
 #define __TRANSIMITION_HPP__
 
-#include "transimition.h"
-#include "tool/cache_buffer.hpp"
 #include <vector>
+
+#include "tool/cache_buffer.hpp"
+#include "transimition.h"
 
 extern CacheBuffer<1000> gAcmCacheArray[2];
 

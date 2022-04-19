@@ -13,7 +13,7 @@
 #include "tool/transimition.h"
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // definition
@@ -24,7 +24,7 @@
 void deviceMonitor(void * arguments);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __DEVICE_MONITOR_HPP__ */

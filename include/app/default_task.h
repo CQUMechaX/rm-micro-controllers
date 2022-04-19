@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // definition
@@ -23,9 +23,8 @@
 void defaultTask(void * arguments);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
-
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __DEFAULT_TASK_HPP__ */

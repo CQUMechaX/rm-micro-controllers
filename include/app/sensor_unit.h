@@ -11,7 +11,7 @@
 // include
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // definition
@@ -22,9 +22,8 @@
 void sensorExternInterrupt(void * arguments);
 void sensorPeriodical(void * arguments);
 
-
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __SENSOR_UNIT_HPP__ */

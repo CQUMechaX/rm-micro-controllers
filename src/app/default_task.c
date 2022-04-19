@@ -4,17 +4,17 @@
 #include <rcl/rcl.h>
 #include <rmw_microxrcedds_c/config.h>
 // #include <ucdr/microcdr.h>
-#include <uxr/client/client.h>
 #include <microros_transports.h>
 #include <rmw_microros/rmw_microros.h>
+#include <uxr/client/client.h>
 
-#include "main.h"
 #include "app/device_monitor.h"
 #include "app/echo_control.h"
 #include "app/motor_control.h"
 #include "app/pingpong.h"
 #include "app/sensor_unit.h"
 #include "freertos/allocators.h"
+#include "main.h"
 #include "override.h"
 
 extern void MX_USB_DEVICE_Init();
@@ -31,7 +31,8 @@ void defaultTask(void * argument)
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
   availableNetwork = true;
   rmw_uros_set_custom_transport(
-    true, (void *)NULL, transportUxrCdcOpen, transportUxrCdcClose, transportUxrCdcWrite, transportUxrCdcRead);
+    true, (void *)NULL, transportUxrCdcOpen, transportUxrCdcClose, transportUxrCdcWrite,
+    transportUxrCdcRead);
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   printf("Ethernet Initialization\r\n");
 

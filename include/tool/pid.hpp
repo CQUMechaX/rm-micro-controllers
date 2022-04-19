@@ -114,10 +114,7 @@ public:
   : coeff_((PidCoeff){kp, ki, kd}), pid_((PidInfo){0, cmd})
   {
   }
-  inline double feedback(double value)
-  {
-    return pid_target(1, pid_, coeff_, value, pid_.cmd);
-  }
+  inline double feedback(double value) { return pid_target(1, pid_, coeff_, value, pid_.cmd); }
 };
 
 #endif /* __PID_HPP__ */

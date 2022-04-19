@@ -11,7 +11,7 @@
 // include
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 // definition
@@ -21,9 +21,8 @@
 // function and class
 void motorControl(void * arguments);
 
-
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* __MOTOR_CONTROL_HPP__ */

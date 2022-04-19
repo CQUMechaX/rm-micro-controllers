@@ -12,8 +12,8 @@
 // function and class
 class Sensor
 {
-    virtual void init(void);
-    virtual void update(void);
+  virtual void init(void);
+  virtual void update(void);
 };
 
 #endif /* __SENSOR_UNIT_HPP__ */
