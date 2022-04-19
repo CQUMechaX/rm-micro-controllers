@@ -111,7 +111,7 @@ public:
   explicit PidControl() {}
   explicit PidControl(double kp, double ki, double kd) : coeff_((PidCoeff){kp, ki, kd}) {}
   explicit PidControl(double kp, double ki, double kd, double cmd)
-  : coeff_((PidCoeff){kp, ki, kd}), pid_((PidInfo){0, cmd})
+  : pid_((PidInfo){0, cmd}), coeff_((PidCoeff){kp, ki, kd})
   {
   }
   inline double feedback(double value) { return pid_target(1, pid_, coeff_, value, pid_.cmd); }

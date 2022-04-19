@@ -18,23 +18,24 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+typedef struct uxrCustomTransport uxrCustomTransport;
 
-bool transportUxrSerialOpen(struct uxrCustomTransport * transport);
-bool transportUxrSerialClose(struct uxrCustomTransport * transport);
+bool transportUxrSerialOpen(uxrCustomTransport * transport);
+bool transportUxrSerialClose(uxrCustomTransport * transport);
 size_t transportUxrSerialWrite(
-  struct uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
+  uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
 size_t transportUxrSerialRead(
-  struct uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
+  uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
 
 /**
  * Required by rmw_uros_set_custom_transport. Return buffer length(size_t).
  */
-bool transportUxrCdcOpen(struct uxrCustomTransport * transport);
-bool transportUxrCdcClose(struct uxrCustomTransport * transport);
+bool transportUxrCdcOpen(uxrCustomTransport * transport);
+bool transportUxrCdcClose(uxrCustomTransport * transport);
 size_t transportUxrCdcWrite(
-  struct uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
+  uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
 size_t transportUxrCdcRead(
-  struct uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
+  uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
 
 #ifdef __cplusplus
 }
