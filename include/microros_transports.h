@@ -16,21 +16,28 @@
 #define _MICROROS_CLIENT_FREERTOS_SERIAL_TRANSPORT_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-bool freertos_serial_open(struct uxrCustomTransport * transport);
-bool freertos_serial_close(struct uxrCustomTransport * transport);
-size_t freertos_serial_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
-size_t freertos_serial_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
+bool transportUxrSerialOpen(struct uxrCustomTransport * transport);
+bool transportUxrSerialClose(struct uxrCustomTransport * transport);
+size_t transportUxrSerialWrite(
+  struct uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
+size_t transportUxrSerialRead(
+  struct uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
 
-bool CDCUxrOpen(struct uxrCustomTransport * transport);
-bool CDCUxrClose(struct uxrCustomTransport * transport);
-size_t CDCUxrWrite(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
-size_t CDCUxrRead(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
+/**
+ * Required by rmw_uros_set_custom_transport. Return buffer length(size_t).
+ */
+bool transportUxrCdcOpen(struct uxrCustomTransport * transport);
+bool transportUxrCdcClose(struct uxrCustomTransport * transport);
+size_t transportUxrCdcWrite(
+  struct uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err);
+size_t transportUxrCdcRead(
+  struct uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //_MICROROS_CLIENT_FREERTOS_SERIAL_TRANSPORT_H_
+#endif  //_MICROROS_CLIENT_FREERTOS_SERIAL_TRANSPORT_H_

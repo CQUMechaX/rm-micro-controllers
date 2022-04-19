@@ -5,6 +5,6 @@
 #define	_CLOCKID_T_DECLARED
 #define	_MODE_T_DECLARED
 
-void appMain(void *argument);
+void microRosAppMain(void * arguments);
 
 #endif /* __APP__H__ */

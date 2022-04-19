@@ -26,11 +26,12 @@ void defaultTask(void * argument)
   MX_USB_DEVICE_Init();
 
   bool availableNetwork = false;
+  (void)availableNetwork;
 
 #ifdef RMW_UXRCE_TRANSPORT_CUSTOM
   availableNetwork = true;
   rmw_uros_set_custom_transport(
-    true, (void *)NULL, CDCUxrOpen, CDCUxrClose, CDCUxrWrite, CDCUxrRead);
+    true, (void *)NULL, transportUxrCdcOpen, transportUxrCdcClose, transportUxrCdcWrite, transportUxrCdcRead);
 #elif defined(RMW_UXRCE_TRANSPORT_UDP)
   printf("Ethernet Initialization\r\n");
 
@@ -65,8 +66,8 @@ void defaultTask(void * argument)
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
   attributes.stack_size = 3000 * 4;
   attributes.priority = (osPriority_t)osPriorityNormal;
-  attributes.name = "microROS_app";
-  micro_ros_handle = osThreadNew(appMain, NULL, &attributes);
+  attributes.name = "micro_ros_app";
+  micro_ros_handle = osThreadNew(microRosAppMain, NULL, &attributes);
   attributes.stack_size = 500 * 4;
 #ifdef RM_DEV_C
   //attributes.priority = (osPriority_t)osPriorityRealtime;
