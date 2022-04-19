@@ -254,7 +254,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t size)
 {
-    __HAL_DMA_DISABLE(huart->hdmarx); // disable DMA
+    __HAL_DMA_DISABLE(huart->hdmarx); // Disable DMA, as in CIRCULAR mode, DMA xfer and HAL UART Rx process is not ended. (L2514)
     if(huart == &HUART_LEGACY)
     {
         transimitionIdleHandler(huart, size, LEGACY_CACHE_BYTE_LEN, LEGACY_FRAME_BYTE_LEN, transimitionLegacyRx);

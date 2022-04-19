@@ -87,7 +87,15 @@ DeviceStatus & DeviceMonitor::device_dict_find(void * key)
 
 bool DeviceMonitor::update_to_controller(void)
 {
-    device_dbus_.online = true;
+    if((device_dbus_.offline_time = xTaskGetTickCount() - device_dbus_.tick) > 30)
+    {
+        device_dbus_.online = false;
+    }
+    else
+    {
+        device_dbus_.online = true;
+    }
+
     for(auto & list_iter : this->device_joint_)
     {
         for(DeviceStatus & device : list_iter)

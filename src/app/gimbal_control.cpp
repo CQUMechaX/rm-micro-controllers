@@ -15,15 +15,15 @@ bool GimbalControl::on_init(void)
   pitch_sub_ = this->joint_add(
     gRosParam.gimbal.joint[0].type, gRosParam.gimbal.joint[0].id,
     const_cast<const JointCoeff &>(gRosParam.gimbal.joint[0].coeff));
-  angle_calibration_[pitch_sub_][0] = 5000;
+  angle_calibration_[pitch_sub_][0] = 6000;
   angle_calibration_[pitch_sub_][1] = 1200;
   yaw_sub_ = this->joint_add(
     gRosParam.gimbal.joint[1].type, gRosParam.gimbal.joint[1].id,
     const_cast<const JointCoeff &>(gRosParam.gimbal.joint[1].coeff));
-  angle_calibration_[yaw_sub_][0] = 7500;
+  angle_calibration_[yaw_sub_][0] = 4800;
   angle_calibration_[yaw_sub_][1] = 1500;
-  // this->joint_add(JointType::RM6020, 3);/** pitch H3600 - 4800 - 6000L */
-  // this->joint_add(JointType::RM6020, 1);/** yaw L6000 - 7500 - 809(9000)R */
+  /** pitch H3600 - 3500 - 6000L DELTA 1200*/
+  /** yaw L3300 - 4800 - 6300R DELTA 1500*/
   return true;
 }
 
