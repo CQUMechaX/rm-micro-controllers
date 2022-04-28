@@ -123,6 +123,7 @@ void pong_subscription_callback(const void *msgin)
 			return false; \
 		} \
 	}
+	static rcl_timer_t timer;
 	// support.context.impl -> init_options.impl -> rmw_init_options -> impl = (rmw_uxrce_transport_params_t){};
 	// create init_options
 	INIT_FAIL_RETURN_FALSE(rclc_support_init(support, 0, NULL, allocator));
@@ -147,11 +148,9 @@ void pong_subscription_callback(const void *msgin)
 											   ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Header), "/microROS/pong"));
 
 	// Create a 3 seconds ping timer timer,
-	rcl_timer_t timer;
 	INIT_FAIL_RETURN_FALSE(rclc_timer_init_default(&timer, support, RCL_MS_TO_NS(2000), ping_timer_callback));
 
 	// Create executor
-	// rclc_executor_t executor;
 	INIT_FAIL_RETURN_FALSE(rclc_executor_init(executor, &support->context, 3, allocator));
 	INIT_FAIL_RETURN_FALSE(rclc_executor_add_timer(executor, &timer));
 	INIT_FAIL_RETURN_FALSE(rclc_executor_add_subscription(executor, &ping_subscriber, &incoming_ping,
@@ -160,17 +159,17 @@ void pong_subscription_callback(const void *msgin)
 										   &pong_subscription_callback, ON_NEW_DATA));
 
 	// Create and allocate the pingpong messages
-	// char outcoming_ping_buffer[STRING_BUFFER_LEN];
-	// outcoming_ping.frame_id.data = outcoming_ping_buffer;
-	// outcoming_ping.frame_id.capacity = STRING_BUFFER_LEN;
+	char outcoming_ping_buffer[STRING_BUFFER_LEN];
+	outcoming_ping.frame_id.data = outcoming_ping_buffer;
+	outcoming_ping.frame_id.capacity = STRING_BUFFER_LEN;
 
-	// char incoming_ping_buffer[STRING_BUFFER_LEN];
-	// incoming_ping.frame_id.data = incoming_ping_buffer;
-	// incoming_ping.frame_id.capacity = STRING_BUFFER_LEN;
+	char incoming_ping_buffer[STRING_BUFFER_LEN];
+	incoming_ping.frame_id.data = incoming_ping_buffer;
+	incoming_ping.frame_id.capacity = STRING_BUFFER_LEN;
 
-	// char incoming_pong_buffer[STRING_BUFFER_LEN];
-	// incoming_pong.frame_id.data = incoming_pong_buffer;
-	// incoming_pong.frame_id.capacity = STRING_BUFFER_LEN;
+	char incoming_pong_buffer[STRING_BUFFER_LEN];
+	incoming_pong.frame_id.data = incoming_pong_buffer;
+	incoming_pong.frame_id.capacity = STRING_BUFFER_LEN;
 
 	device_id = rand();
 

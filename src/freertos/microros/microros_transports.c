@@ -1,3 +1,5 @@
+#include "microros_transports.h"
+
 #include <cmsis_os.h>
 #include <uxr/client/transport.h>
 
@@ -12,6 +14,7 @@
 #include <string.h>
 
 // --- micro-ROS Transports ---
+/*
 #define UART_DMA_BUFFER_SIZE 2048
 
 static uint8_t dma_buffer[UART_DMA_BUFFER_SIZE];
@@ -67,16 +70,22 @@ size_t transportUxrSerialRead(
 
   return wrote;
 }
+*/
 
-bool transportUxrCdcOpen(struct uxrCustomTransport * transport)
-{
-  return true;
-}
+bool transportUxrCdcOpen(struct uxrCustomTransport * transport) { return true; }
 bool transportUxrCdcClose(struct uxrCustomTransport * transport) { return true; }
 size_t transportUxrCdcWrite(
   struct uxrCustomTransport * transport, const uint8_t * buf, size_t len, uint8_t * err)
 {
-  return (CDC_Transmit_FS((uint8_t *)buf, len, 0) == USBD_OK) ? len : 0;
+  uint8_t ret_val;
+  while (true) {
+    ret_val = CDC_Transmit_FS((uint8_t *)buf, len, 0);
+    if (ret_val == USBD_OK) {
+      return len;
+    } else if (ret_val != USBD_BUSY) {
+      return 0; /** This will simply stop any further transmition in this message frame. @see stream_framing_protocol.c*/
+    }
+  }
 }
 size_t transportUxrCdcRead(
   struct uxrCustomTransport * transport, uint8_t * buf, size_t len, int timeout, uint8_t * err)
