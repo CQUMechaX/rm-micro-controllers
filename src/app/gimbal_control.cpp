@@ -12,12 +12,12 @@ double gGimbalTest;
 bool GimbalControl::on_init(void)
 {
   this->hcan_ = gRosParam.gimbal.hcan;
-  pitch_sub_ = this->joint_add(
+  pitch_sub_ = joint_add(
     gRosParam.gimbal.joint[0].type, gRosParam.gimbal.joint[0].id,
     const_cast<const JointCoeff &>(gRosParam.gimbal.joint[0].coeff));
   angle_calibration_[pitch_sub_][0] = 6000;
   angle_calibration_[pitch_sub_][1] = 1200;
-  yaw_sub_ = this->joint_add(
+  yaw_sub_ = joint_add(
     gRosParam.gimbal.joint[1].type, gRosParam.gimbal.joint[1].id,
     const_cast<const JointCoeff &>(gRosParam.gimbal.joint[1].coeff));
   angle_calibration_[yaw_sub_][0] = 4800;
@@ -70,29 +70,34 @@ bool GimbalControl::update(void)
       this->joint_[i].target.current = 0;
     }
   }
-  // this->hcan_ = &hcan1;  //???
-  this->update_target();
+
+  update_target();
   return true;
 }
 
 bool GimbalControl::get_command(void)
 {
-  // Get mode change.
+  /** Get mode change. */
   /** NO DATA or ATTI(1)*/
   if (
-    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 3) ||
-    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[0] == 0)) {
+    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[switch_right] == right_still)
+    /*gDeviceMonitor.get_online()*/) {
     this->mode_ = test;
   } else {
     this->mode_ = zero_speed;
   }
 
-  // Get control command.
+  /** Get control command. */
   joint_[pitch_sub_].target.angle =
-    angle_calibration_[pitch_sub_][0] +
-    command_default(3, angle_calibration_[pitch_sub_][1], 0, 0, 0, 0);
-  joint_[yaw_sub_].target.angle = angle_calibration_[yaw_sub_][0] +
-                                  command_default(2, angle_calibration_[yaw_sub_][1], 0, 0, 0, 0);
+    angle_calibration_[pitch_sub_][Calibration::origin_value] +
+    gDeviceMonitor.get_command_default(
+      DbusDataEnum::channel_left_y, angle_calibration_[pitch_sub_][Calibration::offset_max_value],
+      0, 0, 0, 0);
+  joint_[yaw_sub_].target.angle =
+    angle_calibration_[yaw_sub_][Calibration::origin_value] +
+    gDeviceMonitor.get_command_default(
+      DbusDataEnum::channel_left_x, angle_calibration_[yaw_sub_][Calibration::offset_max_value], 0,
+      0, 0, 0);
 
   return true;
 }

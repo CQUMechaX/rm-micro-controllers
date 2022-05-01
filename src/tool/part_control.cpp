@@ -36,7 +36,7 @@ uint8_t PartControl::joint_add(JointType joint_type, uint8_t id, const JointCoef
   return this->joint_cnt_++;
 }
 
-bool PartControl::joint_clear(void) { return true; }
+bool PartControl::joint_delete(void) { return false; }
 
 bool PartControl::update_target(void)
 {
@@ -74,27 +74,4 @@ bool PartControl::set_can_current(void)
 void PartControl::set_online_cnt(uint8_t can_num, uint8_t id, uint8_t cnt_change)
 {
   PartControl::joint_cmd_group_online_cnt_[can_num][id >> 2] += cnt_change;
-}
-
-double PartControl::get_command_dbus_channel(uint8_t channel, double channel_coeff)
-{
-  return channel_coeff * gDeviceMonitor.device_dbus_.data.dbus.rc.channel[channel] /
-         RC_CHANNEL_VALUE_ERROR;
-}
-
-int16_t PartControl::command_default(
-  uint8_t channel, double channel_coeff, uint8_t mouse, double mouse_coeff, uint8_t serial,
-  double serial_coeff)
-{
-  if (mouse) {
-    return 0;
-  } else if (serial) {
-    return 0;
-  } else {
-    if (gDeviceMonitor.device_dbus_.online) {
-      return get_command_dbus_channel(channel, channel_coeff);
-    } else {
-      return 0;
-    }
-  }
 }

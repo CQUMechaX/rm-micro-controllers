@@ -18,21 +18,25 @@
 
 class PartControl : public TaskControl, private Pid
 {
-protected:
-  uint8_t joint_cnt_, /** count of joint_ */
-    joint_cmd_group_cnt_[__PARTCONTROL_TARGET_NUM] =
-      {}; /** register to different cmd packet. @see gCanHeadTarget */
-  JointData joint_[__PARTCONTROL_JOINT_NUM];
-  JointData * joint_id_ptr_[__PARTCONTROL_ID_MAX_NUM] = {};
+private:
+  /** @brief Do you know what's the static member of a class? They can only accessed by class name. */
   static JointData::CtrlInfo joint_target_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
                                           [__PARTCONTROL_ID_MAX_NUM + 1];
   static uint8_t joint_cmd_group_online_cnt_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
                                             [__PARTCONTROL_ID_MAX_NUM +
                                              1]; /** Update in DeviceMonitor::update()*/
+protected:
+  enum Calibration { origin_value, offset_max_value };
+  uint8_t joint_cnt_; /** count of joint_ */
+  uint8_t joint_cmd_group_cnt_[__PARTCONTROL_TARGET_NUM] =
+    {}; /** register to different cmd packet. @see gCanHeadTarget */
+  JointData joint_[__PARTCONTROL_JOINT_NUM];
+  JointData * joint_id_ptr_[__PARTCONTROL_ID_MAX_NUM] = {};
 
   uint8_t joint_add(JointType joint_type, uint8_t id);
   uint8_t joint_add(JointType joint_type, uint8_t id, const JointCoeff & coeff);
-  bool joint_clear(void);
+  bool joint_configure(void);
+  bool joint_delete(void);
 
   inline double pid_speed(uint32_t tick, JointData & joint, double get, double set)
   {
@@ -44,13 +48,6 @@ protected:
       tick, joint.pid_calc[1], joint.coeff.pid[1], get, set,
       static_cast<double>(joint.coeff.angle_limit[1]));
   }
-
-  double get_command_dbus_channel(uint8_t channel, double channel_coeff);
-  int16_t command_default(
-    uint8_t channel, double channel_coeff, uint8_t mouse, double mouse_coeff, uint8_t serial,
-    double serial_coeff);
-  //template<>
-  //int32_t command_noname(uint8_t channel, double coeff);
 
   bool update_target(void);
   static void set_target(CAN_HandleTypeDef & hcan, JointData & joint);

@@ -62,10 +62,30 @@ std::vector<DeviceStatus> & DeviceMonitor::get_register_list(CAN_HandleTypeDef &
 {
   return this->device_joint_[this->can_cast_to_num(hcan)];
 }
-
 bool DeviceMonitor::get_online(JointData & joint)
 {
   return this->device_dict_find(static_cast<void *>(&joint)).online;
+}
+double DeviceMonitor::get_command_dbus_channel(uint8_t channel, double channel_coeff)
+{
+  return channel_coeff * device_dbus_.data.dbus.rc.channel[channel] /
+         RC_CHANNEL_VALUE_ERROR;
+}
+int16_t DeviceMonitor::get_command_default(
+  uint8_t channel, double channel_coeff, uint8_t mouse, double mouse_coeff, uint8_t serial,
+  double serial_coeff)
+{
+  if (mouse) {
+    return 0;
+  } else if (serial) {
+    return 0;
+  } else {
+    if (device_dbus_.online) {
+      return get_command_dbus_channel(channel, channel_coeff);
+    } else {
+      return 0;
+    }
+  }
 }
 
 bool DeviceMonitor::device_dict_add(void * key, DeviceStatus * value)

@@ -69,6 +69,12 @@ public:
   bool register_and_init(CAN_HandleTypeDef & hcan, JointData & joint);
   std::vector<DeviceStatus> & get_register_list(CAN_HandleTypeDef & hcan);
   bool get_online(JointData & joint);
+  double get_command_dbus_channel(uint8_t channel, double channel_coeff);
+  int16_t get_command_default(
+    uint8_t channel, double channel_coeff, uint8_t mouse, double mouse_coeff, uint8_t serial,
+    double serial_coeff);
+  //template<>
+  //int32_t get_command_noname(uint8_t channel, double coeff);
 
   constexpr uint8_t can_cast_to_num(CAN_HandleTypeDef & hcan)
   {
