@@ -1,9 +1,11 @@
+.cache
 .pio
 .micro-ros
 .Project
 .vscode/*
 !.vscode/extensions.json
 !.vscode/tasks.json
+compile_commands.json
 
 *.log
 ~*
