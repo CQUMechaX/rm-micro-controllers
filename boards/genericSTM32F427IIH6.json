@@ -1,0 +1,36 @@
+{
+  "build": {
+    "core": "stm32",
+    "cpu": "cortex-m4",
+    "extra_flags": "-DSTM32F427xx -DSTM32F4xx -DSTM32F4",
+    "f_cpu": "180000000L",
+    "mcu": "stm32f427iih6",
+    "product_line": "STM32F427xx",
+    "variant": "STM32F427I(G-I)Hx"
+  },
+  "debug": {
+    "jlink_device": "STM32F427II",
+    "openocd_target": "stm32f4x"
+  },
+  "frameworks": [
+    "arduino",
+    "cmsis",
+    "stm32cube",
+    "libopencm3"
+  ],
+  "name": "STM32F427II (320kb RAM. 1536kb Flash)",
+  "upload": {
+    "maximum_ram_size": 327680,
+    "maximum_size": 1572864,
+    "protocol": "stlink",
+    "protocols": [
+      "blackmagic",
+      "dfu",
+      "jlink",
+      "serial",
+      "stlink"
+    ]
+  },
+  "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32f427ii.html",
+  "vendor": "Generic"
+}
