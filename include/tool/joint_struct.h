@@ -18,15 +18,15 @@
 extern "C" {
 #endif
 
-typedef struct JointCoeff
+typedef struct
 {
   double act2pos, act2vel, act2effort, pos2act, vel2act, effort2act, act2pos_offset, act2vel_offset,
     act2effort_offset;
-  PidCoeff pid[2];
+  PidCoeff pid[2]; /** current control and speed control */
   int16_t angle_limit[2], speed_limit[2], current_limit[2];
 } JointCoeff;
 
-typedef struct JointData
+typedef struct
 {
   // std::string name;
   // std::string type;
@@ -39,7 +39,8 @@ typedef struct JointData
   {
     int16_t angle, speed, current;
     int8_t temperature;
-  } feedback[5], target;
+  } feedback[5], /** Feedback infomation includes 4 kinds of data.  */
+    target;      /** You can only control the motor by curent DIRECTLY. */
   bool halted, need_calibration, calibrated, calibration_reading;
   bool locked;
   double cmd_degree, cmd_position;

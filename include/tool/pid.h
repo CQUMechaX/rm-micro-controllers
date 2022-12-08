@@ -20,7 +20,7 @@ extern "C" {
 /** kp, ki, kd, frequency, ki_limit, k_limit
  * @see class PartControl
  */
-typedef struct PidCoeff
+typedef struct
 {
   double kp, ki, kd;        /** coefficient of pid */
   double frequency;         /** reserved for future use */
@@ -29,7 +29,7 @@ typedef struct PidCoeff
 /** feed, cmd, error[3], tick[3], p_out, i_out, d_out, out
  * @see class PartControl
  */
-typedef struct PidInfo
+typedef struct
 {
   double feed, cmd, error[3], tick[3], p_out, i_out, d_out, out;
 } PidInfo;

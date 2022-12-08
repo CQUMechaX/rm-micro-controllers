@@ -13,6 +13,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "override.h"
+
 // definition
 /* ----------------------- PC Key Definition-------------------------------- */
 #define KEY_PRESSED_OFFSET_W ((uint16_t)1 << 0)
@@ -37,11 +39,11 @@ extern "C" {
 #define RC_CHANNEL_VALUE_ERROR ((uint16_t)660)
 
 // struct definition for custom
-typedef struct GCC_PACKED DbusData
+typedef struct GCC_PACKED
 {
   struct GCC_PACKED Rc
   {
-    int16_t channel[5];
+    int16_t channel[5]; /** channel 5 corresponds to left-up corner scroller. */
     uint8_t button[2];
   } rc;
   struct GCC_PACKED Mouse
@@ -54,7 +56,7 @@ typedef struct GCC_PACKED DbusData
   } mouse;
   struct GCC_PACKED Key
   {
-    uint16_t v;
+    uint16_t v; /** BVCX ZGFR EQ^^ DASW */
   } key;
 } DbusData;
 
@@ -71,7 +73,7 @@ typedef enum DbusDataEnum {
   left_hl = 2,
   right_gps = 1,
   right_still = 0, /** center ATTI */
-  right_down = 2, /** buttom ATTI */
+  right_down = 2,  /** buttom ATTI */
 } DbusDataEnum;
 
 #ifdef __cplusplus
