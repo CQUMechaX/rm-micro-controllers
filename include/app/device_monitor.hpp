@@ -12,7 +12,6 @@
 #include "tool/task_control.hpp"
 
 // definition
-#define __MONITOR_CAN_INTERFACE_MAX_NUM 2
 
 // variable
 
@@ -49,6 +48,7 @@ class DeviceMonitor : public TaskControl
   bool update_to_controller(void);
 
 public:
+  /** @warning Since the MCU doesn't have MMU, we prefer to allocate space in advance. */
   explicit DeviceMonitor()
   {
     for (auto & iter : this->device_joint_) {
@@ -58,7 +58,8 @@ public:
   }
   ~DeviceMonitor() = default;
 
-  std::vector<DeviceStatus> device_joint_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1];
+  static const uint8_t interface_max_number_ = 2;
+  std::vector<DeviceStatus> device_joint_[interface_max_number_];
   DeviceStatus device_dbus_{}, device_imu_{};
 
   bool update(void);

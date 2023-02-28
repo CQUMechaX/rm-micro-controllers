@@ -53,9 +53,9 @@ typedef struct
   // LowPassFilter* lp_filter;
 } JointData;
 
-typedef enum JointType { RM3508, RM2006, RM6020 } JointType;
+typedef enum JointType { kRM3508, kRM2006, kRM6020 } JointType;
 
-extern const JointCoeff g_joint_default[3]; /** @see @file microros_param.c */
+extern const JointCoeff gJointDefault[3]; /** @see @file microros_param.c */
 
 #ifdef __cplusplus
 }

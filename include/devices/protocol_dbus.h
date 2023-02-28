@@ -61,19 +61,19 @@ typedef struct GCC_PACKED
 } DbusData;
 
 typedef enum DbusDataEnum {
-  channel_left_x = 2,
-  channel_left_y = 3,
-  channel_right_x = 0,
-  channel_right_y = 1,
-  channel_toggle = 4,
-  switch_left = 1,
-  switch_right = 0,
-  left_off = 1,
-  left_cl = 0,
-  left_hl = 2,
-  right_gps = 1,
-  right_still = 0, /** center ATTI */
-  right_down = 2,  /** buttom ATTI */
+  kChannelLeftX = 2,
+  kChannelLeftY = 3,
+  kChannelRightX = 0,
+  kChannelRightY = 1,
+  kChannelToggle = 4,
+  kSwitchLeft = 1,
+  kSwitchRight = 0,
+  kLeftOff = 1,
+  kLeftCl = 0,
+  kLeftHl = 2,
+  kRightGps = 1,
+  kRightStill = 0, /** center ATTI */
+  kRightDown = 2,  /** buttom ATTI */
 } DbusDataEnum;
 
 #ifdef __cplusplus

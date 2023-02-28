@@ -80,7 +80,7 @@ bool GimbalControl::get_command(void)
   /** Get mode change. */
   /** NO DATA or ATTI(1)*/
   if (
-    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[switch_right] == right_still)
+    (gDeviceMonitor.device_dbus_.data.dbus.rc.button[kSwitchRight] == kRightStill)
     /*gDeviceMonitor.get_online()*/) {
     this->mode_ = test;
   } else {
@@ -89,14 +89,14 @@ bool GimbalControl::get_command(void)
 
   /** Get control command. */
   joint_[pitch_sub_].target.angle =
-    angle_calibration_[pitch_sub_][Calibration::origin_value] +
+    angle_calibration_[pitch_sub_][Calibration::kOriginValue] +
     gDeviceMonitor.get_command_default(
-      DbusDataEnum::channel_left_y, angle_calibration_[pitch_sub_][Calibration::offset_max_value],
+      DbusDataEnum::kChannelLeftY, angle_calibration_[pitch_sub_][Calibration::kOffsetMaxValue],
       0, 0, 0, 0);
   joint_[yaw_sub_].target.angle =
-    angle_calibration_[yaw_sub_][Calibration::origin_value] +
+    angle_calibration_[yaw_sub_][Calibration::kOriginValue] +
     gDeviceMonitor.get_command_default(
-      DbusDataEnum::channel_left_x, angle_calibration_[yaw_sub_][Calibration::offset_max_value], 0,
+      DbusDataEnum::kChannelLeftX, angle_calibration_[yaw_sub_][Calibration::kOffsetMaxValue], 0,
       0, 0, 0);
 
   return true;

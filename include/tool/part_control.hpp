@@ -14,28 +14,35 @@
 
 #define __PARTCONTROL_TARGET_NUM 4
 #define __PARTCONTROL_JOINT_NUM 6
-#define __PARTCONTROL_ID_MAX_NUM 16
 
 class PartControl : public TaskControl, private Pid
 {
+public:
+  static const uint8_t target_number_ = 4, /** */
+    joint_number_ = 6,                     /** */
+    id_max_number_ = 16;                   /** */
+
 private:
   /** @brief Do you know what's the static member of a class? They can only accessed by class name. */
-  static JointData::CtrlInfo joint_target_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
-                                          [__PARTCONTROL_ID_MAX_NUM + 1];
-  static uint8_t joint_cmd_group_online_cnt_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
-                                            [__PARTCONTROL_ID_MAX_NUM +
-                                             1]; /** Update in DeviceMonitor::update()*/
+  static JointData::CtrlInfo joint_target_[DeviceMonitor::interface_max_number_][id_max_number_];
+  static uint8_t
+    joint_cmd_group_online_cnt_[DeviceMonitor::interface_max_number_]
+                               [id_max_number_]; /** Update in DeviceMonitor::update()*/
 protected:
-  enum Calibration { origin_value, offset_max_value };
+  enum Calibration { kOriginValue, kOffsetMaxValue };
   uint8_t joint_cnt_; /** count of joint_ */
   uint8_t joint_cmd_group_cnt_[__PARTCONTROL_TARGET_NUM] =
     {}; /** register to different cmd packet. @see gCanHeadTarget */
   JointData joint_[__PARTCONTROL_JOINT_NUM];
-  JointData * joint_id_ptr_[__PARTCONTROL_ID_MAX_NUM] = {};
+  JointData * joint_id_ptr_[id_max_number_] = {};
 
+  /** @brief Register a new joint to the PartControl object. */
   uint8_t joint_add(JointType joint_type, uint8_t id);
+  /** @brief Register a new joint with the given coefficient to the PartControl object. */
   uint8_t joint_add(JointType joint_type, uint8_t id, const JointCoeff & coeff);
+  /** @todo not implemented */
   bool joint_configure(void);
+  /** @todo not implemented */
   bool joint_delete(void);
 
   inline double pid_speed(uint32_t tick, JointData & joint, double get, double set)

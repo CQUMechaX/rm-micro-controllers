@@ -11,9 +11,9 @@ ExtraControl gBulletMotor;
 bool ExtraControl::on_init(void)
 {
   this->hcan_ = gRosParam.hcan_bullet;
-  this->joint_add(JointType::RM2006, 2); /** bullet circle */
-  this->joint_add(JointType::RM3508, 3); /** fabric1 */
-  this->joint_add(JointType::RM3508, 4); /** fabric2 */
+  this->joint_add(JointType::kRM2006, 2); /** bullet circle */
+  this->joint_add(JointType::kRM3508, 3); /** fabric1 */
+  this->joint_add(JointType::kRM3508, 4); /** fabric2 */
   this->joint_[0].coeff.pid[0].kp = 3;
   this->joint_[1].coeff.pid[0].kp = this->joint_[2].coeff.pid[0].kp = 3;
   return true;

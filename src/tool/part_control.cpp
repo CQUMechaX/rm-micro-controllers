@@ -4,19 +4,19 @@
 #include "override.h"
 #include "tool/transimition.hpp"
 
-JointData::CtrlInfo PartControl::joint_target_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
-                                              [__PARTCONTROL_ID_MAX_NUM + 1] = {0};
-uint8_t PartControl::joint_cmd_group_online_cnt_[__MONITOR_CAN_INTERFACE_MAX_NUM + 1]
-                                                [__PARTCONTROL_ID_MAX_NUM + 1] = {0};
+JointData::CtrlInfo PartControl::joint_target_[DeviceMonitor::interface_max_number_]
+                                              [id_max_number_] = {0};
+uint8_t PartControl::joint_cmd_group_online_cnt_[DeviceMonitor::interface_max_number_]
+                                                [id_max_number_] = {0};
 
 uint8_t PartControl::joint_add(JointType joint_type, uint8_t id)
 {
-  return joint_add(joint_type, id, g_joint_default[joint_type]);
+  return joint_add(joint_type, id, gJointDefault[joint_type]);
 }
 
 uint8_t PartControl::joint_add(JointType joint_type, uint8_t id, const JointCoeff & coeff)
 {
-  if (joint_type == JointType::RM6020) {
+  if (joint_type == JointType::kRM6020) {
     id += 4; /** GM6020 id1 :=> JointData::id = 5 @see gCanHeadTarget */
   }
 
@@ -58,7 +58,7 @@ int16_t PartControl::get_target_current(uint8_t can_num, uint8_t id)
 
 bool PartControl::set_can_current(void)
 {
-  for (uint8_t i = 0; i != __MONITOR_CAN_INTERFACE_MAX_NUM; ++i) {
+  for (uint8_t i = 0; i != DeviceMonitor::interface_max_number_; ++i) {
     for (uint8_t j = 0; j != __PARTCONTROL_TARGET_NUM; ++j) {
       if (PartControl::joint_cmd_group_online_cnt_[i][j]) {
         transimitionCanTx(
